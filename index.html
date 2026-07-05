@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Google Sheets Chat</title>
+  <style>
+    :root {
+      --primary: #4285f4;
+      --primary-light: #75a0fc;
+      --bg: #f5f5f5;
+      --chat-bg: #ffffff;
+      --text: #333333;
+      --text-light: #666666;
+      --border: #e0e0e0;
+      --received: #e9e9eb;
+      --sent: #4285f4;
+      --sent-text: #ffffff;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 0.25rem;
+    }
+    
+    .chat-container {
+      flex: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    
+    .messages {
+      flex: 1;
+      background-color: var(--chat-bg);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+    
+    .message {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 1rem;
+      max-width: 80%;
+    }
+    
+    .message.received {
+      align-self: flex-start;
+    }
+    
+    .message.sent {
+      align-self: flex-end;
+    }
+    
+    .message-bubble {
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+    
+    .message.received .message-bubble {
+      background-color: var(--received);
+      color: var(--text);
+      border-top-left-radius: 4px;
+    }
+    
+    .message.sent .message-bubble {
+      background-color: var(--sent);
+      color: var(--sent-text);
+      border-top-right-radius: 4px;
+    }
+    
+    .message-sender {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text-light);
+    }
+    
+    .message.sent .message-sender {
+      text-align: right;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .message-time {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      margin-top: 0.25rem;
+    }
+    
+    .message.sent .message-time {
+      text-align: right;
+      color: rgba(255,255,255,0.7);
+    }
+    
+    .input-area {
+      display: flex;
+      gap: 0.75rem;
+      background-color: var(--chat-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+    
+    .input-area input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .input-area input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+    }
+    
+    .input-area input[name="name"] {
+      flex: 0 0 150px;
+    }
+    
+    .input-area button {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    
+    .input-area button:hover {
+      background-color: #3367d6;
+    }
+    
+    .input-area button:active {
+      transform: scale(0.98);
+    }
+    
+    .input-area button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .typing-indicator {
+      display: none;
+      padding: 0.5rem 1rem;
+      background-color: var(--received);
+      border-radius: 18px;
+      align-self: flex-start;
+      font-style: italic;
+      color: var(--text-light);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-light);
+    }
+    
+    .empty-state p {
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 600px) {
+      .chat-container {
+        padding: 0.5rem;
+      }
+      
+      .input-area {
+        flex-direction: column;
+      }
+      
+      .input-area input[name="name"] {
+        flex: 1;
+      }
+      
+      .input-area button {
+        width: 100%;
+      }
+      
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>💬 Google Sheets Chat</h1>
+    <p>Messages are saved to your Google Sheet in real-time</p>
+  </header>
+  
+  <div class="chat-container">
+    <div class="messages" id="messages">
+      <div class="empty-state">
+        <p>No messages yet</p>
+        <p>Start a conversation!</p>
+      </div>
+    </div>
+    
+    <div class="input-area">
+      <input 
+        type="text" 
+        name="name" 
+        id="userName" 
+        placeholder="Your name" 
+        value=""
+        maxlength="30"
+      />
+      <input 
+        type="text" 
+        name="message" 
+        id="messageInput" 
+        placeholder="Type a message..." 
+        maxlength="500"
+        autocomplete="off"
+      />
+      <button id="sendButton" disabled>Send</button>
+    </div>
+    
+    <div class="status" id="status">Connecting...</div>
+  </div>
+  
+  <script>
+    // Configuration - REPLACE THIS WITH YOUR WEB APP URL
+    const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbw_HurkSMPBwKMHVk4Lr9LgnHyG-iv6r6H5OC4wXlVkjf0ZHQH--ZgUvx4ZdFxPQYiy/exec';
+    
+    // DOM elements
+    const messagesContainer = document.getElementById('messages');
+    const messageInput = document.getElementById('messageInput');
+    const userNameInput = document.getElementById('userName');
+    const sendButton = document.getElementById('sendButton');
+    const statusElement = document.getElementById('status');
+    
+    // State
+    let userName = localStorage.getItem('chatUserName') || '';
+    let isLoading = false;
+    
+    // Initialize
+    userNameInput.value = userName;
+    
+    // Enable/disable send button based on input
+    function updateSendButton() {
+      const hasName = userNameInput.value.trim().length > 0;
+      const hasMessage = messageInput.value.trim().length > 0;
+      sendButton.disabled = !(hasName && hasMessage) || isLoading;
+    }
+    
+    messageInput.addEventListener('input', updateSendButton);
+    userNameInput.addEventListener('input', updateSendButton);
+    
+    // Format timestamp for display
+    function formatTime(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    // Format date for display
+    function formatDate(isoString) {
+      const date = new Date(isoString);
+      const today = new Date();
+      
+      if (date.toDateString() === today.toDateString()) {
+        return 'Today';
+      }
+      if (date.toDateString() === new Date(today.getTime() - 86400000).toDateString()) {
+        return 'Yesterday';
+      }
+      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+    
+    // Create a message element
+    function createMessageElement(message, isSent = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.className = 'message-sender';
+      senderDiv.textContent = message.sender || 'Anonymous';
+      
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      bubbleDiv.textContent = message.message;
+      
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'message-time';
+      timeDiv.textContent = formatTime(message.timestamp);
+      
+      messageDiv.appendChild(senderDiv);
+      messageDiv.appendChild(bubbleDiv);
+      messageDiv.appendChild(timeDiv);
+      
+      return messageDiv;
+    }
+    
+    // Render messages
+    function renderMessages(messages) {
+      if (messages.length === 0) {
+        messagesContainer.innerHTML = `
+          <div class="empty-state">
+            <p>No messages yet</p>
+            <p>Start a conversation!</p>
+          </div>
+        `;
+        return;
+      }
+      
+      messagesContainer.innerHTML = '';
+      
+      // Group messages by date
+      let currentDate = null;
+      
+      messages.forEach(message => {
+        const messageDate = new Date(message.timestamp).toDateString();
+        
+        if (messageDate !== currentDate) {
+          currentDate = messageDate;
+          const dateElement = document.createElement('div');
+          dateElement.className = 'date-separator';
+          dateElement.textContent = formatDate(message.timestamp);
+          dateElement.style.textAlign = 'center';
+          dateElement.style.padding = '0.5rem';
+          dateElement.style.color = 'var(--text-light)';
+          dateElement.style.fontSize = '0.85rem';
+          messagesContainer.appendChild(dateElement);
+        }
+        
+        const isSent = message.sender === userName;
+        const messageElement = createMessageElement(message, isSent);
+        messagesContainer.appendChild(messageElement);
+      });
+      
+      // Scroll to bottom
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    
+    // Update status
+    function updateStatus(text, isError = false) {
+      statusElement.textContent = text;
+      statusElement.style.color = isError ? '#d32f2f' : 'var(--text-light)';
+    }
+    
+    // Fetch messages from backend
+    async function fetchMessages() {
+      try {
+        const response = await fetch(BACKEND_URL);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const messages = await response.json();
+        renderMessages(messages);
+        updateStatus('Connected. Ready to chat!');
+        return messages;
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        updateStatus('Error connecting to backend. Check your URL.', true);
+        return [];
+      }
+    }
+    
+    // Send a message
+    async function sendMessage() {
+      const messageText = messageInput.value.trim();
+      const name = userNameInput.value.trim();
+      
+      if (!name || !messageText) return;
+      
+      isLoading = true;
+      updateSendButton();
+      
+      try {
+        // Save username to localStorage
+        localStorage.setItem('chatUserName', name);
+        userName = name;
+        
+        const response = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sender: name,
+            message: messageText
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // Clear input
+        messageInput.value = '';
+        
+        // Refresh messages
+        await fetchMessages();
+        
+      } catch (error) {
+        console.error('Error sending message:', error);
+        updateStatus('Error sending message. Try again.', true);
+      } finally {
+        isLoading = false;
+        updateSendButton();
+        messageInput.focus();
+      }
+    }
+    
+    // Handle send button click
+    sendButton.addEventListener('click', sendMessage);
+    
+    // Handle Enter key
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !sendButton.disabled) {
+        sendMessage();
+      }
+    });
+    
+    // Auto-focus message input
+    messageInput.focus();
+    
+    // Initial load
+    updateSendButton();
+    fetchMessages();
+    
+    // Refresh messages every 5 seconds
+    setInterval(fetchMessages, 5000);
+  </script>
+</body>
+</html>
