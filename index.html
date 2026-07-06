@@ -1,970 +1,157 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tactical map</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost chat</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #FFD700;
+            --primary-dark: #FFC700;
+            --bg: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text: #e0e0e0;
+            --text-light: #9e9e9e;
+            --border: #3a3a3a;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        #header {
-            background: #1e1e1e;
-            padding: 12px 20px;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        #header h1 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #ffd700;
-            letter-spacing: 1px;
-        }
-        
-        #export-btn {
-            background: #ffd700;
-            color: #121212;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-        
-        #export-btn:hover {
-            background: #ffed4e;
-        }
-        
-        #map-container {
-            height: calc(100vh - 50px);
-            width: 100%;
-            position: relative;
-        }
-        
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-        
-        .leaflet-marker-icon.marker-icon {
-            width: 24px !important;
-            height: 24px !important;
-            border-radius: 50%;
-            position: relative;
-            cursor: move;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-clip: padding-box;
-        }
-        
-        .leaflet-marker-icon.marker-icon.circle {
-            border: 2px solid;
-        }
-        
-        .leaflet-marker-icon.marker-icon.cross {
-            border-radius: 0;
-            border: none;
-            background: transparent;
-        }
-        
-        .leaflet-marker-icon.marker-icon.cross svg {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            pointer-events: none;
-        }
-        
-        .leaflet-marker-icon.marker-icon.red.circle { background: #ff4444; border-color: #cc0000; }
-        .leaflet-marker-icon.marker-icon.white.circle { background: #fff; border-color: #ccc; }
-        .leaflet-marker-icon.marker-icon.green.circle { background: #4CAF50; border-color: #2E7D32; }
-        .leaflet-marker-icon.marker-icon.blue.circle { background: #2196F3; border-color: #0d47a1; }
-        .leaflet-marker-icon.marker-icon.gold.circle { background: #ffd700; border-color: #ffaa00; }
-        
-        .leaflet-marker-icon.marker-icon.red.cross svg path { stroke: #ff4444; }
-        .leaflet-marker-icon.marker-icon.white.cross svg path { stroke: #333; }
-        .leaflet-marker-icon.marker-icon.green.cross svg path { stroke: #4CAF50; }
-        .leaflet-marker-icon.marker-icon.blue.cross svg path { stroke: #2196F3; }
-        .leaflet-marker-icon.marker-icon.gold.cross svg path { stroke: #ffaa00; }
-        
-        .leaflet-marker-icon.marker-icon.deleted.circle {
-            background: #444 !important;
-            border-color: #666 !important;
-        }
-        
-        .leaflet-marker-icon.marker-icon.deleted.cross svg path {
-            stroke: #666 !important;
-        }
-        
-        .marker-label {
-            position: absolute;
-            top: -28px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.95);
-            color: #ffd700;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            border: 1px solid #333;
-            pointer-events: none;
-            z-index: 1000;
-        }
-        
-        .marker-label input {
-            background: transparent;
-            border: 1px solid #444;
-            color: #ffd700;
-            padding: 2px 4px;
-            width: 120px;
-            pointer-events: auto;
-        }
-        
-        .marker-label input:focus {
-            outline: none;
-            border-color: #ffd700;
-        }
-        
-        .context-menu {
-            position: absolute;
-            background: #2d2d2d;
-            border: 1px solid #444;
-            border-radius: 6px;
-            padding: 8px 0;
-            z-index: 10000;
-            min-width: 200px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-        
-        .context-menu-item {
-            padding: 8px 16px;
-            color: #e0e0e0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .context-menu-item:hover {
-            background: #3a3a3a;
-            color: #ffd700;
-        }
-        
-        .context-menu-item.disabled {
-            color: #666;
-            cursor: not-allowed;
-        }
-        
-        .color-option {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #555;
-            cursor: pointer;
-        }
-        
-        .color-option.red { background: #ff4444; }
-        .color-option.white { background: #fff; border-color: #999; }
-        .color-option.green { background: #4CAF50; }
-        .color-option.blue { background: #2196F3; }
-        .color-option.gold { background: #ffd700; }
-        
-        .shape-option {
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .shape-option.circle {
-            border: 2px solid #ffd700;
-            border-radius: 50%;
-            background: #ffd700;
-        }
-        
-        .shape-option.cross::before,
-        .shape-option.cross::after {
-            content: '';
-            position: absolute;
-            background: #ffd700;
-        }
-        
-        .shape-option.cross::before {
-            width: 12px;
-            height: 2px;
-        }
-        
-        .shape-option.cross::after {
-            width: 2px;
-            height: 12px;
-        }
-        
-        #modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 20000;
-        }
-        
-        #modal-content {
-            background: #2d2d2d;
-            padding: 24px;
-            border-radius: 8px;
-            min-width: 300px;
-            max-width: 400px;
-            border: 1px solid #444;
-        }
-        
-        #modal-content h3 {
-            color: #ffd700;
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-        }
-        
-        #modal-content .form-group {
-            margin-bottom: 16px;
-        }
-        
-        #modal-content label {
-            display: block;
-            margin-bottom: 6px;
-            color: #ccc;
-            font-size: 0.9rem;
-        }
-        
-        #modal-content input[type="text"] {
-            width: 100%;
-            padding: 8px 12px;
-            background: #1e1e1e;
-            border: 1px solid #444;
-            border-radius: 4px;
-            color: #e0e0e0;
-            font-size: 0.95rem;
-        }
-        
-        #modal-content input[type="text"]:focus {
-            outline: none;
-            border-color: #ffd700;
-        }
-        
-        .color-selector, .shape-selector {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-        
-        .btn-primary {
-            background: #ffd700;
-            color: #121212;
-        }
-        
-        .btn-secondary {
-            background: #444;
-            color: #e0e0e0;
-        }
-        
-        .btn-danger {
-            background: #ff4444;
-            color: #fff;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-        }
-        
-        .action-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #2d2d2d;
-            border-radius: 6px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            z-index: 1001;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .action-btn {
-            width: 28px;
-            height: 28px;
-            background: transparent;
-            border: none;
-            color: #ccc;
-            cursor: pointer;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        
-        .action-btn:hover {
-            background: #3a3a3a;
-            color: #ffd700;
-        }
-        
-        .action-btn.delete:hover {
-            background: #ff4444;
-            color: #fff;
-        }
-        
-        .leaflet-popup {
-            background: #2d2d2d;
-            color: #e0e0e0;
-            border: 1px solid #444;
-        }
-        
-        .leaflet-popup-content-wrapper {
-            background: #2d2d2d;
-        }
-        
-        .leaflet-popup-content {
-            color: #e0e0e0;
-            font-size: 0.9rem;
-        }
-        
-        .leaflet-popup-tip {
-            background: #2d2d2d;
-            border: 1px solid #444;
-        }
-        
-        .leaflet-control-attribution {
-            background: transparent;
-            color: #666;
-        }
-        
-        .leaflet-bar {
-            border: 1px solid #444;
-        }
-        
-        .leaflet-bar a {
-            background: #2d2d2d;
-            color: #ccc;
-        }
-        
-        .leaflet-bar a:hover {
-            background: #3a3a3a;
-            color: #ffd700;
-        }
-        
-        .leaflet-container {
-            background: #121212;
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 30000;
-            color: #ffd700;
-            font-size: 1.2rem;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 10px; }
+        .container { width: 100%; max-width: 900px; min-width: 320px; padding: 15px; display: flex; flex-direction: column; height: 90vh; max-height: 700px; }
+        header { text-align: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
+        header h1 { color: var(--primary); font-size: 1.4rem; font-weight: 600; }
+        .chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-card); border-radius: 12px; overflow: hidden; }
+        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .message { display: flex; flex-direction: column; max-width: 85%; padding: 10px 14px; border-radius: 16px; line-height: 1.4; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 4px; }
+        .message.other { align-self: flex-start; background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
+        .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .sender { font-weight: 600; font-size: 0.8rem; }
+        .time { font-size: 0.7rem; opacity: 0.6; }
+        .message-content { font-size: 0.9rem; word-wrap: break-word; }
+        .input-area { padding: 15px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
+        .input-row { display: flex; gap: 10px; }
+        .input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
+        .input-area input:focus { border-color: var(--primary); }
+        .input-area button { padding: 10px 20px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        .input-area button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
+        .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); }
     </style>
 </head>
 <body>
-    <div id="header">
-        <h1>Tactical map</h1>
-        <button id="export-btn">Export Image</button>
-    </div>
-    <div id="map-container">
-        <div id="map"></div>
-    </div>
-    
-    <div id="modal">
-        <div id="modal-content">
-            <h3 id="modal-title">Add Marker</h3>
-            <div class="form-group">
-                <label for="marker-name">Marker Name</label>
-                <input type="text" id="marker-name" placeholder="Enter marker name" />
+    <div class="container">
+        <header><h1>Ghost chat</h1></header>
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="empty-state"><h3>Введите имя и напишите сообщение</h3></div>
             </div>
-            <div class="form-group">
-                <label>Color</label>
-                <div class="color-selector" id="color-selector">
-                    <div class="color-option red" data-color="red"></div>
-                    <div class="color-option white" data-color="white"></div>
-                    <div class="color-option green" data-color="green"></div>
-                    <div class="color-option blue" data-color="blue"></div>
-                    <div class="color-option gold" data-color="gold"></div>
+            <div class="input-area">
+                <input type="text" id="nameInput" placeholder="Ваше имя..." autocomplete="off">
+                <div class="input-row">
+                    <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
+                    <button id="sendButton" disabled>Отправить</button>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Shape</label>
-                <div class="shape-selector" id="shape-selector">
-                    <div class="shape-option circle" data-shape="circle"></div>
-                    <div class="shape-option cross" data-shape="cross"></div>
-                </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
-                <button class="btn btn-primary" id="save-btn">Save</button>
             </div>
         </div>
     </div>
-    
-    <div id="context-menu" class="context-menu" style="display: none;">
-        <div class="context-menu-item" data-action="add-marker">
-            <span>Add Marker Here</span>
-        </div>
-    </div>
-    
-    <div class="loading-overlay" id="loading">Saving...</div>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
     <script>
-        // Firebase configuration - user needs to configure this
         const firebaseConfig = {
-            apiKey: "AIzaSyAt5UlCyNCxGlkOOzFMWtyNgtYwxB_bbno",
-            authDomain: "mapsdatabase-944d9.firebaseapp.com",
-            databaseURL: "https://mapsdatabase-944d9-default-rtdb.firebaseio.com",
-            projectId: "mapsdatabase-944d9",
-            storageBucket: "mapsdatabase-944d9.firebasestorage.app",
-            messagingSenderId: "166085521396",
-            appId: "1:166085521396:web:a739f10c29f0769f81d3a1"
+            apiKey: "AIzaSyCF2izLpJOUc90hF2hpnhVLJm4bgmD6xyE",
+            authDomain: "database-5cf6d.firebaseapp.com",
+            databaseURL: "https://database-5cf6d-default-rtdb.firebaseio.com",
+            projectId: "database-5cf6d",
+            storageBucket: "database-5cf6d.firebasestorage.app",
+            messagingSenderId: "1081787251376",
+            appId: "1:1081787251376:web:a4c7847df3956923221975"
         };
-        
-        let firebaseApp = null;
-        let database = null;
-        let markersRef = null;
-        
-        function initializeFirebase() {
-            try {
-                if (typeof firebase === 'undefined' || !firebase.apps) {
-                    console.warn('Firebase not loaded, using local storage fallback');
-                    loadMarkersFromLocalStorage();
-                    return;
-                }
-                
-                if (!firebase.apps || firebase.apps.length === 0) {
-                    firebaseApp = firebase.initializeApp(firebaseConfig);
-                } else {
-                    firebaseApp = firebase.apps[0];
-                }
-                
-                database = firebase.database();
-                markersRef = database.ref('tactical-map-markers');
-                loadMarkers();
-            } catch (error) {
-                console.error("Firebase initialization error:", error);
-                loadMarkersFromLocalStorage();
-            }
-        }
-        
-        // Initialize map
-        const map = L.map('map').setView([55.7558, 37.6173], 12);
-        
-        // Dark theme OSM tiles
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        }).addTo(map);
-        
-        // Custom marker icons
-        function createMarkerIcon(color, shape, isDeleted = false) {
-            const baseClass = 'marker-icon ' + color + ' ' + shape + (isDeleted ? ' deleted' : '');
-            const strokeColor = isDeleted ? '#666' : (color === 'white' ? '#333' : (color === 'gold' ? '#ffaa00' : color));
-            
-            if (shape === 'cross') {
-                return L.divIcon({
-                    className: baseClass,
-                    html: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4L20 20M20 4L4 20" stroke="' + strokeColor + '" stroke-width="2"/></svg>',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12],
-                    className: baseClass
-                });
-            } else {
-                return L.divIcon({
-                    className: baseClass,
-                    html: '',
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
-                });
-            }
-        }
-        
-        // Store markers
-        let markers = [];
-        let activeMarker = null;
-        let contextMenu = document.getElementById('context-menu');
-        let modal = document.getElementById('modal');
-        let currentMarkerData = null;
-        let isEditing = false;
-        
-        // Click on map - show marker modal at click position
-        map.on('click', function(e) {
-            contextMenu.style.display = 'none';
-            showMarkerModal(e.latlng);
-        });
-        
-        // Right click for context menu
-        map.on('contextmenu', function(e) {
-            e.originalEvent.preventDefault();
-            const point = map.latLngToContainerPoint(e.latlng);
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = (point.x + 10) + 'px';
-            contextMenu.style.top = (point.y + 10) + 'px';
-            window.lastClickLatLng = e.latlng;
-        });
-        
-        // Context menu item click
-        document.querySelectorAll('.context-menu-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const action = this.dataset.action;
-                if (action === 'add-marker') {
-                    showMarkerModal(window.lastClickLatLng);
-                }
-                contextMenu.style.display = 'none';
-            });
-        });
-        
-        // Close context menu on click elsewhere
-        document.addEventListener('click', function() {
-            contextMenu.style.display = 'none';
-        });
-        
-        // Show marker modal
-        function showMarkerModal(latlng, markerData = null) {
-            currentMarkerData = markerData || {
-                lat: latlng.lat,
-                lng: latlng.lng,
-                color: 'gold',
-                shape: 'circle',
-                name: ''
-            };
-            
-            isEditing = !!markerData;
-            
-            document.getElementById('modal-title').textContent = isEditing ? 'Edit Marker' : 'Add Marker';
-            document.getElementById('marker-name').value = currentMarkerData.name || '';
-            
-            // Set active color
-            document.querySelectorAll('#color-selector .color-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.color === currentMarkerData.color);
-            });
-            
-            // Set active shape
-            document.querySelectorAll('#shape-selector .shape-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.shape === currentMarkerData.shape);
-            });
-            
-            modal.style.display = 'flex';
-        }
-        
-        // Color selector
-        document.querySelectorAll('#color-selector .color-option').forEach(opt => {
-            opt.addEventListener('click', function() {
-                document.querySelectorAll('#color-selector .color-option').forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
-                currentMarkerData.color = this.dataset.color;
-            });
-        });
-        
-        // Shape selector
-        document.querySelectorAll('#shape-selector .shape-option').forEach(opt => {
-            opt.addEventListener('click', function() {
-                document.querySelectorAll('#shape-selector .shape-option').forEach(o => o.classList.remove('active'));
-                this.classList.add('active');
-                currentMarkerData.shape = this.dataset.shape;
-            });
-        });
-        
-        // Modal buttons
-        document.getElementById('cancel-btn').addEventListener('click', function() {
-            modal.style.display = 'none';
-            activeMarker = null;
-        });
-        
-        document.getElementById('save-btn').addEventListener('click', function() {
-            const name = document.getElementById('marker-name').value.trim();
-            
-            if (!name) {
-                alert('Please enter a marker name');
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const messagesRef = database.ref('messages');
+
+        const messagesEl = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const nameInput = document.getElementById('nameInput');
+        const sendButton = document.getElementById('sendButton');
+
+        let userName = localStorage.getItem('chat_user_name') || '';
+        let autoScroll = true;
+
+        if (userName) nameInput.value = userName;
+
+        messagesRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            const messages = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value }))
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
+
+            if (messages.length === 0) {
+                messagesEl.innerHTML = '<div class="empty-state"><h3>Введите имя и напишите сообщение</h3></div>';
                 return;
             }
-            
-            currentMarkerData.name = name;
-            
-            if (isEditing && activeMarker) {
-                // Update existing marker
-                const markerId = activeMarker.options.markerId;
-                const markerObj = markers.find(m => m.id === markerId);
-                
-                if (markerObj) {
-                    // Update data
-                    markerObj.data.color = currentMarkerData.color;
-                    markerObj.data.shape = currentMarkerData.shape;
-                    markerObj.data.name = currentMarkerData.name;
-                    
-                    // Update icon
-                    const icon = createMarkerIcon(currentMarkerData.color, currentMarkerData.shape, markerObj.data.deleted);
-                    activeMarker.setIcon(icon);
-                    
-                    // Update label
-                    const label = activeMarker.getElement().querySelector('.marker-label');
-                    if (label) {
-                        label.innerHTML = `<span>${currentMarkerData.name}</span>`;
-                    }
-                    
-                    // Save to Firebase
-                    saveMarkerToFirebase(markerId, markerObj.data);
-                }
-            } else {
-                // Create new marker
-                createMarker(currentMarkerData);
-            }
-            
-            modal.style.display = 'none';
-            activeMarker = null;
+
+            messagesEl.innerHTML = messages.map(msg => `
+                <div class="message ${msg.sender === userName ? 'user' : 'other'}">
+                    <div class="message-info">
+                        <span class="sender">${escapeHtml(msg.sender)}</span>
+                        <span class="time">${formatTime(msg.timestamp)}</span>
+                    </div>
+                    <div class="message-content">${escapeHtml(msg.text)}</div>
+                </div>
+            `).join('');
+
+            if (autoScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
         });
-        
-        // Create marker
-        function createMarker(data, existingId = null) {
-            const markerId = existingId || Date.now().toString();
-            const isDeleted = data.deleted || false;
-            const icon = createMarkerIcon(data.color, data.shape, isDeleted);
-            
-            const marker = L.marker([data.lat, data.lng], {
-                icon: icon,
-                draggable: true,
-                markerId: markerId
-            }).addTo(map);
-            
-            // Add label
-            const label = document.createElement('div');
-            label.className = 'marker-label';
-            label.innerHTML = `<span>${data.name}</span>`;
-            
-            marker.getElement().appendChild(label);
-            
-            // Add action buttons
-            const actionButtons = document.createElement('div');
-            actionButtons.className = 'action-buttons';
-            actionButtons.innerHTML = `
-                <button class="action-btn edit" title="Edit">E</button>
-                <button class="action-btn delete" title="Delete">X</button>
-            `;
-            
-            marker.getElement().appendChild(actionButtons);
-            
-            // Store reference to data for updates
-            const markerData = {
-                lat: data.lat,
-                lng: data.lng,
-                color: data.color,
-                shape: data.shape,
-                name: data.name,
-                deleted: isDeleted
-            };
-            
-            // Button event handlers
-            actionButtons.querySelector('.edit').addEventListener('click', (e) => {
-                e.stopPropagation();
-                showMarkerModal(marker.getLatLng(), {
-                    lat: marker.getLatLng().lat,
-                    lng: marker.getLatLng().lng,
-                    color: markerData.color,
-                    shape: markerData.shape,
-                    name: markerData.name
-                });
-                activeMarker = marker;
-                activeMarker.options.markerId = markerId;
-            });
-            
-            actionButtons.querySelector('.delete').addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (confirm('Delete this marker?')) {
-                    // Mark as deleted
-                    markerData.deleted = true;
-                    markerData.name = '(Deleted) ' + markerData.name;
-                    
-                    const newIcon = createMarkerIcon(markerData.color, markerData.shape, true);
-                    marker.setIcon(newIcon);
-                    
-                    // Update label
-                    const labelEl = marker.getElement().querySelector('.marker-label');
-                    if (labelEl) {
-                        labelEl.innerHTML = `<span>${markerData.name}</span>`;
-                    }
-                    
-                    // Save to Firebase
-                    saveMarkerToFirebase(markerId, markerData);
-                }
-            });
-            
-            // Drag handler
-            marker.on('dragend', function() {
-                const newLatLng = marker.getLatLng();
-                markerData.lat = newLatLng.lat;
-                markerData.lng = newLatLng.lng;
-                saveMarkerToFirebase(markerId, markerData);
-            });
-            
-            // Click on marker - show edit modal
-            marker.on('click', function() {
-                showMarkerModal(marker.getLatLng(), {
-                    lat: marker.getLatLng().lat,
-                    lng: marker.getLatLng().lng,
-                    color: markerData.color,
-                    shape: markerData.shape,
-                    name: markerData.name
-                });
-                activeMarker = marker;
-                activeMarker.options.markerId = markerId;
-            });
-            
-            markers.push({ marker: marker, data: markerData, id: markerId });
-            
-            // Save to Firebase
-            saveMarkerToFirebase(markerId, markerData);
-            
-            return marker;
+
+        function formatTime(timestamp) {
+            const now = new Date();
+            const msgDate = new Date(timestamp);
+            if (now - msgDate < 60000) return 'Только что';
+            if (now - msgDate < 3600000) return `${Math.floor((now - msgDate) / 60000)} мин. назад`;
+            return msgDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
         }
-        
-        // Save marker to Firebase with retry
-        function saveMarkerToFirebase(markerId, data) {
-            // Try to save immediately if markersRef is available
-            if (markersRef) {
-                doSaveToFirebase(markerId, data);
-                return;
-            }
-            
-            // Otherwise, wait for Firebase to initialize
-            const retryInterval = setInterval(() => {
-                if (markersRef) {
-                    clearInterval(retryInterval);
-                    doSaveToFirebase(markerId, data);
-                }
-            }, 500);
-            
-            // Fallback after 5 seconds
-            setTimeout(() => {
-                clearInterval(retryInterval);
-                if (!markersRef) {
-                    console.warn('Firebase not available after 5s, using local storage');
-                    saveMarkerToLocalStorage(markerId, data);
-                }
-            }, 5000);
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-        
-        function doSaveToFirebase(markerId, data) {
-            document.getElementById('loading').style.display = 'flex';
-            document.getElementById('loading').textContent = 'Saving...';
-            
-            const saveData = {
-                lat: data.lat,
-                lng: data.lng,
-                color: data.color,
-                shape: data.shape,
-                name: data.name,
-                deleted: data.deleted || false,
-                updatedAt: firebase.database.ServerValue.TIMESTAMP
-            };
-            
-            markersRef.child(markerId).set(saveData).then(() => {
-                document.getElementById('loading').style.display = 'none';
-            }).catch(error => {
-                console.error('Error saving marker:', error);
-                document.getElementById('loading').style.display = 'none';
-                saveMarkerToLocalStorage(markerId, data);
-            });
+
+        function updateSendButton() {
+            sendButton.disabled = !nameInput.value.trim() || !messageInput.value.trim();
         }
-        
-        // Local storage fallback
-        function saveMarkerToLocalStorage(markerId, data) {
-            try {
-                const markers = JSON.parse(localStorage.getItem('tacticalMapMarkers') || '{}');
-                markers[markerId] = {
-                    lat: data.lat,
-                    lng: data.lng,
-                    color: data.color,
-                    shape: data.shape,
-                    name: data.name,
-                    deleted: data.deleted || false
-                };
-                localStorage.setItem('tacticalMapMarkers', JSON.stringify(markers));
-            } catch (e) {
-                console.error('Local storage error:', e);
-            }
-        }
-        
-        // Load from local storage fallback
-        function loadMarkersFromLocalStorage() {
-            try {
-                const markersData = JSON.parse(localStorage.getItem('tacticalMapMarkers') || '{}');
-                for (const [id, data] of Object.entries(markersData)) {
-                    createMarker({
-                        lat: data.lat,
-                        lng: data.lng,
-                        color: data.color || 'gold',
-                        shape: data.shape || 'circle',
-                        name: data.name || 'Marker',
-                        deleted: data.deleted || false
-                    }, id);
-                }
-            } catch (e) {
-                console.error('Error loading from local storage:', e);
-            }
-        }
-        
-        // Delete marker from Firebase
-        function deleteMarkerFromFirebase(markerId) {
-            if (!markersRef) return;
-            markersRef.child(markerId).remove();
-        }
-        
-        // Load markers from Firebase
-        function loadMarkers() {
-            if (!markersRef) {
-                // Fallback to local storage
-                loadMarkersFromLocalStorage();
-                return;
-            }
-            
-            markersRef.on('value', function(snapshot) {
-                const markersData = snapshot.val();
-                if (!markersData) {
-                    // Fallback to local storage if Firebase is empty
-                    loadMarkersFromLocalStorage();
-                    return;
-                }
-                
-                // Clear existing markers
-                markers.forEach(m => map.removeLayer(m.marker));
-                markers = [];
-                
-                // Create markers from data
-                for (const [id, data] of Object.entries(markersData)) {
-                    createMarker({
-                        lat: data.lat,
-                        lng: data.lng,
-                        color: data.color || 'gold',
-                        shape: data.shape || 'circle',
-                        name: data.name || 'Marker',
-                        deleted: data.deleted || false
-                    }, id);
-                }
-            });
-        }
-        
-        // Export to image
-        document.getElementById('export-btn').addEventListener('click', function() {
-            document.getElementById('loading').style.display = 'flex';
-            document.getElementById('loading').textContent = 'Exporting...';
-            
-            // Hide header and buttons temporarily
-            document.getElementById('header').style.opacity = '0';
-            
-            html2canvas(document.getElementById('map-container'), {
-                scale: 2,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#121212'
-            }).then(canvas => {
-                // Restore header
-                document.getElementById('header').style.opacity = '1';
-                document.getElementById('loading').style.display = 'none';
-                
-                // Create download link
-                const link = document.createElement('a');
-                link.download = 'tactical-map-' + new Date().toISOString().slice(0, 10) + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(error => {
-                document.getElementById('header').style.opacity = '1';
-                document.getElementById('loading').style.display = 'none';
-                console.error('Error exporting map:', error);
-                alert('Error exporting map. Please try again.');
-            });
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
         });
-        
-        // Close modal on outside click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                activeMarker = null;
+        messageInput.addEventListener('input', updateSendButton);
+        nameInput.addEventListener('input', updateSendButton);
+        nameInput.addEventListener('blur', () => {
+            if (nameInput.value.trim()) {
+                userName = nameInput.value.trim();
+                localStorage.setItem('chat_user_name', userName);
             }
         });
-        
-        // Keyboard support
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                modal.style.display = 'none';
-                contextMenu.style.display = 'none';
-                activeMarker = null;
-            }
+        messagesEl.addEventListener('scroll', () => {
+            autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 50;
         });
-        
-        // Initialize Firebase when page loads
-        window.addEventListener('load', function() {
-            // Check if Firebase is already loaded
-            if (typeof firebase === 'object' && firebase.apps && firebase.apps.length > 0) {
-                initializeFirebase();
-            } else {
-                // Firebase scripts might still be loading, try again in 1 second
-                setTimeout(initializeFirebase, 1000);
-            }
-        });
-        
-        // Fallback if Firebase scripts fail to load
-        setTimeout(function() {
-            if (!firebase) {
-                console.warn('Firebase scripts did not load. Using local storage as fallback.');
-                // Implement local storage fallback here if needed
-            }
-        }, 5000);
+
+        function sendMessage() {
+            const name = nameInput.value.trim();
+            const text = messageInput.value.trim();
+            if (!name || !text) return;
+
+            userName = name;
+            localStorage.setItem('chat_user_name', userName);
+            messagesRef.push({ sender: name, text: text, timestamp: new Date().toISOString() });
+
+            messageInput.value = '';
+            updateSendButton();
+            messageInput.focus();
+        }
     </script>
 </body>
 </html>
