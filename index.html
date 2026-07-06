@@ -63,45 +63,55 @@
             width: 100%;
         }
         
-        .marker-icon {
-            width: 24px;
-            height: 24px;
+        .leaflet-marker-icon.marker-icon {
+            width: 24px !important;
+            height: 24px !important;
             border-radius: 50%;
-            border: 2px solid #ffd700;
             position: relative;
             cursor: move;
             display: flex;
             align-items: center;
             justify-content: center;
+            background-clip: padding-box;
         }
         
-        .marker-icon.cross {
+        .leaflet-marker-icon.marker-icon.circle {
+            border: 2px solid;
+        }
+        
+        .leaflet-marker-icon.marker-icon.cross {
             border-radius: 0;
             border: none;
+            background: transparent;
         }
         
-        .marker-icon.cross::before,
-        .marker-icon.cross::after {
-            content: '';
+        .leaflet-marker-icon.marker-icon.cross svg {
             position: absolute;
-            background: currentColor;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
         }
         
-        .marker-icon.cross::before {
-            width: 16px;
-            height: 2px;
+        .leaflet-marker-icon.marker-icon.red.circle { background: #ff4444; border-color: #cc0000; }
+        .leaflet-marker-icon.marker-icon.white.circle { background: #fff; border-color: #ccc; }
+        .leaflet-marker-icon.marker-icon.green.circle { background: #4CAF50; border-color: #2E7D32; }
+        .leaflet-marker-icon.marker-icon.blue.circle { background: #2196F3; border-color: #0d47a1; }
+        .leaflet-marker-icon.marker-icon.gold.circle { background: #ffd700; border-color: #ffaa00; }
+        
+        .leaflet-marker-icon.marker-icon.red.cross svg path { stroke: #ff4444; }
+        .leaflet-marker-icon.marker-icon.white.cross svg path { stroke: #333; }
+        .leaflet-marker-icon.marker-icon.green.cross svg path { stroke: #4CAF50; }
+        .leaflet-marker-icon.marker-icon.blue.cross svg path { stroke: #2196F3; }
+        .leaflet-marker-icon.marker-icon.gold.cross svg path { stroke: #ffaa00; }
+        
+        .leaflet-marker-icon.marker-icon.deleted.circle {
+            background: #444 !important;
+            border-color: #666 !important;
         }
         
-        .marker-icon.cross::after {
-            width: 2px;
-            height: 16px;
+        .leaflet-marker-icon.marker-icon.deleted.cross svg path {
+            stroke: #666 !important;
         }
-        
-        .marker-icon.red { background: #ff4444; color: #ff4444; }
-        .marker-icon.white { background: #fff; color: #fff; border-color: #ccc; }
-        .marker-icon.green { background: #4CAF50; color: #4CAF50; }
-        .marker-icon.blue { background: #2196F3; color: #2196F3; }
-        .marker-icon.gold { background: #ffd700; color: #ffd700; border-color: #ffaa00; }
         
         .marker-label {
             position: absolute;
@@ -472,14 +482,24 @@
         
         function initializeFirebase() {
             try {
-                if (!firebase.app.length) {
-                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                if (typeof firebase === 'undefined' || !firebase.apps) {
+                    console.warn('Firebase not loaded, using local storage fallback');
+                    loadMarkersFromLocalStorage();
+                    return;
                 }
+                
+                if (!firebase.apps || firebase.apps.length === 0) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                } else {
+                    firebaseApp = firebase.apps[0];
+                }
+                
                 database = firebase.database();
                 markersRef = database.ref('tactical-map-markers');
                 loadMarkers();
             } catch (error) {
                 console.error("Firebase initialization error:", error);
+                loadMarkersFromLocalStorage();
             }
         }
         
@@ -492,13 +512,26 @@
         }).addTo(map);
         
         // Custom marker icons
-        function createMarkerIcon(color, shape) {
-            return L.divIcon({
-                className: 'marker-icon ' + color + ' ' + shape,
-                html: shape === 'cross' ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4L20 20M20 4L4 20" stroke="' + (color === 'white' ? '#333' : (color === 'gold' ? '#ffaa00' : 'currentColor')) + '" stroke-width="2"/></svg>' : '',
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
-            });
+        function createMarkerIcon(color, shape, isDeleted = false) {
+            const baseClass = 'marker-icon ' + color + ' ' + shape + (isDeleted ? ' deleted' : '');
+            const strokeColor = isDeleted ? '#666' : (color === 'white' ? '#333' : (color === 'gold' ? '#ffaa00' : color));
+            
+            if (shape === 'cross') {
+                return L.divIcon({
+                    className: baseClass,
+                    html: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4L20 20M20 4L4 20" stroke="' + strokeColor + '" stroke-width="2"/></svg>',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12],
+                    className: baseClass
+                });
+            } else {
+                return L.divIcon({
+                    className: baseClass,
+                    html: '',
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+            }
         }
         
         // Store markers
@@ -594,27 +627,39 @@
         });
         
         document.getElementById('save-btn').addEventListener('click', function() {
-            currentMarkerData.name = document.getElementById('marker-name').value.trim();
+            const name = document.getElementById('marker-name').value.trim();
             
-            if (!currentMarkerData.name) {
+            if (!name) {
                 alert('Please enter a marker name');
                 return;
             }
             
+            currentMarkerData.name = name;
+            
             if (isEditing && activeMarker) {
                 // Update existing marker
-                const icon = createMarkerIcon(currentMarkerData.color, currentMarkerData.shape);
-                activeMarker.setIcon(icon);
-                activeMarker.setLatLng([currentMarkerData.lat, currentMarkerData.lng]);
+                const markerId = activeMarker.options.markerId;
+                const markerObj = markers.find(m => m.id === markerId);
                 
-                // Update label
-                const label = activeMarker.getElement().querySelector('.marker-label');
-                if (label) {
-                    label.innerHTML = `<span>${currentMarkerData.name}</span>`;
+                if (markerObj) {
+                    // Update data
+                    markerObj.data.color = currentMarkerData.color;
+                    markerObj.data.shape = currentMarkerData.shape;
+                    markerObj.data.name = currentMarkerData.name;
+                    
+                    // Update icon
+                    const icon = createMarkerIcon(currentMarkerData.color, currentMarkerData.shape, markerObj.data.deleted);
+                    activeMarker.setIcon(icon);
+                    
+                    // Update label
+                    const label = activeMarker.getElement().querySelector('.marker-label');
+                    if (label) {
+                        label.innerHTML = `<span>${currentMarkerData.name}</span>`;
+                    }
+                    
+                    // Save to Firebase
+                    saveMarkerToFirebase(markerId, markerObj.data);
                 }
-                
-                // Save to Firebase
-                saveMarkerToFirebase(activeMarker.options.markerId, currentMarkerData);
             } else {
                 // Create new marker
                 createMarker(currentMarkerData);
@@ -625,9 +670,10 @@
         });
         
         // Create marker
-        function createMarker(data) {
-            const markerId = Date.now().toString();
-            const icon = createMarkerIcon(data.color, data.shape);
+        function createMarker(data, existingId = null) {
+            const markerId = existingId || Date.now().toString();
+            const isDeleted = data.deleted || false;
+            const icon = createMarkerIcon(data.color, data.shape, isDeleted);
             
             const marker = L.marker([data.lat, data.lng], {
                 icon: icon,
@@ -652,38 +698,57 @@
             
             marker.getElement().appendChild(actionButtons);
             
+            // Store reference to data for updates
+            const markerData = {
+                lat: data.lat,
+                lng: data.lng,
+                color: data.color,
+                shape: data.shape,
+                name: data.name,
+                deleted: isDeleted
+            };
+            
             // Button event handlers
             actionButtons.querySelector('.edit').addEventListener('click', (e) => {
                 e.stopPropagation();
                 showMarkerModal(marker.getLatLng(), {
                     lat: marker.getLatLng().lat,
                     lng: marker.getLatLng().lng,
-                    color: data.color,
-                    shape: data.shape,
-                    name: data.name
+                    color: markerData.color,
+                    shape: markerData.shape,
+                    name: markerData.name
                 });
                 activeMarker = marker;
+                activeMarker.options.markerId = markerId;
             });
             
             actionButtons.querySelector('.delete').addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (confirm('Delete this marker?')) {
-                    map.removeLayer(marker);
-                    const index = markers.findIndex(m => m.options.markerId === markerId);
-                    if (index !== -1) markers.splice(index, 1);
-                    deleteMarkerFromFirebase(markerId);
+                    // Mark as deleted
+                    markerData.deleted = true;
+                    markerData.name = '(Deleted) ' + markerData.name;
+                    
+                    const newIcon = createMarkerIcon(markerData.color, markerData.shape, true);
+                    marker.setIcon(newIcon);
+                    
+                    // Update label
+                    const labelEl = marker.getElement().querySelector('.marker-label');
+                    if (labelEl) {
+                        labelEl.innerHTML = `<span>${markerData.name}</span>`;
+                    }
+                    
+                    // Save to Firebase
+                    saveMarkerToFirebase(markerId, markerData);
                 }
             });
             
             // Drag handler
             marker.on('dragend', function() {
                 const newLatLng = marker.getLatLng();
-                const markerData = markers.find(m => m.options.markerId === markerId);
-                if (markerData) {
-                    markerData.data.lat = newLatLng.lat;
-                    markerData.data.lng = newLatLng.lng;
-                    saveMarkerToFirebase(markerId, markerData.data);
-                }
+                markerData.lat = newLatLng.lat;
+                markerData.lng = newLatLng.lng;
+                saveMarkerToFirebase(markerId, markerData);
             });
             
             // Click on marker - show edit modal
@@ -691,43 +756,106 @@
                 showMarkerModal(marker.getLatLng(), {
                     lat: marker.getLatLng().lat,
                     lng: marker.getLatLng().lng,
-                    color: data.color,
-                    shape: data.shape,
-                    name: data.name
+                    color: markerData.color,
+                    shape: markerData.shape,
+                    name: markerData.name
                 });
                 activeMarker = marker;
+                activeMarker.options.markerId = markerId;
             });
             
-            markers.push({ marker: marker, data: data, id: markerId });
+            markers.push({ marker: marker, data: markerData, id: markerId });
             
             // Save to Firebase
-            saveMarkerToFirebase(markerId, data);
+            saveMarkerToFirebase(markerId, markerData);
             
             return marker;
         }
         
-        // Save marker to Firebase
+        // Save marker to Firebase with retry
         function saveMarkerToFirebase(markerId, data) {
-            if (!markersRef) {
-                console.warn('Firebase not initialized');
+            // Try to save immediately if markersRef is available
+            if (markersRef) {
+                doSaveToFirebase(markerId, data);
                 return;
             }
             
-            document.getElementById('loading').style.display = 'flex';
+            // Otherwise, wait for Firebase to initialize
+            const retryInterval = setInterval(() => {
+                if (markersRef) {
+                    clearInterval(retryInterval);
+                    doSaveToFirebase(markerId, data);
+                }
+            }, 500);
             
-            markersRef.child(markerId).set({
+            // Fallback after 5 seconds
+            setTimeout(() => {
+                clearInterval(retryInterval);
+                if (!markersRef) {
+                    console.warn('Firebase not available after 5s, using local storage');
+                    saveMarkerToLocalStorage(markerId, data);
+                }
+            }, 5000);
+        }
+        
+        function doSaveToFirebase(markerId, data) {
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('loading').textContent = 'Saving...';
+            
+            const saveData = {
                 lat: data.lat,
                 lng: data.lng,
                 color: data.color,
                 shape: data.shape,
                 name: data.name,
+                deleted: data.deleted || false,
                 updatedAt: firebase.database.ServerValue.TIMESTAMP
-            }).then(() => {
+            };
+            
+            markersRef.child(markerId).set(saveData).then(() => {
                 document.getElementById('loading').style.display = 'none';
             }).catch(error => {
                 console.error('Error saving marker:', error);
                 document.getElementById('loading').style.display = 'none';
+                saveMarkerToLocalStorage(markerId, data);
             });
+        }
+        
+        // Local storage fallback
+        function saveMarkerToLocalStorage(markerId, data) {
+            try {
+                const markers = JSON.parse(localStorage.getItem('tacticalMapMarkers') || '{}');
+                markers[markerId] = {
+                    lat: data.lat,
+                    lng: data.lng,
+                    color: data.color,
+                    shape: data.shape,
+                    name: data.name,
+                    deleted: data.deleted || false
+                };
+                localStorage.setItem('tacticalMapMarkers', JSON.stringify(markers));
+            } catch (e) {
+                console.error('Local storage error:', e);
+            }
+        }
+        
+        // Load from local storage fallback
+        function loadMarkersFromLocalStorage() {
+            try {
+                const markersData = JSON.parse(localStorage.getItem('tacticalMapMarkers') || '{}');
+                for (const [id, data] of Object.entries(markersData)) {
+                    createMarker({
+                        lat: data.lat,
+                        lng: data.lng,
+                        color: data.color || 'gold',
+                        shape: data.shape || 'circle',
+                        name: data.name || 'Marker',
+                        deleted: data.deleted || false
+                    }, id);
+                }
+            } catch (e) {
+                console.error('Error loading from local storage:', e);
+            }
         }
         
         // Delete marker from Firebase
@@ -738,11 +866,19 @@
         
         // Load markers from Firebase
         function loadMarkers() {
-            if (!markersRef) return;
+            if (!markersRef) {
+                // Fallback to local storage
+                loadMarkersFromLocalStorage();
+                return;
+            }
             
             markersRef.on('value', function(snapshot) {
                 const markersData = snapshot.val();
-                if (!markersData) return;
+                if (!markersData) {
+                    // Fallback to local storage if Firebase is empty
+                    loadMarkersFromLocalStorage();
+                    return;
+                }
                 
                 // Clear existing markers
                 markers.forEach(m => map.removeLayer(m.marker));
@@ -755,8 +891,9 @@
                         lng: data.lng,
                         color: data.color || 'gold',
                         shape: data.shape || 'circle',
-                        name: data.name || 'Marker'
-                    }).options.markerId = id;
+                        name: data.name || 'Marker',
+                        deleted: data.deleted || false
+                    }, id);
                 }
             });
         }
