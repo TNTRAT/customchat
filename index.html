@@ -33,8 +33,10 @@
         .message-content { font-size: 0.9rem; word-wrap: break-word; }
         .reply-preview { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary); }
         .reply-sender { color: var(--primary); font-size: 0.8rem; margin-bottom: 4px; }
-        .reply-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .reply-btn:hover { background: rgba(255,255,255,0.3); }
+        .message-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
+        .action-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .action-btn:hover { background: rgba(255,255,255,0.3); }
+        .action-btn.delete { color: #ff4444; }
         .input-area { padding: 15px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
         .input-row { display: flex; gap: 10px; align-items: flex-end; }
         .input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
@@ -166,6 +168,18 @@
             updateSendButton();
         }
 
+        async function deleteMessage(id) {
+            if (!currentUser) return;
+            if (!confirm('Удалить это сообщение?')) return;
+
+            try {
+                await messagesRef.child(id).remove();
+                setStatus('Сообщение удалено');
+            } catch (error) {
+                setStatus('Ошибка удаления');
+            }
+        }
+
         async function login() {
             const name = nameInput.value.trim();
             const password = passwordInput.value.trim();
@@ -277,7 +291,10 @@
                             <span class="time">${formatTime(msg.timestamp)}</span>
                         </div>
                         <div class="message-content">${escapeHtml(msg.text)}</div>
-                        <button class="reply-btn" onclick="replyToMessage('${msg.id}', '${msg.sender}', '${msg.text.replace(/'/g, "\\'")}')">↩</button>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="replyToMessage('${msg.id}', '${msg.sender}', '${msg.text.replace(/'/g, "\\'")}')">↩</button>
+                            ${isCurrentUser ? `<button class="action-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button>` : ''}
+                        </div>
                     </div>
                 `}).join('');
 
@@ -327,12 +344,12 @@
             autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 50;
         });
 
-        // Проверяем, есть ли сохраненный пользователь
         window.addEventListener('load', () => {
             showAuth();
         });
 
         window.replyToMessage = replyToMessage;
+        window.deleteMessage = deleteMessage;
     </script>
 </body>
 </html>
