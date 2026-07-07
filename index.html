@@ -31,27 +31,26 @@
         .sender { font-weight: 600; font-size: 0.8rem; }
         .time { font-size: 0.7rem; opacity: 0.6; }
         .message-content { font-size: 0.9rem; word-wrap: break-word; }
-        .reply-preview { background: rgba(255,255,255,0.1); padding: 8px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary); }
+        .reply-preview { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary); }
         .reply-sender { color: var(--primary); font-size: 0.8rem; margin-bottom: 4px; }
         .message-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
         .action-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .action-btn:hover { background: rgba(255,255,255,0.3); }
         .action-btn.delete { color: #ff4444; }
-        .input-area { padding: 15px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
-        .input-row { display: flex; gap: 10px; align-items: flex-end; }
-        .input-area input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
-        .input-area input:focus { border-color: var(--primary); }
-        .input-area button { padding: 10px 20px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
-        .input-area button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
+        .input-area, .auth-form { padding: 15px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
+        .input-row, .auth-row { display: flex; gap: 10px; align-items: flex-end; }
+        .input-area input, .auth-form input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
+        .input-area input:focus, .auth-form input:focus { border-color: var(--primary); }
+        .input-area button, .auth-form button { padding: 10px 20px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        .input-area button:disabled, .auth-form button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
+        .auth-btn { width: 100%; }
+        .auth-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
         .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); }
         .status { color: var(--primary); font-size: 0.8rem; text-align: center; padding: 5px; }
         .error { color: var(--error); font-size: 0.8rem; text-align: center; padding: 5px; }
-        .auth-form { padding: 20px; background: var(--bg-card); border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
-        .auth-inputs { display: flex; flex-direction: column; gap: 10px; }
-        .auth-buttons { display: flex; gap: 10px; }
-        .auth-btn { flex: 1; padding: 12px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 20px; font-weight: 600; cursor: pointer; }
-        .auth-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
         .hide { display: none; }
+        .reply-indicator { font-size: 0.8rem; color: var(--primary); margin-bottom: 5px; cursor: pointer; }
+        .reply-indicator:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -62,21 +61,26 @@
                 <div class="empty-state"><h3>Войдите или зарегистрируйтесь</h3></div>
             </div>
             <div id="authArea" class="auth-form">
-                <div class="auth-inputs">
+                <div class="auth-row">
                     <input type="text" id="nameInput" placeholder="Имя" autocomplete="off">
+                </div>
+                <div class="auth-row">
                     <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
                 </div>
-                <div class="error" id="error"></div>
-                <div class="auth-buttons">
-                    <button id="loginBtn" class="auth-btn">Войти</button>
-                    <button id="registerBtn" class="auth-btn secondary">Зарегистрироваться</button>
+                <div class="auth-row">
+                    <button id="loginBtn">Войти</button>
                 </div>
+                <div class="auth-row">
+                    <button id="registerBtn" class="secondary">Зарегистрироваться</button>
+                </div>
+                <div class="error" id="error"></div>
             </div>
             <div id="inputArea" class="input-area hide">
                 <div class="input-row">
                     <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
                     <button id="sendButton" disabled>Отправить</button>
                 </div>
+                <div id="replyIndicator" class="reply-indicator hide"></div>
                 <div id="status"></div>
             </div>
         </div>
@@ -108,13 +112,13 @@
         const inputArea = document.getElementById('inputArea');
         const statusEl = document.getElementById('status');
         const errorEl = document.getElementById('error');
+        const replyIndicator = document.getElementById('replyIndicator');
 
         let currentUser = null;
         let currentUserName = '';
         let autoScroll = true;
         let replyTo = null;
 
-        // Простая хэш-функция
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -135,6 +139,8 @@
             authArea.classList.remove('hide');
             inputArea.classList.add('hide');
             setError('');
+            nameInput.value = localStorage.getItem('chat_username') || '';
+            nameInput.focus();
         }
 
         function showChat() {
@@ -161,16 +167,30 @@
             sendButton.disabled = !messageInput.value.trim();
         }
 
-        function replyToMessage(id, sender, text) {
+        function setReplyTo(id, sender, text) {
             replyTo = { id, sender, text };
-            messageInput.value = `> ${text}\n`;
+            replyIndicator.textContent = `Ответ пользователю: ${sender}`;
+            replyIndicator.classList.remove('hide');
             messageInput.focus();
+            updateSendButton();
+        }
+
+        function clearReply() {
+            replyTo = null;
+            replyIndicator.classList.add('hide');
             updateSendButton();
         }
 
         async function deleteMessage(id) {
             if (!currentUser) return;
-            if (!confirm('Удалить это сообщение?')) return;
+
+            const messageSnapshot = await messagesRef.child(id).once('value');
+            const message = messageSnapshot.val();
+
+            if (message.sender !== currentUser) {
+                setStatus('Можно удалять только свои сообщения');
+                return;
+            }
 
             try {
                 await messagesRef.child(id).remove();
@@ -207,6 +227,8 @@
 
                 currentUser = name;
                 currentUserName = userData.name || name;
+                localStorage.setItem('chat_username', name);
+                localStorage.setItem('chat_logged_in', 'true');
 
                 loadMessages();
                 showChat();
@@ -247,6 +269,8 @@
 
                 currentUser = name;
                 currentUserName = name;
+                localStorage.setItem('chat_username', name);
+                localStorage.setItem('chat_logged_in', 'true');
 
                 loadMessages();
                 showChat();
@@ -292,7 +316,7 @@
                         </div>
                         <div class="message-content">${escapeHtml(msg.text)}</div>
                         <div class="message-actions">
-                            <button class="action-btn" onclick="replyToMessage('${msg.id}', '${msg.sender}', '${msg.text.replace(/'/g, "\\'")}')">↩</button>
+                            <button class="action-btn" onclick="setReplyTo('${msg.id}', '${msg.sender}', '${msg.text.replace(/'/g, "\\'")}')">↩</button>
                             ${isCurrentUser ? `<button class="action-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button>` : ''}
                         </div>
                     </div>
@@ -322,7 +346,7 @@
                     sender: replyTo.sender,
                     text: replyTo.text
                 };
-                replyTo = null;
+                clearReply();
             }
 
             messagesRef.push(messageData);
@@ -343,13 +367,24 @@
         messagesEl.addEventListener('scroll', () => {
             autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 50;
         });
+        replyIndicator.addEventListener('click', clearReply);
 
         window.addEventListener('load', () => {
-            showAuth();
+            const savedUser = localStorage.getItem('chat_username');
+            const isLoggedIn = localStorage.getItem('chat_logged_in') === 'true';
+
+            if (savedUser && isLoggedIn) {
+                nameInput.value = savedUser;
+                passwordInput.value = '';
+                login();
+            } else {
+                showAuth();
+            }
         });
 
-        window.replyToMessage = replyToMessage;
+        window.setReplyTo = setReplyTo;
         window.deleteMessage = deleteMessage;
+        window.clearReply = clearReply;
     </script>
 </body>
 </html>
