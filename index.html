@@ -16,77 +16,565 @@
             --text-light: #9e9e9e;
             --border: #3a3a3a;
             --error: #ff4444;
+            --success: #10b981;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 10px; }
-        .container { width: 100%; max-width: 500px; min-width: 320px; padding: 15px; display: flex; flex-direction: column; height: 90vh; max-height: 700px; }
-        header { text-align: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 15px; }
-        header h1 { color: var(--primary); font-size: 1.4rem; font-weight: 600; }
-        .chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-card); border-radius: 12px; overflow: hidden; }
-        .messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .message { display: flex; flex-direction: column; max-width: 85%; padding: 10px 14px; border-radius: 16px; line-height: 1.4; animation: fadeIn 0.2s ease; position: relative; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            padding: 10px; 
+        }
+        .container { 
+            display: flex; 
+            width: 100%; 
+            max-width: 900px; 
+            min-width: 320px; 
+            height: 90vh; 
+            max-height: 700px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .sidebar { 
+            width: 240px; 
+            background: var(--bg-card); 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            border-right: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .sidebar h3 { 
+            color: var(--primary); 
+            font-size: 0.95rem; 
+            margin-bottom: 12px; 
+            text-align: center; 
+            flex-shrink: 0;
+        }
+        .sidebar-section {
+            margin-bottom: 15px;
+        }
+        .sidebar-section-title {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+        .user-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            margin-bottom: 10px;
+        }
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .user-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            padding: 8px; 
+            border-radius: 12px; 
+            background: rgba(0,0,0,0.3);
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+        }
+        .user-item.banned-user {
+            opacity: 0.6;
+            background: rgba(255,68,68,0.1);
+            border: 1px solid rgba(255,68,68,0.2);
+        }
+        .user-name { flex: 1; min-width: 60px; word-break: break-all; }
+        .user-badge { 
+            font-size: 0.65rem; 
+            padding: 2px 6px; 
+            border-radius: 12px; 
+        }
+        .user-badge.admin { background: var(--primary); color: #1a1a1a; }
+        .user-badge.banned { background: var(--error); color: white; }
+        .user-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+        .user-action-btn { 
+            background: rgba(255,255,255,0.1); 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 0.85rem; 
+            padding: 4px 8px; 
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .user-action-btn:hover { background: rgba(255,255,255,0.25); }
+        .user-action-btn.delete-btn {
+            color: var(--error);
+        }
+        .user-action-btn.delete-btn:hover {
+            background: rgba(255,68,68,0.3);
+        }
+        .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+        header { 
+            text-align: center; 
+            padding: 12px; 
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            flex-shrink: 0;
+        }
+        header h1 { color: var(--primary); font-size: 1.3rem; font-weight: 600; }
+        .admin-badge { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            background: var(--primary); 
+            color: #1a1a1a; 
+            padding: 3px 10px; 
+            border-radius: 14px; 
+            font-size: 0.7rem; 
+            font-weight: 600; 
+        }
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .messages { 
+            flex: 1; 
+            padding: 15px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+        }
+        .message { 
+            display: flex; 
+            flex-direction: column; 
+            max-width: 85%; 
+            padding: 8px 12px; 
+            border-radius: 18px; 
+            line-height: 1.4; 
+            animation: fadeIn 0.2s ease; 
+            position: relative; 
+            word-wrap: break-word;
+        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .message.user { align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 4px; }
-        .message.other { align-self: flex-start; background: var(--bg); color: var(--text); border-bottom-left-radius: 4px; }
-        .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .sender { font-weight: 600; font-size: 0.8rem; }
-        .time { font-size: 0.7rem; opacity: 0.6; }
-        .message-content { font-size: 0.9rem; word-wrap: break-word; }
-        .reply-preview { background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid var(--primary); }
-        .reply-sender { color: var(--primary); font-size: 0.8rem; margin-bottom: 4px; }
-        .message-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; }
-        .action-btn { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .action-btn:hover { background: rgba(255,255,255,0.3); }
-        .action-btn.delete { color: #ff4444; }
-        .input-area, .auth-form { padding: 15px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 10px; }
-        .input-row, .auth-row { display: flex; gap: 10px; align-items: flex-end; }
-        .input-area input, .auth-form input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
-        .input-area input:focus, .auth-form input:focus { border-color: var(--primary); }
-        .input-area button, .auth-form button { padding: 10px 20px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 20px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
-        .input-area button:disabled, .auth-form button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.6; }
-        .auth-btn { width: 100%; }
-        .auth-btn.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-        .empty-state { text-align: center; padding: 30px 15px; color: var(--text-light); }
-        .status { color: var(--primary); font-size: 0.8rem; text-align: center; padding: 5px; }
-        .error { color: var(--error); font-size: 0.8rem; text-align: center; padding: 5px; }
-        .hide { display: none; }
-        .reply-indicator { font-size: 0.8rem; color: var(--primary); margin-bottom: 5px; cursor: pointer; }
-        .reply-indicator:hover { text-decoration: underline; }
+        .message.user { 
+            align-self: flex-end; 
+            background: var(--primary); 
+            color: #1a1a1a; 
+            border-bottom-right-radius: 6px; 
+        }
+        .message.other { 
+            align-self: flex-start; 
+            background: rgba(255,255,255,0.08); 
+            color: var(--text); 
+            border-bottom-left-radius: 6px; 
+        }
+        .message-info { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 4px; 
+            gap: 10px;
+        }
+        .sender { font-weight: 600; font-size: 0.75rem; opacity: 0.8; }
+        .time { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; }
+        .message-content { font-size: 0.9rem; }
+        .reply-preview { 
+            background: rgba(0,0,0,0.3); 
+            padding: 6px 8px; 
+            border-radius: 10px; 
+            margin-bottom: 6px; 
+            border-left: 3px solid var(--primary); 
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        .reply-sender { color: var(--primary); margin-bottom: 2px; font-weight: 600; }
+        .message-actions { 
+            position: absolute; 
+            top: 6px; 
+            right: 6px; 
+            display: flex; 
+            gap: 3px; 
+            opacity: 0; 
+            transition: opacity 0.2s; 
+        }
+        .message:hover .message-actions { opacity: 1; }
+        .action-btn { 
+            background: rgba(0,0,0,0.3); 
+            border: none; 
+            border-radius: 50%; 
+            width: 22px; 
+            height: 22px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 11px; 
+            color: white;
+        }
+        .action-btn:hover { background: rgba(0,0,0,0.5); }
+        .action-btn.delete { color: #ff6b6b; }
+        
+        /* Форма входа */
+        .auth-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            z-index: 10;
+        }
+        .auth-box {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            width: 300px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .auth-box h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #1a1a1a;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .auth-box input:focus {
+            border-color: var(--primary);
+        }
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--primary);
+            color: #1a1a1a;
+        }
+        .auth-box button:hover { 
+            opacity: 0.9; 
+            transform: translateY(-1px);
+        }
+        .auth-box button:active {
+            transform: translateY(0);
+        }
+        .auth-error {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        .input-area { 
+            padding: 12px; 
+            border-top: 1px solid var(--border); 
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+        .input-row { display: flex; gap: 8px; }
+        .input-area input { 
+            flex: 1; 
+            padding: 10px 14px; 
+            border: 1px solid var(--border); 
+            border-radius: 22px; 
+            font-size: 0.9rem; 
+            background: var(--bg); 
+            color: var(--text); 
+            outline: none; 
+        }
+        .input-area input:focus { border-color: var(--primary); }
+        .send-button { 
+            padding: 10px 20px; 
+            background: var(--primary); 
+            color: #1a1a1a; 
+            border: none; 
+            border-radius: 22px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .send-button:disabled { 
+            background: var(--border); 
+            cursor: not-allowed; 
+            opacity: 0.5; 
+        }
+        .send-arrow {
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+        .reply-indicator { 
+            font-size: 0.8rem; 
+            color: var(--primary); 
+            margin-bottom: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: rgba(255,215,0,0.1); 
+            padding: 6px 10px; 
+            border-radius: 12px; 
+        }
+        .reply-close { 
+            background: none; 
+            border: none; 
+            color: var(--primary); 
+            cursor: pointer; 
+            font-size: 1.1rem; 
+            padding: 0 4px; 
+        }
+        .status { 
+            color: var(--primary); 
+            font-size: 0.75rem; 
+            text-align: center; 
+            margin-top: 6px;
+            min-height: 18px;
+            transition: all 0.3s;
+        }
+        .hide { display: none !important; }
+        .empty-state { 
+            text-align: center; 
+            padding: 30px; 
+            color: var(--text-light); 
+            font-size: 0.9rem;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        .logout-btn:hover { background: rgba(255,68,68,0.3); }
+
+        .no-users {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            padding: 10px;
+            opacity: 0.6;
+        }
+
+        /* Бан-оверлей */
+        .ban-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        .ban-message {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .ban-message h2 {
+            color: var(--error);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .ban-message p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        .ban-message button {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Модальное окно подтверждения */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+        }
+        .modal-box h3 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+        .modal-box p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-btn-cancel {
+            background: var(--border);
+            color: var(--text);
+        }
+        .modal-btn-confirm {
+            background: var(--error);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .container { max-width: 100%; border-radius: 0; }
+            .auth-box { width: 90%; max-width: 300px; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header><h1>Ghost chat</h1></header>
-        <div class="chat-container">
-            <div class="messages" id="messages">
-                <div class="empty-state"><h3>Войдите или зарегистрируйтесь</h3></div>
-            </div>
-            <div id="authArea" class="auth-form">
-                <div class="auth-row">
-                    <input type="text" id="nameInput" placeholder="Имя" autocomplete="off">
+        <!-- Сайдбар администратора -->
+        <div class="sidebar hide" id="adminSidebar">
+            <h3>Управление пользователями</h3>
+            <div class="sidebar-scroll">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Активные</div>
+                    <div class="user-list" id="activeUsersList"></div>
                 </div>
-                <div class="auth-row">
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Забаненные</div>
+                    <div class="user-list" id="bannedUsersList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="main-content">
+            <!-- Бан-оверлей -->
+            <div class="ban-overlay hide" id="banOverlay">
+                <div class="ban-message">
+                    <h2>Вы забанены</h2>
+                    <p>Ваш аккаунт был заблокирован администратором.</p>
+                    <button onclick="logout()">Выйти</button>
+                </div>
+            </div>
+
+            <!-- Модальное окно подтверждения -->
+            <div class="modal-overlay hide" id="confirmModal">
+                <div class="modal-box">
+                    <h3 id="modalTitle">Подтверждение</h3>
+                    <p id="modalText"></p>
+                    <div class="modal-buttons">
+                        <button class="modal-btn-cancel" onclick="closeModal()">Отмена</button>
+                        <button class="modal-btn-confirm" id="modalConfirmBtn">Удалить</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма входа -->
+            <div class="auth-overlay" id="authOverlay">
+                <div class="auth-box">
+                    <h2>Ghost Chat</h2>
+                    <input type="text" id="nameInput" placeholder="Имя пользователя" autocomplete="off">
                     <input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+                    <div class="auth-buttons">
+                        <button id="loginBtn">Войти</button>
+                        <button id="registerBtn">Зарегистрироваться</button>
+                    </div>
+                    <div class="auth-error" id="authError"></div>
                 </div>
-                <div class="auth-row">
-                    <button id="loginBtn">Войти</button>
-                </div>
-                <div class="auth-row">
-                    <button id="registerBtn" class="secondary">Зарегистрироваться</button>
-                </div>
-                <div class="error" id="error"></div>
             </div>
-            <div id="inputArea" class="input-area hide">
-                <div class="input-row">
-                    <input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off">
-                    <button id="sendButton" disabled>Отправить</button>
+
+            <!-- Заголовок чата -->
+            <header>
+                <button class="logout-btn hide" id="logoutBtn" onclick="logout()">Выйти</button>
+                <h1>Ghost chat</h1>
+                <span id="adminBadge" class="admin-badge hide">Администратор</span>
+            </header>
+
+            <!-- Область чата -->
+            <div class="chat-container">
+                <div class="messages" id="messages">
+                    <div class="empty-state">Войдите в аккаунт</div>
                 </div>
-                <div id="replyIndicator" class="reply-indicator hide"></div>
-                <div id="status"></div>
+
+                <!-- Поле ввода -->
+                <div class="input-area hide" id="inputArea">
+                    <div id="replyIndicator" class="reply-indicator hide">
+                        <span id="replyText"></span>
+                        <button class="reply-close" onclick="clearReply()">x</button>
+                    </div>
+                    <div class="input-row">
+                        <input type="text" id="messageInput" placeholder="Написать сообщение..." autocomplete="off">
+                        <button id="sendButton" class="send-button" disabled>
+                            <span class="send-arrow">&#10148;</span>
+                        </button>
+                    </div>
+                    <div class="status" id="status"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Firebase инициализация
         const firebaseConfig = {
             apiKey: "AIzaSyCF2izLpJOUc90hF2hpnhVLJm4bgmD6xyE",
             authDomain: "database-5cf6d.firebaseapp.com",
@@ -101,24 +589,48 @@
         const database = firebase.database();
         const messagesRef = database.ref('messages');
         const usersRef = database.ref('users');
+        const bannedUsersRef = database.ref('bannedUsers');
 
-        const messagesEl = document.getElementById('messages');
-        const messageInput = document.getElementById('messageInput');
+        // DOM элементы
+        const authOverlay = document.getElementById('authOverlay');
+        const banOverlay = document.getElementById('banOverlay');
+        const confirmModal = document.getElementById('confirmModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
         const nameInput = document.getElementById('nameInput');
         const passwordInput = document.getElementById('passwordInput');
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
-        const authArea = document.getElementById('authArea');
+        const authError = document.getElementById('authError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminSidebar = document.getElementById('adminSidebar');
+        const activeUsersList = document.getElementById('activeUsersList');
+        const bannedUsersList = document.getElementById('bannedUsersList');
+        const adminBadge = document.getElementById('adminBadge');
+        const messagesEl = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
         const inputArea = document.getElementById('inputArea');
         const statusEl = document.getElementById('status');
-        const errorEl = document.getElementById('error');
         const replyIndicator = document.getElementById('replyIndicator');
+        const replyText = document.getElementById('replyText');
 
+        // Состояние
         let currentUser = null;
         let currentUserName = '';
+        let isAdmin = false;
         let autoScroll = true;
         let replyTo = null;
+        let bannedUsers = {};
+        let allUsers = {};
+        let statusTimeout = null;
+        let messagesListener = null;
+        let usersListener = null;
+        let bansListener = null;
+        let pendingModalAction = null;
 
+        // Хеширование пароля
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const data = encoder.encode(password);
@@ -127,34 +639,152 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        function setError(text) {
-            errorEl.textContent = text;
+        // Модальное окно
+        function showModal(title, text, confirmText, onConfirm) {
+            modalTitle.textContent = title;
+            modalText.textContent = text;
+            modalConfirmBtn.textContent = confirmText;
+            pendingModalAction = onConfirm;
+            confirmModal.classList.remove('hide');
         }
 
-        function setStatus(text) {
-            statusEl.textContent = text;
+        function closeModal() {
+            confirmModal.classList.add('hide');
+            pendingModalAction = null;
         }
 
-        function showAuth() {
-            authArea.classList.remove('hide');
+        modalConfirmBtn.addEventListener('click', () => {
+            if (pendingModalAction) {
+                pendingModalAction();
+                closeModal();
+            }
+        });
+
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target === confirmModal) {
+                closeModal();
+            }
+        });
+
+        // Отслеживание банов в реальном времени
+        function startListeningBans() {
+            if (bansListener) {
+                bannedUsersRef.off('value', bansListener);
+            }
+            
+            bansListener = (snapshot) => {
+                bannedUsers = snapshot.val() || {};
+                
+                if (currentUser && bannedUsers[currentUser]) {
+                    showBanScreen();
+                }
+                
+                if (isAdmin) {
+                    renderUserList();
+                }
+                
+                if (messagesListener) {
+                    refreshMessagesDisplay();
+                }
+            };
+            
+            bannedUsersRef.on('value', bansListener);
+        }
+
+        // Отслеживание пользователей в реальном времени
+        function startListeningUsers() {
+            if (usersListener) {
+                usersRef.off('value', usersListener);
+            }
+            
+            usersListener = (snapshot) => {
+                allUsers = snapshot.val() || {};
+                
+                if (currentUser && allUsers[currentUser]) {
+                    const newAdminStatus = allUsers[currentUser].isAdmin || false;
+                    if (newAdminStatus !== isAdmin) {
+                        isAdmin = newAdminStatus;
+                        if (isAdmin) {
+                            adminSidebar.classList.remove('hide');
+                            adminBadge.classList.remove('hide');
+                            renderUserList();
+                            setStatus('Вы назначены администратором');
+                        } else {
+                            adminSidebar.classList.add('hide');
+                            adminBadge.classList.add('hide');
+                            setStatus('Вы лишены прав администратора');
+                        }
+                    }
+                }
+                
+                if (isAdmin) {
+                    renderUserList();
+                }
+            };
+            
+            usersRef.on('value', usersListener);
+        }
+
+        function showBanScreen() {
+            banOverlay.classList.remove('hide');
             inputArea.classList.add('hide');
-            setError('');
-            nameInput.value = localStorage.getItem('chat_username') || '';
-            nameInput.focus();
+            adminSidebar.classList.add('hide');
+            adminBadge.classList.add('hide');
+            logoutBtn.classList.add('hide');
+            authOverlay.classList.add('hide');
         }
 
-        function showChat() {
-            authArea.classList.add('hide');
-            inputArea.classList.remove('hide');
-            messageInput.focus();
+        function renderUserList() {
+            if (!isAdmin) return;
+
+            const usersArray = Object.entries(allUsers).sort(([a], [b]) => a.localeCompare(b));
+            
+            const activeUsers = usersArray.filter(([username]) => !bannedUsers[username]);
+            const bannedUsersArray = usersArray.filter(([username]) => bannedUsers[username]);
+
+            activeUsersList.innerHTML = activeUsers.length > 0 
+                ? activeUsers.map(([username, userData]) => renderUserItem(username, userData, false)).join('')
+                : '<div class="no-users">Нет активных пользователей</div>';
+
+            bannedUsersList.innerHTML = bannedUsersArray.length > 0
+                ? bannedUsersArray.map(([username, userData]) => renderUserItem(username, userData, true)).join('')
+                : '<div class="no-users">Нет забаненных пользователей</div>';
         }
 
-        function formatTime(timestamp) {
-            const now = new Date();
-            const msgDate = new Date(timestamp);
-            if (now - msgDate < 60000) return 'Только что';
-            if (now - msgDate < 3600000) return `${Math.floor((now - msgDate) / 60000)} мин. назад`;
-            return msgDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        function renderUserItem(username, userData, isBanned) {
+            const isUserAdmin = userData.isAdmin || false;
+            const isProtected = username === 'tntrat';
+            const isMe = username === currentUser;
+
+            let actionsHtml = '';
+            if (!isProtected) {
+                if (isUserAdmin) {
+                    actionsHtml += `<button class="user-action-btn" onclick="toggleAdmin('${username}')" title="Снять права администратора" style="color: var(--primary);">&#128081;</button>`;
+                } else {
+                    actionsHtml += `<button class="user-action-btn" onclick="toggleAdmin('${username}')" title="Назначить администратором">&#128081;</button>`;
+                }
+                if (!isMe) {
+                    if (isBanned) {
+                        actionsHtml += `<button class="user-action-btn" onclick="toggleBanUser('${username}')" title="Разбанить" style="color: var(--success);">&#8634;</button>`;
+                    } else {
+                        actionsHtml += `<button class="user-action-btn" onclick="toggleBanUser('${username}')" title="Забанить" style="color: var(--error);">&#128683;</button>`;
+                    }
+                }
+                if (isBanned && !isMe) {
+                    actionsHtml += `<button class="user-action-btn delete-btn" onclick="deleteUser('${username}')" title="Удалить аккаунт">&#10005;</button>`;
+                }
+            } else {
+                actionsHtml = '<span style="font-size:0.65rem;color:var(--primary);opacity:0.7">создатель</span>';
+            }
+
+            return `
+                <div class="user-item ${isBanned ? 'banned-user' : ''}">
+                    <span class="user-name">${escapeHtml(username)}${isMe ? ' (вы)' : ''}</span>
+                    ${isUserAdmin ? '<span class="user-badge admin">&#128081;</span>' : ''}
+                    ${isBanned ? '<span class="user-badge banned">бан</span>' : ''}
+                    <div class="user-actions">${actionsHtml}</div>
+                </div>
+            `;
         }
 
         function escapeHtml(text) {
@@ -163,41 +793,231 @@
             return div.innerHTML;
         }
 
+        function formatTime(timestamp) {
+            const now = new Date();
+            const msgDate = new Date(timestamp);
+            const diff = now - msgDate;
+            if (diff < 60000) return 'сейчас';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}м`;
+            if (diff < 86400000) return msgDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            return msgDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        }
+
+        function setStatus(text, duration = 4000) {
+            statusEl.textContent = text;
+            if (statusTimeout) clearTimeout(statusTimeout);
+            if (text && duration > 0) {
+                statusTimeout = setTimeout(() => {
+                    if (statusEl.textContent === text) statusEl.textContent = '';
+                }, duration);
+            }
+        }
+
+        function showAuthError(text) {
+            authError.textContent = text;
+            if (text) {
+                setTimeout(() => {
+                    if (authError.textContent === text) authError.textContent = '';
+                }, 4000);
+            }
+        }
+
         function updateSendButton() {
             sendButton.disabled = !messageInput.value.trim();
         }
 
         function setReplyTo(id, sender, text) {
             replyTo = { id, sender, text };
-            replyIndicator.textContent = `Ответ пользователю: ${sender}`;
+            replyText.textContent = `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0, 40)}${text.length > 40 ? '...' : ''}`;
             replyIndicator.classList.remove('hide');
             messageInput.focus();
-            updateSendButton();
         }
 
         function clearReply() {
             replyTo = null;
             replyIndicator.classList.add('hide');
-            updateSendButton();
+            replyText.textContent = '';
+        }
+
+        async function toggleAdmin(username) {
+            if (!isAdmin) return;
+            if (username === 'tntrat') {
+                setStatus('Невозможно изменить права создателя');
+                return;
+            }
+
+            try {
+                const userData = allUsers[username];
+                if (!userData) {
+                    setStatus('Пользователь не найден');
+                    return;
+                }
+
+                const newStatus = !userData.isAdmin;
+                await usersRef.child(username).update({ isAdmin: newStatus });
+                setStatus(`Пользователь ${username} ${newStatus ? 'назначен администратором' : 'лишён прав администратора'}`);
+            } catch (error) {
+                console.error(error);
+                setStatus('Ошибка при изменении прав');
+            }
+        }
+
+        async function toggleBanUser(username) {
+            if (!isAdmin) return;
+            if (username === currentUser) {
+                setStatus('Невозможно забанить самого себя');
+                return;
+            }
+            if (username === 'tntrat') {
+                setStatus('Невозможно забанить создателя');
+                return;
+            }
+
+            try {
+                const isBanned = !!bannedUsers[username];
+                
+                if (isBanned) {
+                    await bannedUsersRef.child(username).remove();
+                } else {
+                    await bannedUsersRef.child(username).set(true);
+                }
+
+                setStatus(`Пользователь ${username} ${isBanned ? 'разбанен' : 'забанен'}`);
+            } catch (error) {
+                console.error(error);
+                setStatus('Ошибка при бане');
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!isAdmin) return;
+            if (username === 'tntrat') {
+                setStatus('Невозможно удалить создателя');
+                return;
+            }
+            if (username === currentUser) {
+                setStatus('Невозможно удалить самого себя');
+                return;
+            }
+
+            showModal(
+                'Удаление аккаунта',
+                `Вы уверены, что хотите удалить аккаунт пользователя "${username}"? Все его сообщения также будут удалены. Это действие нельзя отменить.`,
+                'Удалить',
+                async () => {
+                    try {
+                        await bannedUsersRef.child(username).remove();
+                        await usersRef.child(username).remove();
+                        
+                        const messagesSnapshot = await messagesRef.once('value');
+                        const messages = messagesSnapshot.val();
+                        if (messages) {
+                            const deletePromises = Object.entries(messages)
+                                .filter(([_, msg]) => msg.sender === username)
+                                .map(([key]) => messagesRef.child(key).remove());
+                            await Promise.all(deletePromises);
+                        }
+                        
+                        setStatus(`Аккаунт пользователя ${username} удалён`);
+                    } catch (error) {
+                        console.error(error);
+                        setStatus('Ошибка при удалении аккаунта');
+                    }
+                }
+            );
         }
 
         async function deleteMessage(id) {
             if (!currentUser) return;
 
-            const messageSnapshot = await messagesRef.child(id).once('value');
-            const message = messageSnapshot.val();
+            try {
+                const snapshot = await messagesRef.child(id).once('value');
+                const message = snapshot.val();
+                if (!message) return;
 
-            if (message.sender !== currentUser) {
-                setStatus('Можно удалять только свои сообщения');
+                if (message.sender !== currentUser && !isAdmin) {
+                    setStatus('Можно удалять только свои сообщения');
+                    return;
+                }
+
+                await messagesRef.child(id).remove();
+                setStatus('Сообщение удалено', 2000);
+            } catch (error) {
+                console.error(error);
+                setStatus('Ошибка при удалении сообщения');
+            }
+        }
+
+        async function refreshMessagesDisplay() {
+            const snapshot = await messagesRef.once('value');
+            const data = snapshot.val();
+            let messages = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value }))
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
+
+            messages = messages.filter(msg => !bannedUsers[msg.sender]);
+
+            if (messages.length === 0) {
+                messagesEl.innerHTML = '<div class="empty-state">Пока нет сообщений</div>';
                 return;
             }
 
-            try {
-                await messagesRef.child(id).remove();
-                setStatus('Сообщение удалено');
-            } catch (error) {
-                setStatus('Ошибка удаления');
+            const userNames = {};
+            for (const msg of messages) {
+                if (msg.sender && !userNames[msg.sender]) {
+                    const snap = await usersRef.child(msg.sender).once('value');
+                    const data = snap.val();
+                    userNames[msg.sender] = data ? (data.name || msg.sender) : msg.sender;
+                }
             }
+
+            messagesEl.innerHTML = messages.map(msg => {
+                const displayName = userNames[msg.sender] || msg.sender;
+                const isMe = msg.sender === currentUser;
+
+                let replyHtml = '';
+                if (msg.replyTo && msg.replyTo.sender) {
+                    const replyName = userNames[msg.replyTo.sender] || msg.replyTo.sender;
+                    replyHtml = `
+                        <div class="reply-preview">
+                            <div class="reply-sender">&#8617; Ответ для ${escapeHtml(replyName)}</div>
+                            <div>${escapeHtml(msg.replyTo.text || '')}</div>
+                        </div>`;
+                }
+
+                const escapedText = escapeHtml(msg.text);
+                const escapedSender = escapeHtml(displayName);
+
+                return `
+                    <div class="message ${isMe ? 'user' : 'other'}" data-id="${msg.id}">
+                        ${replyHtml}
+                        <div class="message-info">
+                            <span class="sender">${escapedSender}</span>
+                            <span class="time">${formatTime(msg.timestamp)}</span>
+                        </div>
+                        <div class="message-content">${escapedText}</div>
+                        <div class="message-actions">
+                            <button class="action-btn" onclick="setReplyTo('${msg.id}', '${msg.sender.replace(/'/g, "\\'")}', '${(msg.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;').substring(0, 50)}')" title="Ответить">&#8617;</button>
+                            ${(isMe || isAdmin) ? `<button class="action-btn delete" onclick="deleteMessage('${msg.id}')" title="Удалить">x</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            if (autoScroll) {
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+        }
+
+        function loadMessages() {
+            if (messagesListener) {
+                messagesRef.off('value', messagesListener);
+            }
+
+            messagesListener = (snapshot) => {
+                refreshMessagesDisplay();
+            };
+
+            messagesRef.on('value', messagesListener);
         }
 
         async function login() {
@@ -205,37 +1025,50 @@
             const password = passwordInput.value.trim();
 
             if (!name || !password) {
-                setError('Введите имя и пароль');
+                showAuthError('Заполните все поля');
                 return;
             }
 
             try {
-                const userSnapshot = await usersRef.child(name).once('value');
-                const userData = userSnapshot.val();
+                await loadBans();
+                if (bannedUsers[name]) {
+                    showAuthError('Этот аккаунт забанен');
+                    return;
+                }
+
+                const snapshot = await usersRef.child(name).once('value');
+                const userData = snapshot.val();
 
                 if (!userData) {
-                    setError('Пользователь не найден');
+                    showAuthError('Аккаунт не найден');
                     return;
                 }
 
                 const hashedPassword = await hashPassword(password);
-
                 if (userData.password !== hashedPassword) {
-                    setError('Неверный пароль');
+                    showAuthError('Неверный пароль');
                     return;
                 }
 
                 currentUser = name;
                 currentUserName = userData.name || name;
+                isAdmin = userData.isAdmin || false;
+
                 localStorage.setItem('chat_username', name);
                 localStorage.setItem('chat_logged_in', 'true');
 
-                loadMessages();
                 showChat();
-                setStatus(`Вы вошли как: ${currentUserName}`);
+                loadMessages();
+                setStatus(`Добро пожаловать, ${currentUserName}!`, 3000);
             } catch (error) {
-                setError('Ошибка входа');
+                console.error(error);
+                showAuthError('Ошибка при входе');
             }
+        }
+
+        async function loadBans() {
+            const snapshot = await bannedUsersRef.once('value');
+            bannedUsers = snapshot.val() || {};
         }
 
         async function register() {
@@ -243,94 +1076,96 @@
             const password = passwordInput.value.trim();
 
             if (!name || !password) {
-                setError('Введите имя и пароль');
+                showAuthError('Заполните все поля');
                 return;
             }
-
             if (password.length < 4) {
-                setError('Пароль должен быть не менее 4 символов');
+                showAuthError('Пароль должен содержать минимум 4 символа');
+                return;
+            }
+            if (name.length < 2) {
+                showAuthError('Имя должно содержать минимум 2 символа');
                 return;
             }
 
             try {
-                const userSnapshot = await usersRef.child(name).once('value');
-
-                if (userSnapshot.val()) {
-                    setError('Имя уже занято');
+                const snapshot = await usersRef.child(name).once('value');
+                if (snapshot.val()) {
+                    showAuthError('Это имя уже занято');
                     return;
                 }
 
                 const hashedPassword = await hashPassword(password);
-
-                await usersRef.child(name).set({
+                const userData = {
                     name: name,
-                    password: hashedPassword
-                });
+                    password: hashedPassword,
+                    isAdmin: name === 'tntrat'
+                };
+
+                await usersRef.child(name).set(userData);
 
                 currentUser = name;
                 currentUserName = name;
+                isAdmin = name === 'tntrat';
+
                 localStorage.setItem('chat_username', name);
                 localStorage.setItem('chat_logged_in', 'true');
 
-                loadMessages();
                 showChat();
-                setStatus(`Вы зарегистрированы как: ${currentUserName}`);
+                loadMessages();
+                setStatus(`Аккаунт создан! Добро пожаловать, ${name}!`, 4000);
             } catch (error) {
-                setError('Ошибка регистрации');
+                console.error(error);
+                showAuthError('Ошибка при регистрации');
             }
         }
 
-        async function loadMessages() {
-            messagesRef.on('value', async (snapshot) => {
-                const data = snapshot.val();
-                const messages = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value }))
-                    .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
+        function logout() {
+            currentUser = null;
+            currentUserName = '';
+            isAdmin = false;
+            replyTo = null;
+            
+            localStorage.removeItem('chat_logged_in');
+            
+            if (messagesListener) {
+                messagesRef.off('value', messagesListener);
+                messagesListener = null;
+            }
 
-                if (messages.length === 0) {
-                    messagesEl.innerHTML = '<div class="empty-state"><h3>Напишите первое сообщение</h3></div>';
-                    return;
-                }
+            banOverlay.classList.add('hide');
+            authOverlay.classList.remove('hide');
+            inputArea.classList.add('hide');
+            adminSidebar.classList.add('hide');
+            adminBadge.classList.add('hide');
+            logoutBtn.classList.add('hide');
+            
+            messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>';
+            
+            nameInput.value = localStorage.getItem('chat_username') || '';
+            passwordInput.value = '';
+            nameInput.focus();
+        }
 
-                const userNames = {};
-                for (const msg of messages) {
-                    if (msg.sender && !userNames[msg.sender]) {
-                        const userData = await usersRef.child(msg.sender).once('value');
-                        userNames[msg.sender] = userData.val()?.name || msg.sender;
-                    }
-                }
-
-                messagesEl.innerHTML = messages.map(msg => {
-                    const displayName = userNames[msg.sender] || msg.sender;
-                    const isCurrentUser = msg.sender === currentUser;
-
-                    return `
-                    <div class="message ${isCurrentUser ? 'user' : 'other'}" data-id="${msg.id}">
-                        ${msg.replyTo ? `
-                        <div class="reply-preview">
-                            <div class="reply-sender">↩ ${escapeHtml(userNames[msg.replyTo.sender] || msg.replyTo.sender)}</div>
-                            <div>${escapeHtml(msg.replyTo.text)}</div>
-                        </div>` : ''}
-                        <div class="message-info">
-                            <span class="sender">${escapeHtml(displayName)}</span>
-                            <span class="time">${formatTime(msg.timestamp)}</span>
-                        </div>
-                        <div class="message-content">${escapeHtml(msg.text)}</div>
-                        <div class="message-actions">
-                            <button class="action-btn" onclick="setReplyTo('${msg.id}', '${msg.sender}', '${msg.text.replace(/'/g, "\\'")}')">↩</button>
-                            ${isCurrentUser ? `<button class="action-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button>` : ''}
-                        </div>
-                    </div>
-                `}).join('');
-
-                if (autoScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
-            });
+        function showChat() {
+            authOverlay.classList.add('hide');
+            inputArea.classList.remove('hide');
+            logoutBtn.classList.remove('hide');
+            
+            if (isAdmin) {
+                adminSidebar.classList.remove('hide');
+                adminBadge.classList.remove('hide');
+                renderUserList();
+            }
+            
+            startListeningBans();
+            startListeningUsers();
+            
+            messageInput.focus();
         }
 
         function sendMessage() {
-            if (!currentUser) {
-                setStatus('Сначала войдите');
-                return;
-            }
+            if (!currentUser) return;
 
             const text = messageInput.value.trim();
             if (!text) return;
@@ -349,42 +1184,78 @@
                 clearReply();
             }
 
-            messagesRef.push(messageData);
+            messagesRef.push(messageData).catch(err => {
+                console.error(err);
+                setStatus('Ошибка при отправке сообщения');
+            });
 
             messageInput.value = '';
-            setStatus('');
             updateSendButton();
             messageInput.focus();
         }
 
+        // Обработчики событий
         loginBtn.addEventListener('click', login);
         registerBtn.addEventListener('click', register);
-        sendButton.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
         });
+
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') passwordInput.focus();
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
         messageInput.addEventListener('input', updateSendButton);
+
         messagesEl.addEventListener('scroll', () => {
             autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 50;
         });
-        replyIndicator.addEventListener('click', clearReply);
 
-        window.addEventListener('load', () => {
+        // Глобальные функции
+        window.setReplyTo = setReplyTo;
+        window.clearReply = clearReply;
+        window.deleteMessage = deleteMessage;
+        window.toggleAdmin = toggleAdmin;
+        window.toggleBanUser = toggleBanUser;
+        window.deleteUser = deleteUser;
+        window.logout = logout;
+        window.closeModal = closeModal;
+
+        // Инициализация
+        window.addEventListener('load', async () => {
+            await loadBans();
+            
             const savedUser = localStorage.getItem('chat_username');
             const isLoggedIn = localStorage.getItem('chat_logged_in') === 'true';
 
             if (savedUser && isLoggedIn) {
+                if (bannedUsers[savedUser]) {
+                    localStorage.removeItem('chat_logged_in');
+                    nameInput.value = savedUser;
+                    return;
+                }
+                
                 nameInput.value = savedUser;
-                passwordInput.value = '';
-                login();
-            } else {
-                showAuth();
+                passwordInput.focus();
             }
         });
 
-        window.setReplyTo = setReplyTo;
-        window.deleteMessage = deleteMessage;
-        window.clearReply = clearReply;
+        // Защита создателя
+        usersRef.child('tntrat').once('value').then(snapshot => {
+            if (snapshot.exists() && !snapshot.val().isAdmin) {
+                snapshot.ref.update({ isAdmin: true });
+            }
+        });
     </script>
 </body>
 </html>
