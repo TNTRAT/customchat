@@ -114,8 +114,19 @@
         .user-item.online { border-left: 2px solid var(--success); }
         .user-item.active-chat { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
         .user-item.banned-highlight { background: rgba(255,68,68,0.15); border-left: 2px solid var(--error); }
+        .user-item.has-unread { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); } 50% { box-shadow: 0 0 0 4px rgba(255,215,0,0); } }
         .user-name { flex: 1; min-width: 50px; word-break: break-all; }
         .user-status { font-size: 0.6rem; color: var(--success); }
+        .unread-badge {
+            background: var(--primary);
+            color: #1a1a1a;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 1px 5px;
+            border-radius: 8px;
+            margin-left: 4px;
+        }
         .user-badge { font-size: 0.58rem; padding: 1px 4px; border-radius: 6px; }
         .user-badge.admin { background: var(--primary); color: #1a1a1a; }
 
@@ -464,6 +475,7 @@
         const bannedUsersRef = database.ref('bannedUsers');
         const typingRef = database.ref('typing');
         const onlineRef = database.ref('online');
+        const unreadRef = database.ref('unread');
 
         const authOverlay = document.getElementById('authOverlay');
         const banOverlay = document.getElementById('banOverlay');
@@ -505,10 +517,10 @@
         const replyText = document.getElementById('replyText');
 
         let currentUser = null, currentUserName = '', isAdmin = false, autoScroll = true, replyTo = null;
-        let bannedUsers = {}, allUsers = {}, allChats = {}, onlineUsers = {}, typingUsers = {};
+        let bannedUsers = {}, allUsers = {}, allChats = {}, onlineUsers = {}, typingUsers = {}, unreadMessages = {};
         let currentChatId = null, currentChatType = 'public', privateChatPartner = null;
         let messagesRef = null, statusTimeout = null;
-        let messagesListener = null, usersListener = null, bansListener = null, chatsListener = null, onlineListener = null, typingListener = null;
+        let messagesListener = null, usersListener = null, bansListener = null, chatsListener = null, onlineListener = null, typingListener = null, unreadListener = null;
         let pendingModalAction = null, contextMsgId = null, contextMsgSender = null, contextMsgText = null, contextUser = null, typingTimeout = null;
 
         async function hashPassword(p) {
@@ -536,10 +548,7 @@
         function closeModal() { modalOverlay.classList.add('hide'); pendingModalAction = null; }
 
         modalConfirmBtn.addEventListener('click', () => {
-            if (pendingModalAction) {
-                const v = modalInput.classList.contains('hide') ? null : modalInput.value.trim();
-                pendingModalAction(v); closeModal();
-            }
+            if (pendingModalAction) { const v = modalInput.classList.contains('hide') ? null : modalInput.value.trim(); pendingModalAction(v); closeModal(); }
         });
         modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 
@@ -621,6 +630,12 @@
             document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
             document.querySelector(`.user-item[data-username="${partner}"]`)?.classList.add('active-chat');
+            
+            // Сбрасываем счётчик непрочитанных
+            if (unreadMessages[partner]) {
+                unreadRef.child(currentUser).child(partner).remove();
+            }
+            
             updateChatSubtitle(); typingIndicator.textContent = ''; loadMessages(); setStatus('');
         }
 
@@ -637,7 +652,8 @@
         function showMessageContextMenu(e, id, sender, text) {
             e.preventDefault(); e.stopPropagation();
             contextMsgId = id; contextMsgSender = sender; contextMsgText = text;
-            const canDelete = sender === currentUser || isAdmin;
+            // Админ может удалять сообщения только в общем чате, свои может везде
+            const canDelete = sender === currentUser || (isAdmin && currentChatType === 'public');
             messageContextMenu.querySelectorAll('.context-menu-item').forEach((item, i) => {
                 item.classList.toggle('hide', (i === 1 && sender === currentUser) || (i === 2 && !canDelete));
             });
@@ -701,6 +717,16 @@
             usersRef.on('value', usersListener);
         }
 
+        function startListeningUnread() {
+            if (unreadListener) unreadRef.child(currentUser).off('value', unreadListener);
+            if (!currentUser) return;
+            unreadListener = (snapshot) => {
+                unreadMessages = snapshot.val() || {};
+                renderAllUsers();
+            };
+            unreadRef.child(currentUser).on('value', unreadListener);
+        }
+
         function updateAdminUI() {
             if (isAdmin) { adminBadge.classList.remove('hide'); createChatBtn.classList.remove('hide'); bannedSection.classList.remove('hide'); setStatus('Вы назначены администратором'); }
             else { adminBadge.classList.add('hide'); createChatBtn.classList.add('hide'); bannedSection.classList.add('hide'); setStatus('Вы лишены прав администратора'); }
@@ -740,8 +766,10 @@
             allUsersList.innerHTML = activeUsers.length ? activeUsers.map(([u,d]) => {
                 const online = !!onlineUsers[u], admin = d.isAdmin || false, isMe = u === currentUser;
                 const isActive = currentChatType === 'private' && privateChatPartner === u;
-                return `<div class="user-item ${online?'online':''} ${isActive?'active-chat':''}" data-username="${u}" onclick="handleUserClick(event, '${u}')" oncontextmenu="handleUserContextMenu(event, '${u}')">
+                const hasUnread = !!unreadMessages[u];
+                return `<div class="user-item ${online?'online':''} ${isActive?'active-chat':''} ${hasUnread?'has-unread':''}" data-username="${u}" onclick="handleUserClick(event, '${u}')" oncontextmenu="handleUserContextMenu(event, '${u}')">
                     <span class="user-name">${escapeHtml(u)}${isMe?' (вы)':''}</span>
+                    ${hasUnread ? `<span class="unread-badge">${unreadMessages[u]}</span>` : ''}
                     ${online ? '<span class="user-status">онлайн</span>' : ''}
                     ${admin ? '<span class="user-badge admin">&#128081;</span>' : ''}
                 </div>`;
@@ -789,7 +817,7 @@
 
         async function deleteUser(username) {
             if (currentUser!=='tntrat') { setStatus('Только создатель'); return; }
-            showModal('Удаление аккаунта', `Вы уверены, что хотите безвозвратно удалить аккаунт "${username}"? Все его сообщения будут удалены.`, false, 'Удалить', 'modal-btn-danger', async () => {
+            showModal('Удаление аккаунта', `Вы уверены, что хотите безвозвратно удалить аккаунт "${username}"?`, false, 'Удалить', 'modal-btn-danger', async () => {
                 await bannedUsersRef.child(username).remove();
                 await usersRef.child(username).remove();
                 for (const cid of Object.keys(allChats)) {
@@ -807,7 +835,12 @@
         async function deleteMessage(id) {
             if (!currentUser || !messagesRef) return;
             const snap = await messagesRef.child(id).once('value'), msg = snap.val();
-            if (!msg || (msg.sender!==currentUser && !isAdmin)) return;
+            if (!msg) return;
+            // Проверка прав: свои сообщения можно удалять везде, админ может удалять только в общем чате
+            if (msg.sender !== currentUser && !(isAdmin && currentChatType === 'public')) {
+                setStatus('Можно удалять только свои сообщения');
+                return;
+            }
             await messagesRef.child(id).remove(); setStatus('Удалено', 2000);
         }
 
@@ -825,10 +858,12 @@
                 let rhtml = '';
                 if (m.replyTo?.sender) rhtml = `<div class="reply-preview"><div class="reply-sender">&#8617; ${escapeHtml(names[m.replyTo.sender]||m.replyTo.sender)}</div><div>${escapeHtml(m.replyTo.text||'')}</div></div>`;
                 const et = escapeHtml(m.text||''), est = (m.text||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+                // Админ может удалять чужие сообщения только в общем чате
+                const canDelete = isMe || (isAdmin && currentChatType === 'public');
                 return `<div class="message ${isMe?'user':'other'}" onclick="handleMessageClick(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')" oncontextmenu="handleMessageContextMenu(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')">
                     ${rhtml}<div class="message-info"><span class="sender">${escapeHtml(dn)}</span><span class="time">${formatTime(m.timestamp)}</span></div>
                     <div class="message-content">${et}</div>
-                    <div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${(isMe||isAdmin)?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div>
+                    <div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${canDelete?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div>
                 </div>`;
             }).join('');
             if (autoScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -882,7 +917,7 @@
         function showChat() {
             authOverlay.classList.add('hide'); inputArea.classList.remove('hide'); logoutBtn.classList.remove('hide'); menuToggle.classList.remove('hide'); mainSidebar.classList.remove('hide');
             if (isAdmin) { adminBadge.classList.remove('hide'); createChatBtn.classList.remove('hide'); bannedSection.classList.remove('hide'); }
-            startListeningBans(); startListeningUsers(); startListeningChats(); startListeningOnline(); startListeningTyping();
+            startListeningBans(); startListeningUsers(); startListeningChats(); startListeningOnline(); startListeningTyping(); startListeningUnread();
             chatsRef.once('value').then(snap => { if (!snap.val() || Object.keys(snap.val()).length === 0) chatsRef.push().set({name: 'Общий', createdBy: 'tntrat', createdAt: new Date().toISOString()}); });
             messageInput.focus();
         }
@@ -892,6 +927,13 @@
             const text = messageInput.value.trim(); if (!text) return;
             const data = { sender: currentUser, text, timestamp: new Date().toISOString() };
             if (replyTo) { data.replyTo = {sender: replyTo.sender, text: replyTo.text}; clearReply(); }
+            
+            // Если это личное сообщение — увеличиваем счётчик непрочитанных для получателя
+            if (currentChatType === 'private' && privateChatPartner) {
+                const currentCount = unreadMessages[privateChatPartner] || 0;
+                unreadRef.child(privateChatPartner).child(currentUser).set(currentCount + 1);
+            }
+            
             messagesRef.push(data).catch(() => setStatus('Ошибка'));
             messageInput.value = ''; updateSendButton();
             const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
