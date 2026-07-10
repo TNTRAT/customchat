@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost chat</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -22,32 +22,32 @@
             font-family: 'Segoe UI', sans-serif; 
             background: var(--bg); 
             color: var(--text); 
-            min-height: 100vh; 
+            height: 100vh; 
             display: flex; 
             justify-content: center; 
             align-items: center;
-            padding: 10px; 
+            padding: 0; 
             -webkit-tap-highlight-color: transparent;
             -webkit-user-select: none;
             user-select: none;
+            overflow: hidden;
         }
         .container { 
             display: flex; 
             width: 100%; 
             max-width: 950px; 
-            min-width: 320px; 
-            height: 90vh; 
-            max-height: 700px;
+            height: 100vh;
+            max-height: 100vh;
             background: var(--bg-card);
-            border-radius: 12px;
             overflow: hidden;
             position: relative;
+            border-radius: 0;
         }
         
         .sidebar { 
             width: 270px; 
             background: var(--bg-card); 
-            padding: 15px; 
+            padding: 12px; 
             display: flex; 
             flex-direction: column; 
             border-right: 1px solid var(--border);
@@ -58,19 +58,19 @@
         }
         .sidebar h3 { 
             color: var(--primary); 
-            font-size: 0.9rem; 
-            margin-bottom: 10px; 
+            font-size: 0.85rem; 
+            margin-bottom: 8px; 
             text-align: center; 
             flex-shrink: 0;
         }
-        .sidebar-section { margin-bottom: 10px; }
+        .sidebar-section { margin-bottom: 8px; }
         .sidebar-section-title {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             color: var(--text-light);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 5px;
-            padding-bottom: 3px;
+            margin-bottom: 4px;
+            padding-bottom: 2px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -78,62 +78,54 @@
         }
         .sidebar-section-title button {
             background: rgba(255,255,255,0.1);
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
+            border: none; color: var(--primary);
+            cursor: pointer; font-size: 0.7rem;
+            padding: 1px 5px; border-radius: 4px;
         }
-        .sidebar-section-title button:hover { background: rgba(255,215,0,0.2); }
-        .chat-list, .user-list { display: flex; flex-direction: column; gap: 2px; }
+        .chat-list, .user-list { display: flex; flex-direction: column; gap: 1px; }
         .sidebar-scroll { flex: 1; overflow-y: auto; }
         
         .chat-item { 
-            display: flex; align-items: center; gap: 6px; padding: 7px 9px; 
-            border-radius: 8px; background: rgba(0,0,0,0.3); font-size: 0.82rem;
+            display: flex; align-items: center; gap: 5px; padding: 6px 8px; 
+            border-radius: 6px; background: rgba(0,0,0,0.3); font-size: 0.78rem;
             cursor: pointer; transition: all 0.15s;
         }
-        .chat-item:hover { background: rgba(255,255,255,0.08); }
         .chat-item.active { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
         .chat-item-name { flex: 1; word-break: break-all; }
         .chat-item-actions { display: flex; gap: 2px; }
         .chat-item-btn {
-            background: rgba(255,255,255,0.1); border: none; border-radius: 4px;
-            cursor: pointer; font-size: 0.65rem; padding: 2px 5px; color: var(--text);
+            background: rgba(255,255,255,0.1); border: none; border-radius: 3px;
+            cursor: pointer; font-size: 0.6rem; padding: 2px 4px; color: var(--text);
         }
-        .chat-item-btn:hover { background: rgba(255,255,255,0.25); }
         .chat-item-btn.delete { color: var(--error); }
         
         .user-item { 
             display: flex; align-items: center; gap: 5px; padding: 5px 7px; 
-            border-radius: 8px; background: rgba(0,0,0,0.3); flex-wrap: wrap; font-size: 0.78rem;
+            border-radius: 6px; background: rgba(0,0,0,0.3); flex-wrap: wrap; font-size: 0.75rem;
             cursor: pointer; position: relative;
         }
-        .user-item:hover { background: rgba(255,255,255,0.05); }
-        .user-item.online { border-left: 2px solid var(--success); }
         .user-item.active-chat { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
-        .user-item.banned-highlight { background: rgba(255,68,68,0.15); border-left: 2px solid var(--error); }
+        .user-item.banned-highlight { background: rgba(255,68,68,0.15); }
         .user-item.has-unread { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); } 50% { box-shadow: 0 0 0 4px rgba(255,215,0,0); } }
         .user-name { flex: 1; min-width: 50px; word-break: break-all; }
-        .user-status { font-size: 0.6rem; color: var(--success); }
-        .unread-badge {
-            background: var(--primary);
-            color: #1a1a1a;
-            font-size: 0.6rem;
-            font-weight: 700;
-            padding: 1px 5px;
-            border-radius: 8px;
-            margin-left: 4px;
+        .online-dot {
+            width: 8px; height: 8px; border-radius: 50%; background: var(--success);
+            flex-shrink: 0; margin-right: 2px;
         }
-        .user-badge { font-size: 0.58rem; padding: 1px 4px; border-radius: 6px; }
+        .online-dot.offline { background: var(--border); }
+        .unread-badge {
+            background: var(--primary); color: #1a1a1a;
+            font-size: 0.55rem; font-weight: 700;
+            padding: 1px 5px; border-radius: 8px; margin-left: 3px;
+        }
+        .user-badge { font-size: 0.55rem; padding: 1px 4px; border-radius: 6px; }
         .user-badge.admin { background: var(--primary); color: #1a1a1a; }
 
         .menu-toggle {
-            display: none; position: absolute; top: 12px; left: 12px; z-index: 40;
+            display: none; position: absolute; top: 8px; left: 8px; z-index: 40;
             background: rgba(255,255,255,0.1); border: none; color: var(--text);
-            padding: 8px; border-radius: 8px; cursor: pointer; font-size: 1.2rem;
+            padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 1.1rem;
         }
         .sidebar-overlay {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -143,79 +135,82 @@
 
         .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
         header { 
-            text-align: center; padding: 8px 12px; border-bottom: 1px solid var(--border);
+            text-align: center; padding: 6px 12px; border-bottom: 1px solid var(--border);
             position: relative; flex-shrink: 0;
         }
-        header h1 { color: var(--primary); font-size: 1.1rem; font-weight: 600; }
+        header h1 { color: var(--primary); font-size: 1rem; font-weight: 600; }
         .chat-subtitle { 
-            font-size: 0.8rem; color: var(--text-light); margin-top: 2px;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+            font-size: 0.72rem; color: var(--text-light); margin-top: 1px;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
         }
         .chat-type-badge {
-            font-size: 0.6rem;
-            padding: 2px 6px;
-            border-radius: 8px;
-            background: rgba(255,215,0,0.2);
-            color: var(--primary);
-        }
-        .typing-indicator {
-            font-size: 0.7rem; color: var(--success); font-style: italic;
-            min-height: 16px; margin-top: 1px;
+            font-size: 0.55rem; padding: 1px 5px; border-radius: 6px;
+            background: rgba(255,215,0,0.2); color: var(--primary);
         }
         .admin-badge { 
-            position: absolute; top: 8px; right: 12px; background: var(--primary); 
-            color: #1a1a1a; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 600; 
+            position: absolute; top: 6px; right: 10px; background: var(--primary); 
+            color: #1a1a1a; padding: 1px 7px; border-radius: 8px; font-size: 0.6rem; font-weight: 600; 
         }
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .messages { 
-            flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; 
+            flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; 
         }
         .message { 
-            display: flex; flex-direction: column; max-width: 85%; padding: 8px 12px; 
-            border-radius: 18px; line-height: 1.4; animation: fadeIn 0.2s ease; 
+            display: flex; flex-direction: column; max-width: 85%; padding: 7px 10px; 
+            border-radius: 16px; line-height: 1.4; animation: fadeIn 0.2s ease; 
             position: relative; word-wrap: break-word; cursor: pointer;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { 
-            align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 6px; 
+            align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 4px; 
         }
         .message.other { 
-            align-self: flex-start; background: rgba(255,255,255,0.08); color: var(--text); border-bottom-left-radius: 6px; 
+            align-self: flex-start; background: rgba(255,255,255,0.08); color: var(--text); border-bottom-left-radius: 4px; 
         }
         .message:active { opacity: 0.8; }
-        .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; gap: 10px; }
-        .sender { font-weight: 600; font-size: 0.7rem; opacity: 0.8; }
-        .time { font-size: 0.6rem; opacity: 0.5; white-space: nowrap; }
-        .message-content { font-size: 0.85rem; }
+        .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; gap: 8px; }
+        .sender { font-weight: 600; font-size: 0.68rem; opacity: 0.8; }
+        .time { font-size: 0.58rem; opacity: 0.5; white-space: nowrap; }
+        .message-content { font-size: 0.82rem; }
         .reply-preview { 
-            background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 10px; 
-            margin-bottom: 6px; border-left: 3px solid var(--primary); font-size: 0.7rem; opacity: 0.8;
+            background: rgba(0,0,0,0.3); padding: 5px 7px; border-radius: 8px; 
+            margin-bottom: 5px; border-left: 3px solid var(--primary); font-size: 0.68rem; opacity: 0.8;
         }
-        .reply-sender { color: var(--primary); margin-bottom: 2px; font-weight: 600; }
+        .reply-sender { color: var(--primary); margin-bottom: 1px; font-weight: 600; }
         
+        /* Индикатор новых сообщений */
+        .new-messages-indicator {
+            position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #1a1a1a; padding: 6px 14px;
+            border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; z-index: 5; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            animation: bounceIn 0.3s ease; display: none;
+        }
+        @keyframes bounceIn { 0% { transform: translateX(-50%) scale(0.8); opacity: 0; } 100% { transform: translateX(-50%) scale(1); opacity: 1; } }
+
         .context-menu {
             position: fixed; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 14px; padding: 6px; min-width: 160px; z-index: 1000;
+            border-radius: 14px; padding: 6px; min-width: 150px; z-index: 1000;
             box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease;
         }
         @keyframes menuFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .context-menu-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-            border-radius: 10px; cursor: pointer; font-size: 0.85rem; color: var(--text);
+            display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+            border-radius: 10px; cursor: pointer; font-size: 0.8rem; color: var(--text);
             transition: background 0.15s; white-space: nowrap;
         }
         .context-menu-item:hover { background: rgba(255,255,255,0.08); }
         .context-menu-item.delete-item { color: var(--error); }
-        .context-menu-icon { font-size: 1rem; width: 20px; text-align: center; }
+        .context-menu-icon { font-size: 0.9rem; width: 18px; text-align: center; }
 
         .message-actions { 
-            position: absolute; top: 6px; right: 6px; display: flex; gap: 3px; 
+            position: absolute; top: 5px; right: 5px; display: flex; gap: 2px; 
             opacity: 0; transition: opacity 0.2s; 
         }
         .action-btn { 
             background: rgba(0,0,0,0.3); border: none; border-radius: 50%; 
-            width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; font-size: 11px; color: white;
+            width: 20px; height: 20px; cursor: pointer; display: flex; align-items: center; 
+            justify-content: center; font-size: 10px; color: white;
         }
         .action-btn:hover { background: rgba(0,0,0,0.5); }
         .action-btn.delete { color: #ff6b6b; }
@@ -235,70 +230,72 @@
             background: var(--bg); z-index: 10;
         }
         .auth-box {
-            background: var(--bg-card); padding: 30px; border-radius: 20px;
-            width: 300px; text-align: center; border: 1px solid var(--border);
+            background: var(--bg-card); padding: 25px; border-radius: 18px;
+            width: 280px; text-align: center; border: 1px solid var(--border);
         }
-        .auth-box h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.5rem; }
+        .auth-box h2 { color: var(--primary); margin-bottom: 18px; font-size: 1.3rem; }
         .auth-box input {
-            width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid var(--border);
-            border-radius: 14px; background: #1a1a1a; color: var(--text); font-size: 0.95rem; outline: none;
+            width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid var(--border);
+            border-radius: 12px; background: #1a1a1a; color: var(--text); font-size: 0.9rem; outline: none;
         }
         .auth-box input:focus { border-color: var(--primary); }
-        .auth-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
+        .auth-buttons { display: flex; flex-direction: column; gap: 6px; margin-top: 5px; }
         .auth-box button {
-            width: 100%; padding: 12px; border: none; border-radius: 14px;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--primary); color: #1a1a1a;
+            width: 100%; padding: 10px; border: none; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; background: var(--primary); color: #1a1a1a;
         }
-        .auth-box button:hover { opacity: 0.9; }
-        .auth-error { color: var(--error); font-size: 0.8rem; margin-top: 10px; min-height: 20px; }
+        .auth-error { color: var(--error); font-size: 0.75rem; margin-top: 8px; min-height: 18px; }
 
         .input-area { 
-            padding: 10px 12px; border-top: 1px solid var(--border); 
+            padding: 8px 10px; border-top: 1px solid var(--border); 
             background: var(--bg-card); flex-shrink: 0;
         }
-        .input-row { display: flex; gap: 8px; }
+        .typing-indicator {
+            font-size: 0.68rem; color: var(--text-light); font-style: italic;
+            min-height: 16px; margin-bottom: 4px; padding-left: 4px;
+        }
+        .input-row { display: flex; gap: 6px; }
         .input-area input { 
-            flex: 1; padding: 10px 14px; border: 1px solid var(--border); 
-            border-radius: 22px; font-size: 0.85rem; background: var(--bg); color: var(--text); outline: none; 
+            flex: 1; padding: 8px 12px; border: 1px solid var(--border); 
+            border-radius: 20px; font-size: 0.82rem; background: var(--bg); color: var(--text); outline: none; 
         }
         .input-area input:focus { border-color: var(--primary); }
         .send-button { 
-            padding: 10px 18px; background: var(--primary); color: #1a1a1a; 
-            border: none; border-radius: 22px; font-size: 0.85rem; font-weight: 600; 
-            cursor: pointer; min-width: 48px; display: flex; align-items: center; justify-content: center;
+            padding: 8px 16px; background: var(--primary); color: #1a1a1a; 
+            border: none; border-radius: 20px; font-size: 0.82rem; font-weight: 600; 
+            cursor: pointer; min-width: 44px; display: flex; align-items: center; justify-content: center;
         }
         .send-button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.5; }
-        .send-arrow { font-size: 1.1rem; line-height: 1; }
+        .send-arrow { font-size: 1rem; line-height: 1; }
         .reply-indicator { 
-            font-size: 0.75rem; color: var(--primary); margin-bottom: 6px; 
+            font-size: 0.7rem; color: var(--primary); margin-bottom: 5px; 
             display: flex; justify-content: space-between; align-items: center; 
-            background: rgba(255,215,0,0.1); padding: 5px 8px; border-radius: 10px; 
+            background: rgba(255,215,0,0.1); padding: 4px 7px; border-radius: 8px; 
         }
-        .reply-close { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 1rem; }
-        .status { color: var(--primary); font-size: 0.7rem; text-align: center; margin-top: 4px; min-height: 16px; }
+        .reply-close { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.9rem; }
+        .status { color: var(--primary); font-size: 0.65rem; text-align: center; margin-top: 3px; min-height: 14px; }
         .hide { display: none !important; }
-        .empty-state { text-align: center; padding: 30px; color: var(--text-light); font-size: 0.85rem; }
+        .empty-state { text-align: center; padding: 25px; color: var(--text-light); font-size: 0.8rem; }
         .logout-btn {
-            position: absolute; top: 8px; left: 12px; background: rgba(255,255,255,0.1);
-            border: none; color: var(--text); padding: 4px 10px; border-radius: 10px;
-            cursor: pointer; font-size: 0.7rem; z-index: 5;
+            position: absolute; top: 6px; left: 10px; background: rgba(255,255,255,0.1);
+            border: none; color: var(--text); padding: 3px 9px; border-radius: 8px;
+            cursor: pointer; font-size: 0.65rem; z-index: 5;
         }
-        .logout-btn:hover { background: rgba(255,68,68,0.3); }
-        .no-items { text-align: center; color: var(--text-light); font-size: 0.65rem; padding: 6px; opacity: 0.6; }
+        .no-items { text-align: center; color: var(--text-light); font-size: 0.62rem; padding: 5px; opacity: 0.6; }
 
         .ban-overlay {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 20;
         }
         .ban-message {
-            background: var(--bg-card); padding: 30px; border-radius: 20px;
+            background: var(--bg-card); padding: 25px; border-radius: 18px;
             text-align: center; border: 1px solid var(--border);
         }
-        .ban-message h2 { color: var(--error); font-size: 1.5rem; margin-bottom: 10px; }
-        .ban-message p { color: var(--text-light); margin-bottom: 20px; }
+        .ban-message h2 { color: var(--error); font-size: 1.3rem; margin-bottom: 8px; }
+        .ban-message p { color: var(--text-light); margin-bottom: 18px; }
         .ban-message button {
-            padding: 10px 24px; background: var(--primary); color: #1a1a1a;
-            border: none; border-radius: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            padding: 8px 20px; background: var(--primary); color: #1a1a1a;
+            border: none; border-radius: 12px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
         }
 
         .modal-overlay {
@@ -306,37 +303,38 @@
             background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;
         }
         .modal-box {
-            background: var(--bg-card); padding: 25px; border-radius: 20px;
-            border: 1px solid var(--border); text-align: center; max-width: 350px; width: 90%;
+            background: var(--bg-card); padding: 22px; border-radius: 18px;
+            border: 1px solid var(--border); text-align: center; max-width: 320px; width: 90%;
         }
-        .modal-box h3 { color: var(--text); margin-bottom: 10px; }
-        .modal-box p { color: var(--text-light); font-size: 0.85rem; margin-bottom: 15px; }
+        .modal-box h3 { color: var(--text); margin-bottom: 8px; }
+        .modal-box p { color: var(--text-light); font-size: 0.8rem; margin-bottom: 12px; }
         .modal-box input {
-            width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border);
-            border-radius: 10px; background: var(--bg); color: var(--text); font-size: 0.85rem; outline: none;
+            width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--border);
+            border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.82rem; outline: none;
         }
         .modal-box input:focus { border-color: var(--primary); }
-        .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+        .modal-buttons { display: flex; gap: 8px; justify-content: center; }
         .modal-buttons button {
-            padding: 10px 20px; border: none; border-radius: 14px;
-            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            padding: 8px 18px; border: none; border-radius: 12px;
+            font-size: 0.82rem; font-weight: 600; cursor: pointer;
         }
         .modal-btn-cancel { background: var(--border); color: var(--text); }
         .modal-btn-confirm { background: var(--primary); color: #1a1a1a; }
         .modal-btn-danger { background: var(--error); color: white; }
 
         @media (max-width: 768px) {
-            .container { border-radius: 0; max-width: 100%; height: 100vh; max-height: none; }
+            .container { border-radius: 0; max-width: 100%; height: 100vh; max-height: 100vh; }
             .sidebar {
-                position: fixed; top: 0; left: 0; bottom: 0; width: 290px;
+                position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
                 transform: translateX(-100%); border-radius: 0 12px 12px 0;
                 box-shadow: 4px 0 20px rgba(0,0,0,0.5);
             }
             .sidebar.open { transform: translateX(0); }
             .menu-toggle { display: block; }
-            .logout-btn { left: 44px; }
-            header { padding-left: 44px; }
-            .auth-box { width: 90%; max-width: 300px; }
+            .logout-btn { left: 40px; }
+            header { padding-left: 40px; }
+            .auth-box { width: 90%; max-width: 280px; }
+            .new-messages-indicator { bottom: 55px; }
         }
     </style>
 </head>
@@ -388,30 +386,16 @@
             </div>
 
             <div class="context-menu hide" id="messageContextMenu">
-                <div class="context-menu-item" onclick="contextReply()">
-                    <span class="context-menu-icon">&#8617;</span><span>Ответить</span>
-                </div>
-                <div class="context-menu-item" onclick="contextPrivateMessage()">
-                    <span class="context-menu-icon">&#9993;</span><span>Личное сообщение</span>
-                </div>
-                <div class="context-menu-item delete-item" onclick="contextDelete()">
-                    <span class="context-menu-icon">&#10005;</span><span>Удалить</span>
-                </div>
+                <div class="context-menu-item" onclick="contextReply()"><span class="context-menu-icon">&#8617;</span><span>Ответить</span></div>
+                <div class="context-menu-item" onclick="contextPrivateMessage()"><span class="context-menu-icon">&#9993;</span><span>Личное сообщение</span></div>
+                <div class="context-menu-item delete-item" onclick="contextDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить</span></div>
             </div>
 
             <div class="context-menu hide" id="userContextMenu">
-                <div class="context-menu-item" onclick="contextUserPrivateChat()">
-                    <span class="context-menu-icon">&#9993;</span><span>Личные сообщения</span>
-                </div>
-                <div class="context-menu-item" id="userMenuAdmin" onclick="contextUserToggleAdmin()">
-                    <span class="context-menu-icon">&#128081;</span><span id="userMenuAdminText">Сделать админом</span>
-                </div>
-                <div class="context-menu-item delete-item" id="userMenuBan" onclick="contextUserToggleBan()">
-                    <span class="context-menu-icon">&#128683;</span><span id="userMenuBanText">Забанить</span>
-                </div>
-                <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()">
-                    <span class="context-menu-icon">&#10005;</span><span>Удалить аккаунт</span>
-                </div>
+                <div class="context-menu-item" onclick="contextUserPrivateChat()"><span class="context-menu-icon">&#9993;</span><span>Личные сообщения</span></div>
+                <div class="context-menu-item" id="userMenuAdmin" onclick="contextUserToggleAdmin()"><span class="context-menu-icon">&#128081;</span><span id="userMenuAdminText">Сделать админом</span></div>
+                <div class="context-menu-item delete-item" id="userMenuBan" onclick="contextUserToggleBan()"><span class="context-menu-icon">&#128683;</span><span id="userMenuBanText">Забанить</span></div>
+                <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить аккаунт</span></div>
             </div>
 
             <div class="auth-overlay" id="authOverlay">
@@ -431,7 +415,6 @@
                 <button class="logout-btn hide" id="logoutBtn" onclick="logout()">Выйти</button>
                 <h1>Ghost chat</h1>
                 <div class="chat-subtitle" id="chatSubtitle"></div>
-                <div class="typing-indicator" id="typingIndicator"></div>
                 <span id="adminBadge" class="admin-badge hide">Админ</span>
             </header>
 
@@ -439,8 +422,10 @@
                 <div class="messages" id="messages">
                     <div class="empty-state">Войдите в аккаунт</div>
                 </div>
+                <div class="new-messages-indicator hide" id="newMessagesIndicator" onclick="scrollToBottom()">Новые сообщения ↓</div>
 
                 <div class="input-area hide" id="inputArea">
+                    <div class="typing-indicator" id="typingIndicator"></div>
                     <div id="replyIndicator" class="reply-indicator hide">
                         <span id="replyText"></span>
                         <button class="reply-close" onclick="clearReply()">x</button>
@@ -509,6 +494,7 @@
         const chatSubtitle = document.getElementById('chatSubtitle');
         const typingIndicator = document.getElementById('typingIndicator');
         const messagesEl = document.getElementById('messages');
+        const newMessagesIndicator = document.getElementById('newMessagesIndicator');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         const inputArea = document.getElementById('inputArea');
@@ -519,9 +505,10 @@
         let currentUser = null, currentUserName = '', isAdmin = false, autoScroll = true, replyTo = null;
         let bannedUsers = {}, allUsers = {}, allChats = {}, onlineUsers = {}, typingUsers = {}, unreadMessages = {};
         let currentChatId = null, currentChatType = 'public', privateChatPartner = null;
-        let messagesRef = null, statusTimeout = null;
-        let messagesListener = null, usersListener = null, bansListener = null, chatsListener = null, onlineListener = null, typingListener = null, unreadListener = null;
+        let messagesRef = null, statusTimeout = null, unreadListener = null;
+        let messagesListener = null, usersListener = null, bansListener = null, chatsListener = null, onlineListener = null, typingListener = null;
         let pendingModalAction = null, contextMsgId = null, contextMsgSender = null, contextMsgText = null, contextUser = null, typingTimeout = null;
+        let newMessagesCount = 0;
 
         async function hashPassword(p) {
             const e = new TextEncoder();
@@ -536,14 +523,11 @@
         function closeSidebar() { mainSidebar.classList.remove('open'); sidebarOverlayEl.classList.remove('active'); }
 
         function showModal(title, text, showInput, confirmText, confirmClass, onConfirm) {
-            modalTitle.textContent = title;
-            modalText.textContent = text || '';
-            modalConfirmBtn.textContent = confirmText || 'ОК';
-            modalConfirmBtn.className = confirmClass || 'modal-btn-confirm';
+            modalTitle.textContent = title; modalText.textContent = text || '';
+            modalConfirmBtn.textContent = confirmText || 'ОК'; modalConfirmBtn.className = confirmClass || 'modal-btn-confirm';
             if (showInput) { modalInput.classList.remove('hide'); modalInput.value = ''; modalInput.focus(); }
             else { modalInput.classList.add('hide'); }
-            pendingModalAction = onConfirm;
-            modalOverlay.classList.remove('hide');
+            pendingModalAction = onConfirm; modalOverlay.classList.remove('hide');
         }
         function closeModal() { modalOverlay.classList.add('hide'); pendingModalAction = null; }
 
@@ -551,6 +535,13 @@
             if (pendingModalAction) { const v = modalInput.classList.contains('hide') ? null : modalInput.value.trim(); pendingModalAction(v); closeModal(); }
         });
         modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+        function scrollToBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            newMessagesIndicator.classList.add('hide');
+            newMessagesCount = 0;
+            autoScroll = true;
+        }
 
         function setTyping() {
             if (!currentUser || !messagesRef) return;
@@ -563,7 +554,7 @@
         function getPrivateChatId(u1, u2) { return [u1, u2].sort().join('_'); }
 
         function updateTypingIndicator() {
-            if (!messagesRef) return;
+            if (!messagesRef) { typingIndicator.textContent = ''; return; }
             const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
             const typers = typingUsers[tk] || {};
             const names = Object.keys(typers).filter(u => u !== currentUser);
@@ -584,14 +575,12 @@
                 if (!name) return;
                 const ref = chatsRef.push();
                 await ref.set({ name, createdBy: currentUser, createdAt: new Date().toISOString() });
-                selectPublicChat(ref.key);
-                setStatus('Чат создан');
+                selectPublicChat(ref.key); setStatus('Чат создан');
             });
         }
 
         function showEditChatModal(chatId) {
-            if (!isAdmin) return;
-            const c = allChats[chatId]; if (!c) return;
+            if (!isAdmin) return; const c = allChats[chatId]; if (!c) return;
             showModal('Редактировать', 'Новое название:', true, 'Сохранить', 'modal-btn-confirm', async (name) => {
                 if (!name) return;
                 await chatsRef.child(chatId).update({ name });
@@ -621,6 +610,8 @@
             document.querySelector(`.chat-item[data-chat-id="${chatId}"]`)?.classList.add('active');
             document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
             updateChatSubtitle(); typingIndicator.textContent = ''; loadMessages(); setStatus('');
+            autoScroll = true; newMessagesCount = 0; newMessagesIndicator.classList.add('hide');
+            messagesEl.scrollTop = messagesEl.scrollHeight;
         }
 
         function selectPrivateChat(partner) {
@@ -630,13 +621,10 @@
             document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
             document.querySelector(`.user-item[data-username="${partner}"]`)?.classList.add('active-chat');
-            
-            // Сбрасываем счётчик непрочитанных
-            if (unreadMessages[partner]) {
-                unreadRef.child(currentUser).child(partner).remove();
-            }
-            
+            if (unreadMessages[partner]) unreadRef.child(currentUser).child(partner).remove();
             updateChatSubtitle(); typingIndicator.textContent = ''; loadMessages(); setStatus('');
+            autoScroll = true; newMessagesCount = 0; newMessagesIndicator.classList.add('hide');
+            messagesEl.scrollTop = messagesEl.scrollHeight;
         }
 
         function renderChatList() {
@@ -652,7 +640,6 @@
         function showMessageContextMenu(e, id, sender, text) {
             e.preventDefault(); e.stopPropagation();
             contextMsgId = id; contextMsgSender = sender; contextMsgText = text;
-            // Админ может удалять сообщения только в общем чате, свои может везде
             const canDelete = sender === currentUser || (isAdmin && currentChatType === 'public');
             messageContextMenu.querySelectorAll('.context-menu-item').forEach((item, i) => {
                 item.classList.toggle('hide', (i === 1 && sender === currentUser) || (i === 2 && !canDelete));
@@ -677,8 +664,8 @@
             let x = e.clientX || (e.touches?.[0]?.clientX || 0), y = e.clientY || (e.touches?.[0]?.clientY || 0);
             if (e.touches?.[0]) { x = e.touches[0].clientX; y = e.touches[0].clientY; }
             const r = menu.getBoundingClientRect();
-            x = Math.min(Math.max(x, 10), window.innerWidth - (r.width || 170) - 10);
-            y = Math.min(Math.max(y, 10), window.innerHeight - (r.height || 120) - 10);
+            x = Math.min(Math.max(x, 10), window.innerWidth - (r.width || 150) - 10);
+            y = Math.min(Math.max(y, 10), window.innerHeight - (r.height || 100) - 10);
             menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.classList.remove('hide');
         }
 
@@ -718,10 +705,14 @@
         }
 
         function startListeningUnread() {
-            if (unreadListener) unreadRef.child(currentUser).off('value', unreadListener);
+            if (unreadListener && currentUser) unreadRef.child(currentUser).off('value', unreadListener);
             if (!currentUser) return;
             unreadListener = (snapshot) => {
                 unreadMessages = snapshot.val() || {};
+                // Не показываем уведомления для активного чата
+                if (currentChatType === 'private' && privateChatPartner && unreadMessages[privateChatPartner]) {
+                    // Не сбрасываем, но и не показываем бейдж
+                }
                 renderAllUsers();
             };
             unreadRef.child(currentUser).on('value', unreadListener);
@@ -745,7 +736,10 @@
             if (onlineListener) onlineRef.off('value', onlineListener);
             onlineListener = (snapshot) => { onlineUsers = snapshot.val() || {}; renderAllUsers(); };
             onlineRef.on('value', onlineListener);
-            if (currentUser) { onlineRef.child(currentUser).set(true); onlineRef.child(currentUser).onDisconnect().remove(); }
+            if (currentUser) { 
+                onlineRef.child(currentUser).set(true); 
+                onlineRef.child(currentUser).onDisconnect().remove(); 
+            }
         }
 
         function startListeningTyping() {
@@ -766,11 +760,11 @@
             allUsersList.innerHTML = activeUsers.length ? activeUsers.map(([u,d]) => {
                 const online = !!onlineUsers[u], admin = d.isAdmin || false, isMe = u === currentUser;
                 const isActive = currentChatType === 'private' && privateChatPartner === u;
-                const hasUnread = !!unreadMessages[u];
-                return `<div class="user-item ${online?'online':''} ${isActive?'active-chat':''} ${hasUnread?'has-unread':''}" data-username="${u}" onclick="handleUserClick(event, '${u}')" oncontextmenu="handleUserContextMenu(event, '${u}')">
+                const hasUnread = !!unreadMessages[u] && !isActive;
+                return `<div class="user-item ${isActive?'active-chat':''} ${hasUnread?'has-unread':''}" data-username="${u}" onclick="handleUserClick(event, '${u}')" oncontextmenu="handleUserContextMenu(event, '${u}')">
+                    <span class="online-dot ${online?'':'offline'}"></span>
                     <span class="user-name">${escapeHtml(u)}${isMe?' (вы)':''}</span>
                     ${hasUnread ? `<span class="unread-badge">${unreadMessages[u]}</span>` : ''}
-                    ${online ? '<span class="user-status">онлайн</span>' : ''}
                     ${admin ? '<span class="user-badge admin">&#128081;</span>' : ''}
                 </div>`;
             }).join('') : '<div class="no-items">Нет пользователей</div>';
@@ -780,6 +774,7 @@
                 bannedUsersList.innerHTML = barr.length ? barr.map(([u,d]) => {
                     const isActive = currentChatType === 'private' && privateChatPartner === u;
                     return `<div class="user-item banned-highlight ${isActive?'active-chat':''}" data-username="${u}" onclick="handleUserClick(event, '${u}')" oncontextmenu="handleUserContextMenu(event, '${u}')">
+                        <span class="online-dot offline"></span>
                         <span class="user-name">${escapeHtml(u)}</span>${d.isAdmin?'<span class="user-badge admin">&#128081;</span>':''}
                     </div>`;
                 }).join('') : '<div class="no-items">Нет забаненных</div>';
@@ -796,7 +791,7 @@
         function updateSendButton() { sendButton.disabled = !messageInput.value.trim(); }
         function setReplyTo(id, sender, text) {
             replyTo = {id, sender, text};
-            replyText.innerHTML = `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0,35)}${text.length>35?'...':''}`;
+            replyText.innerHTML = `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0,30)}${text.length>30?'...':''}`;
             replyIndicator.classList.remove('hide'); messageInput.focus();
         }
         function clearReply() { replyTo = null; replyIndicator.classList.add('hide'); }
@@ -817,14 +812,12 @@
 
         async function deleteUser(username) {
             if (currentUser!=='tntrat') { setStatus('Только создатель'); return; }
-            showModal('Удаление аккаунта', `Вы уверены, что хотите безвозвратно удалить аккаунт "${username}"?`, false, 'Удалить', 'modal-btn-danger', async () => {
-                await bannedUsersRef.child(username).remove();
-                await usersRef.child(username).remove();
+            showModal('Удаление аккаунта', `Удалить аккаунт "${username}"?`, false, 'Удалить', 'modal-btn-danger', async () => {
+                await bannedUsersRef.child(username).remove(); await usersRef.child(username).remove();
                 for (const cid of Object.keys(allChats)) {
                     const msgs = await database.ref(`messages/${cid}`).once('value');
-                    const data = msgs.val();
-                    if (data) {
-                        const dels = Object.entries(data).filter(([,m])=>m.sender===username).map(([k])=>database.ref(`messages/${cid}/${k}`).remove());
+                    if (msgs.val()) {
+                        const dels = Object.entries(msgs.val()).filter(([,m])=>m.sender===username).map(([k])=>database.ref(`messages/${cid}/${k}`).remove());
                         await Promise.all(dels);
                     }
                 }
@@ -835,12 +828,7 @@
         async function deleteMessage(id) {
             if (!currentUser || !messagesRef) return;
             const snap = await messagesRef.child(id).once('value'), msg = snap.val();
-            if (!msg) return;
-            // Проверка прав: свои сообщения можно удалять везде, админ может удалять только в общем чате
-            if (msg.sender !== currentUser && !(isAdmin && currentChatType === 'public')) {
-                setStatus('Можно удалять только свои сообщения');
-                return;
-            }
+            if (!msg || (msg.sender !== currentUser && !(isAdmin && currentChatType === 'public'))) { setStatus('Нельзя удалить'); return; }
             await messagesRef.child(id).remove(); setStatus('Удалено', 2000);
         }
 
@@ -851,6 +839,9 @@
             let msgs = data ? Object.entries(data).map(([k,v])=>({id:k,...v})).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)) : [];
             msgs = msgs.filter(m => !bannedUsers[m.sender]);
             if (!msgs.length) { messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; }
+
+            const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 30;
+            
             const names = {};
             for (const m of msgs) { if (!names[m.sender]) { const s = await usersRef.child(m.sender).once('value'); names[m.sender] = s.val()?.name || m.sender; } }
             messagesEl.innerHTML = msgs.map(m => {
@@ -858,7 +849,6 @@
                 let rhtml = '';
                 if (m.replyTo?.sender) rhtml = `<div class="reply-preview"><div class="reply-sender">&#8617; ${escapeHtml(names[m.replyTo.sender]||m.replyTo.sender)}</div><div>${escapeHtml(m.replyTo.text||'')}</div></div>`;
                 const et = escapeHtml(m.text||''), est = (m.text||'').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-                // Админ может удалять чужие сообщения только в общем чате
                 const canDelete = isMe || (isAdmin && currentChatType === 'public');
                 return `<div class="message ${isMe?'user':'other'}" onclick="handleMessageClick(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')" oncontextmenu="handleMessageContextMenu(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')">
                     ${rhtml}<div class="message-info"><span class="sender">${escapeHtml(dn)}</span><span class="time">${formatTime(m.timestamp)}</span></div>
@@ -866,7 +856,19 @@
                     <div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${canDelete?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div>
                 </div>`;
             }).join('');
-            if (autoScroll) messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            if (wasAtBottom) {
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+                newMessagesCount = 0;
+                newMessagesIndicator.classList.add('hide');
+            } else if (!autoScroll && msgs.length > 0) {
+                // Пользователь наверху — показываем индикатор
+                newMessagesCount++;
+                if (newMessagesCount > 0) {
+                    newMessagesIndicator.textContent = `Новые сообщения (${newMessagesCount}) ↓`;
+                    newMessagesIndicator.classList.remove('hide');
+                }
+            }
         }
 
         function handleMessageClick(e, id, sender, text) { if ('ontouchstart' in window || navigator.maxTouchPoints > 0) showMessageContextMenu(e, id, sender, text); }
@@ -904,7 +906,10 @@
         }
 
         function logout() {
-            if (currentUser) { onlineRef.child(currentUser).remove(); if (messagesRef) { const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); } }
+            if (currentUser) { 
+                onlineRef.child(currentUser).remove(); 
+                if (messagesRef) { const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); }
+            }
             currentUser = currentUserName = ''; isAdmin = false; replyTo = null; localStorage.removeItem('chat_logged_in');
             if (messagesListener && messagesRef) messagesRef.off('value', messagesListener); messagesListener = null; messagesRef = null;
             banOverlay.classList.add('hide'); authOverlay.classList.remove('hide'); inputArea.classList.add('hide');
@@ -928,10 +933,11 @@
             const data = { sender: currentUser, text, timestamp: new Date().toISOString() };
             if (replyTo) { data.replyTo = {sender: replyTo.sender, text: replyTo.text}; clearReply(); }
             
-            // Если это личное сообщение — увеличиваем счётчик непрочитанных для получателя
             if (currentChatType === 'private' && privateChatPartner) {
-                const currentCount = unreadMessages[privateChatPartner] || 0;
-                unreadRef.child(privateChatPartner).child(currentUser).set(currentCount + 1);
+                const currentCount = unreadRef.child(privateChatPartner).child(currentUser);
+                currentCount.once('value').then(snap => {
+                    currentCount.set((snap.val() || 0) + 1);
+                });
             }
             
             messagesRef.push(data).catch(() => setStatus('Ошибка'));
@@ -947,7 +953,10 @@
         sendButton.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
         messageInput.addEventListener('input', () => { updateSendButton(); setTyping(); });
-        messagesEl.addEventListener('scroll', () => { autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 50; });
+        messagesEl.addEventListener('scroll', () => { 
+            autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 30;
+            if (autoScroll) { newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); }
+        });
 
         window.setReplyTo = setReplyTo; window.clearReply = clearReply; window.deleteMessage = deleteMessage;
         window.toggleAdmin = toggleAdmin; window.toggleBanUser = toggleBanUser; window.deleteUser = deleteUser;
@@ -955,6 +964,7 @@
         window.showEditChatModal = showEditChatModal; window.deleteChat = deleteChat;
         window.showCreateChatModal = showCreateChatModal; window.logout = logout; window.closeModal = closeModal;
         window.toggleSidebar = toggleSidebar; window.closeSidebar = closeSidebar;
+        window.scrollToBottom = scrollToBottom;
         window.handleMessageClick = handleMessageClick; window.handleMessageContextMenu = handleMessageContextMenu;
         window.handleUserClick = handleUserClick; window.handleUserContextMenu = handleUserContextMenu;
         window.contextReply = contextReply; window.contextPrivateMessage = contextPrivateMessage;
@@ -967,7 +977,15 @@
             const u = localStorage.getItem('chat_username');
             if (u && localStorage.getItem('chat_logged_in')==='true') {
                 if (bannedUsers[u]) { localStorage.removeItem('chat_logged_in'); nameInput.value = u; return; }
-                nameInput.value = u; passwordInput.focus();
+                nameInput.value = u;
+                // Автовход при сохранённой сессии
+                const snap = await usersRef.child(u).once('value');
+                if (snap.val()) {
+                    currentUser = u; currentUserName = snap.val().name || u; isAdmin = snap.val().isAdmin || false;
+                    showChat(); setStatus(`С возвращением, ${currentUserName}!`, 2000);
+                } else {
+                    passwordInput.focus();
+                }
             }
         });
 
