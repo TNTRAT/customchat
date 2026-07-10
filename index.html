@@ -44,20 +44,29 @@
         }
         .chat-list, .user-list { display: flex; flex-direction: column; gap: 1px; }
         .sidebar-scroll { flex: 1; overflow-y: auto; }
+        
         .chat-item { 
             display: flex; align-items: center; gap: 5px; padding: 6px 7px; 
             border-radius: 7px; background: rgba(0,0,0,0.25); font-size: 0.73rem;
             cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
         }
         .chat-item.active { background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.35); }
-        .chat-item-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; background: rgba(255,255,255,0.08); }
+        .chat-item-icon {
+            width: 24px; height: 24px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; flex-shrink: 0; background: rgba(255,255,255,0.08);
+        }
         .chat-item-content { flex: 1; min-width: 0; }
         .chat-item-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-item-meta { font-size: 0.55rem; color: var(--text-light); margin-top: 1px; display: flex; gap: 3px; align-items: center; }
         .chat-item-badge { font-size: 0.48rem; padding: 1px 4px; border-radius: 5px; background: rgba(0,0,0,0.5); color: var(--primary); border: 1px solid rgba(255,215,0,0.4); font-weight: 600; }
         .chat-item-actions { display: flex; gap: 1px; flex-shrink: 0; }
-        .chat-item-btn { background: rgba(255,255,255,0.08); border: none; border-radius: 3px; cursor: pointer; font-size: 0.55rem; padding: 2px 4px; color: var(--text-light); }
+        .chat-item-btn {
+            background: rgba(255,255,255,0.08); border: none; border-radius: 3px;
+            cursor: pointer; font-size: 0.55rem; padding: 2px 4px; color: var(--text-light);
+        }
         .chat-item-btn.delete:hover { background: rgba(255,68,68,0.3); color: var(--error); }
+        
         .user-item { 
             display: flex; align-items: center; gap: 3px; padding: 3px 5px; 
             border-radius: 5px; background: rgba(0,0,0,0.3); flex-wrap: wrap; font-size: 0.68rem;
@@ -74,42 +83,90 @@
         .gw-badge { font-size: 0.5rem; font-weight: 700; padding: 1px 4px; border-radius: 5px; background: #1a1a1a; color: var(--primary); border: 1px solid var(--primary); }
         .user-badge { font-size: 0.48rem; padding: 1px 2px; border-radius: 4px; }
         .user-badge.admin { background: var(--primary); color: #1a1a1a; }
-        .sidebar-logout { flex-shrink: 0; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
-        .sidebar-logout-btn { width: 100%; padding: 7px 10px; border: none; border-radius: 7px; background: rgba(255,68,68,0.15); color: var(--error); font-size: 0.72rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s; }
+        .ban-reason { font-size: 0.5rem; color: var(--error); opacity: 0.8; margin-top: 1px; width: 100%; padding-left: 9px; }
+
+        .sidebar-logout {
+            flex-shrink: 0; margin-top: 6px; padding-top: 6px;
+            border-top: 1px solid var(--border);
+        }
+        .sidebar-logout-btn {
+            width: 100%; padding: 7px 10px; border: none; border-radius: 7px;
+            background: rgba(255,68,68,0.15); color: var(--error);
+            font-size: 0.72rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: all 0.2s;
+        }
         .sidebar-logout-btn:hover { background: rgba(255,68,68,0.3); }
-        .menu-toggle { display: none; position: absolute; top: 4px; left: 4px; z-index: 40; background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
-        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 25; }
+
+        .menu-toggle {
+            display: none; position: absolute; top: 4px; left: 4px; z-index: 40;
+            background: rgba(255,255,255,0.1); border: none; color: var(--text);
+            padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+        }
+        .sidebar-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 25;
+        }
         .sidebar-overlay.active { display: block; }
+
         .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
-        header { text-align: center; padding: 4px 8px; border-bottom: 1px solid var(--border); position: relative; flex-shrink: 0; }
+        header { 
+            text-align: center; padding: 4px 8px; border-bottom: 1px solid var(--border);
+            position: relative; flex-shrink: 0;
+        }
         header h1 { color: var(--primary); font-size: 0.85rem; font-weight: 600; }
         .chat-subtitle { font-size: 0.62rem; color: var(--text-light); margin-top: 1px; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .chat-type-badge { font-size: 0.45rem; padding: 1px 3px; border-radius: 4px; background: rgba(255,215,0,0.2); color: var(--primary); }
         .admin-badge { position: absolute; top: 4px; right: 6px; background: var(--primary); color: #1a1a1a; padding: 1px 5px; border-radius: 6px; font-size: 0.5rem; font-weight: 600; }
         .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .messages { flex: 1; padding: 6px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .message { display: flex; flex-direction: column; max-width: 88%; padding: 5px 8px; border-radius: 12px; line-height: 1.4; animation: fadeIn 0.2s ease; position: relative; word-wrap: break-word; cursor: pointer; }
+        .message { 
+            display: flex; flex-direction: column; max-width: 88%; padding: 5px 8px; 
+            border-radius: 12px; line-height: 1.4; animation: fadeIn 0.2s ease; 
+            position: relative; word-wrap: break-word; cursor: pointer;
+        }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 3px; }
         .message.other { align-self: flex-start; background: rgba(255,255,255,0.08); color: var(--text); border-bottom-left-radius: 3px; }
+        .message:active { opacity: 0.8; }
         .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px; gap: 5px; }
         .sender { font-weight: 600; font-size: 0.6rem; opacity: 0.8; }
         .time { font-size: 0.5rem; opacity: 0.5; white-space: nowrap; }
         .message-content { font-size: 0.73rem; }
         .reply-preview { background: rgba(0,0,0,0.3); padding: 3px 5px; border-radius: 6px; margin-bottom: 3px; border-left: 2px solid var(--primary); font-size: 0.6rem; opacity: 0.8; }
         .reply-sender { color: var(--primary); margin-bottom: 1px; font-weight: 600; }
-        .new-messages-indicator { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #1a1a1a; padding: 4px 10px; border-radius: 16px; font-size: 0.65rem; font-weight: 600; cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: none; }
-        .context-menu { position: fixed; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 3px; min-width: 130px; z-index: 1000; box-shadow: 0 4px 16px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease; }
+        
+        .new-messages-indicator {
+            position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #1a1a1a; padding: 4px 10px;
+            border-radius: 16px; font-size: 0.65rem; font-weight: 600;
+            cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: none;
+        }
+
+        .context-menu {
+            position: fixed; background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 3px; min-width: 130px; z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease;
+        }
         @keyframes menuFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .context-menu-item { display: flex; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 0.7rem; color: var(--text); transition: background 0.15s; white-space: nowrap; }
+        .context-menu-item {
+            display: flex; align-items: center; gap: 6px; padding: 7px 9px;
+            border-radius: 7px; cursor: pointer; font-size: 0.7rem; color: var(--text);
+            transition: background 0.15s; white-space: nowrap;
+        }
         .context-menu-item:hover { background: rgba(255,255,255,0.08); }
+        .context-menu-item:active { background: rgba(255,255,255,0.15); }
         .context-menu-item.delete-item { color: var(--error); }
         .context-menu-icon { font-size: 0.75rem; width: 14px; text-align: center; }
+
         .message-actions { position: absolute; top: 3px; right: 3px; display: flex; gap: 1px; opacity: 0; }
         .action-btn { background: rgba(0,0,0,0.3); border: none; border-radius: 50%; width: 16px; height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
+        .action-btn:hover { background: rgba(0,0,0,0.5); }
         .action-btn.delete { color: #ff6b6b; }
+
         @media (hover: hover) and (pointer: fine) { .message:hover .message-actions { opacity: 1; } .message { cursor: default; } }
         @media (hover: none) and (pointer: coarse) { .message-actions { display: none; } .message { cursor: pointer; } }
+        
         .auth-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--bg); z-index: 10; }
         .auth-box { background: var(--bg-card); padding: 18px; border-radius: 14px; width: 240px; text-align: center; border: 1px solid var(--border); }
         .auth-box h2 { color: var(--primary); margin-bottom: 12px; font-size: 1.1rem; }
@@ -117,7 +174,9 @@
         .auth-box input:focus { border-color: var(--primary); }
         .auth-buttons { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
         .auth-box button { width: 100%; padding: 8px; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--primary); color: #1a1a1a; }
+        .auth-box button:hover { opacity: 0.9; }
         .auth-error { color: var(--error); font-size: 0.65rem; margin-top: 5px; min-height: 14px; }
+
         .input-area { padding: 5px 6px; border-top: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; }
         .typing-indicator { font-size: 0.58rem; color: var(--text-light); font-style: italic; min-height: 12px; margin-bottom: 2px; padding-left: 2px; }
         .input-row { display: flex; gap: 4px; }
@@ -132,11 +191,13 @@
         .hide { display: none !important; }
         .empty-state { text-align: center; padding: 16px; color: var(--text-light); font-size: 0.7rem; }
         .no-items { text-align: center; color: var(--text-light); font-size: 0.55rem; padding: 3px; opacity: 0.6; }
+
         .ban-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 20; }
         .ban-message { background: var(--bg-card); padding: 18px; border-radius: 14px; text-align: center; border: 1px solid var(--border); }
         .ban-message h2 { color: var(--error); font-size: 1.1rem; margin-bottom: 5px; }
         .ban-message p { color: var(--text-light); margin-bottom: 12px; font-size: 0.73rem; }
         .ban-message button { padding: 6px 16px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; }
+
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal-box { background: var(--bg-card); padding: 16px; border-radius: 14px; border: 1px solid var(--border); text-align: center; max-width: 280px; width: 85%; }
         .modal-box h3 { color: var(--text); margin-bottom: 5px; font-size: 0.8rem; }
@@ -149,6 +210,7 @@
         .modal-btn-cancel { background: var(--border); color: var(--text); }
         .modal-btn-confirm { background: var(--primary); color: #1a1a1a; }
         .modal-btn-danger { background: var(--error); color: white; }
+
         @media (max-width: 768px) {
             .container { border-radius: 0; max-width: 100%; height: 100vh; height: 100dvh; }
             .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 270px; transform: translateX(-100%); border-radius: 0 10px 10px 0; box-shadow: 4px 0 16px rgba(0,0,0,0.5); padding-top: calc(var(--safe-top) + 8px); padding-bottom: calc(var(--safe-bottom) + 8px); }
@@ -163,46 +225,65 @@
 <body>
     <div class="container">
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-        <button class="menu-toggle hide" id="menuToggle" onclick="toggleSidebar()">☰</button>
+        <button class="menu-toggle hide" id="menuToggle" onclick="toggleSidebar()">&#9776;</button>
+
         <div class="sidebar" id="mainSidebar">
             <h3>Меню</h3>
             <div class="sidebar-scroll">
-                <div class="sidebar-section"><div class="sidebar-section-title"><span>Чаты</span><button id="createChatBtn" class="hide" onclick="showCreateChatModal()">+</button></div><div class="chat-list" id="chatList"></div></div>
-                <div class="sidebar-section"><div class="sidebar-section-title">Пользователи</div><div class="user-list" id="allUsersList"></div></div>
-                <div class="sidebar-section hide" id="bannedSection"><div class="sidebar-section-title">Забаненные</div><div class="user-list" id="bannedUsersList"></div></div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title"><span>Чаты</span><button id="createChatBtn" class="hide" onclick="showCreateChatModal()" title="Создать чат">+</button></div>
+                    <div class="chat-list" id="chatList"></div>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Пользователи</div>
+                    <div class="user-list" id="allUsersList"></div>
+                </div>
+                <div class="sidebar-section hide" id="bannedSection">
+                    <div class="sidebar-section-title">Забаненные</div>
+                    <div class="user-list" id="bannedUsersList"></div>
+                </div>
             </div>
-            <div class="sidebar-logout"><button class="sidebar-logout-btn" onclick="logout()">🚪 Выйти</button></div>
+            <div class="sidebar-logout">
+                <button class="sidebar-logout-btn" onclick="logout()">&#128682; Выйти из аккаунта</button>
+            </div>
         </div>
+
         <div class="main-content">
-            <div class="ban-overlay hide" id="banOverlay"><div class="ban-message"><h2>Вы забанены</h2><p>Ваш аккаунт заблокирован.</p><button onclick="logout()">Выйти</button></div></div>
-            <div class="modal-overlay hide" id="modalOverlay"><div class="modal-box"><h3 id="modalTitle"></h3><p id="modalText"></p><div id="modalContent"></div><div class="modal-buttons"><button class="modal-btn-cancel" onclick="closeModal()">Отмена</button><button class="modal-btn-confirm" id="modalConfirmBtn">ОК</button></div></div></div>
+            <div class="ban-overlay hide" id="banOverlay"><div class="ban-message"><h2>Вы забанены</h2><p>Ваш аккаунт заблокирован.</p><div class="ban-reason-text" id="banReasonText"></div><button onclick="logout()">Выйти</button></div></div>
+            <div class="modal-overlay hide" id="modalOverlay"><div class="modal-box" id="modalBox"><h3 id="modalTitle"></h3><p id="modalText"></p><div id="modalContent"></div><div class="modal-buttons"><button class="modal-btn-cancel" onclick="closeModal()">Отмена</button><button class="modal-btn-confirm" id="modalConfirmBtn">ОК</button></div></div></div>
+            
             <div class="context-menu hide" id="messageContextMenu">
-                <div class="context-menu-item" onclick="contextReply()"><span>↩</span> Ответить</div>
-                <div class="context-menu-item" onclick="contextPrivateMessage()"><span>✉</span> Личное</div>
-                <div class="context-menu-item delete-item" onclick="contextDelete()"><span>✕</span> Удалить</div>
+                <div class="context-menu-item" onclick="contextReply()"><span class="context-menu-icon">&#8617;</span><span>Ответить</span></div>
+                <div class="context-menu-item" onclick="contextPrivateMessage()"><span class="context-menu-icon">&#9993;</span><span>Личное сообщение</span></div>
+                <div class="context-menu-item delete-item" onclick="contextDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить</span></div>
             </div>
             <div class="context-menu hide" id="userContextMenu">
-                <div class="context-menu-item" onclick="contextUserPrivateChat()"><span>✉</span> Личные сообщения</div>
-                <div class="context-menu-item" id="userMenuGW" onclick="contextUserToggleGW()"><span>★</span><span id="userMenuGWText">Выдать GW</span></div>
-                <div class="context-menu-item" id="userMenuAdmin" onclick="contextUserToggleAdmin()"><span>♛</span><span id="userMenuAdminText">Сделать админом</span></div>
-                <div class="context-menu-item delete-item" id="userMenuBan" onclick="contextUserToggleBan()"><span>🚫</span><span id="userMenuBanText">Забанить</span></div>
-                <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()"><span>✕</span> Удалить аккаунт</div>
+                <div class="context-menu-item" onclick="contextUserPrivateChat()"><span class="context-menu-icon">&#9993;</span><span>Личные сообщения</span></div>
+                <div class="context-menu-item" id="userMenuGW" onclick="contextUserToggleGW()"><span class="context-menu-icon">&#9733;</span><span id="userMenuGWText">Выдать GW</span></div>
+                <div class="context-menu-item" id="userMenuAdmin" onclick="contextUserToggleAdmin()"><span class="context-menu-icon">&#128081;</span><span id="userMenuAdminText">Сделать админом</span></div>
+                <div class="context-menu-item delete-item" id="userMenuBan" onclick="contextUserToggleBan()"><span class="context-menu-icon">&#128683;</span><span id="userMenuBanText">Забанить</span></div>
+                <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить аккаунт</span></div>
             </div>
-            <div class="auth-overlay" id="authOverlay"><div class="auth-box"><h2>Ghost Chat</h2><input type="text" id="nameInput" placeholder="Имя" autocomplete="off"><input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off"><div class="auth-buttons"><button id="loginBtn">Войти</button><button id="registerBtn">Регистрация</button></div><div class="auth-error" id="authError"></div></div></div>
+
+            <div class="auth-overlay" id="authOverlay"><div class="auth-box"><h2>Ghost Chat</h2><input type="text" id="nameInput" placeholder="Имя пользователя" autocomplete="off"><input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off"><div class="auth-buttons"><button id="loginBtn">Войти</button><button id="registerBtn">Зарегистрироваться</button></div><div class="auth-error" id="authError"></div></div></div>
+            
             <header><h1>Ghost chat</h1><div class="chat-subtitle" id="chatSubtitle"></div><span id="adminBadge" class="admin-badge hide">Админ</span></header>
+            
             <div class="chat-container">
                 <div class="messages" id="messages"><div class="empty-state">Войдите в аккаунт</div></div>
-                <div class="new-messages-indicator hide" id="newMessagesIndicator" onclick="scrollToBottom()">Новые ↓</div>
+                <div class="new-messages-indicator hide" id="newMessagesIndicator" onclick="scrollToBottom()">Новые сообщения ↓</div>
                 <div class="input-area hide" id="inputArea">
                     <div class="typing-indicator" id="typingIndicator"></div>
                     <div id="replyIndicator" class="reply-indicator hide"><span id="replyText"></span><button class="reply-close" onclick="clearReply()">x</button></div>
-                    <div class="input-row"><input type="text" id="messageInput" placeholder="Сообщение..." autocomplete="off"><button id="sendButton" class="send-button" disabled><span class="send-arrow">➤</span></button></div>
+                    <div class="input-row"><input type="text" id="messageInput" placeholder="Написать сообщение..." autocomplete="off"><button id="sendButton" class="send-button" disabled><span class="send-arrow">&#10148;</span></button></div>
                     <div class="status" id="status"></div>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
+        // Firebase конфигурация
         const firebaseConfig = {
             apiKey: "AIzaSyCF2izLpJOUc90hF2hpnhVLJm4bgmD6xyE",
             authDomain: "database-5cf6d.firebaseapp.com",
@@ -212,178 +293,1314 @@
             messagingSenderId: "1081787251376",
             appId: "1:1081787251376:web:a4c7847df3956923221975"
         };
+
+        // Инициализация Firebase
         const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const chatsRef = db.ref('chats'), usersRef = db.ref('users'), bannedRef = db.ref('bannedUsers');
-        const typingRef = db.ref('typing'), onlineRef = db.ref('online'), unreadRef = db.ref('unread');
+        const database = firebase.database();
+        const chatsRef = database.ref('chats');
+        const usersRef = database.ref('users');
+        const bannedUsersRef = database.ref('bannedUsers');
+        const typingRef = database.ref('typing');
+        const onlineRef = database.ref('online');
+        const unreadRef = database.ref('unread');
 
-        let cu = null, cun = '', isAdm = false, autoSc = true, repTo = null;
-        let banned = {}, users = {}, chats = {}, online = {}, typing = {}, unread = {};
-        let cid = null, ctype = 'public', pcp = null, msgRef = null, stTimeout = null;
-        let msgLis = null, usrLis = null, banLis = null, chtLis = null, onlLis = null, typLis = null, unrLis = null;
-        let pendAct = null, ctxId = null, ctxSnd = null, ctxTxt = null, ctxUsr = null, typTimeout = null;
-        let newCnt = 0, onlInt = null;
+        // DOM элементы
+        const authOverlay = document.getElementById('authOverlay');
+        const banOverlay = document.getElementById('banOverlay');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalText = document.getElementById('modalText');
+        const modalContent = document.getElementById('modalContent');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+        const messageContextMenu = document.getElementById('messageContextMenu');
+        const userContextMenu = document.getElementById('userContextMenu');
+        const userMenuGW = document.getElementById('userMenuGW');
+        const userMenuGWText = document.getElementById('userMenuGWText');
+        const userMenuAdmin = document.getElementById('userMenuAdmin');
+        const userMenuAdminText = document.getElementById('userMenuAdminText');
+        const userMenuBan = document.getElementById('userMenuBan');
+        const userMenuBanText = document.getElementById('userMenuBanText');
+        const userMenuDelete = document.getElementById('userMenuDelete');
+        const nameInput = document.getElementById('nameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const authError = document.getElementById('authError');
+        const mainSidebar = document.getElementById('mainSidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const createChatBtn = document.getElementById('createChatBtn');
+        const chatList = document.getElementById('chatList');
+        const allUsersList = document.getElementById('allUsersList');
+        const bannedUsersList = document.getElementById('bannedUsersList');
+        const bannedSection = document.getElementById('bannedSection');
+        const adminBadge = document.getElementById('adminBadge');
+        const chatSubtitle = document.getElementById('chatSubtitle');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const messagesEl = document.getElementById('messages');
+        const newMessagesIndicator = document.getElementById('newMessagesIndicator');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const inputArea = document.getElementById('inputArea');
+        const statusEl = document.getElementById('status');
+        const replyIndicator = document.getElementById('replyIndicator');
+        const replyText = document.getElementById('replyText');
+        const banReasonText = document.getElementById('banReasonText');
+        const sidebarOverlayEl = document.getElementById('sidebarOverlay');
 
-        async function hashP(p) { const e = new TextEncoder(); return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', e.encode(p)))).map(b => b.toString(16).padStart(2, '0')).join(''); }
-        function tglSd() { const s = document.getElementById('mainSidebar'), o = document.getElementById('sidebarOverlay'); if (s.classList.contains('open')) { s.classList.remove('open'); o.classList.remove('active'); } else { s.classList.add('open'); o.classList.add('active'); } }
-        function clsSd() { document.getElementById('mainSidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('active'); }
-        function hasGW(u) { return users[u]?.gw === true; }
-        function isCr(u) { return u === 'tntrat'; }
-        function canSee(c) { return !c.gwOnly || hasGW(cu) || isCr(cu) || (isAdm && users[cu]?.gw); }
-        function setOnl() { if (!cu) return; onlineRef.child(cu).set(true); onlineRef.child(cu).onDisconnect().remove(); }
-        function stOnlHB() { if (onlInt) clearInterval(onlInt); setOnl(); onlInt = setInterval(() => { if (cu) setOnl(); }, 30000); }
-        function spOnlHB() { if (onlInt) { clearInterval(onlInt); onlInt = null; } }
+        // Состояние приложения
+        let currentUser = null;
+        let currentUserName = '';
+        let isAdmin = false;
+        let autoScroll = true;
+        let replyTo = null;
+        let bannedUsers = {};
+        let allUsers = {};
+        let allChats = {};
+        let onlineUsers = {};
+        let typingUsers = {};
+        let unreadMessages = {};
+        let currentChatId = null;
+        let currentChatType = 'public';
+        let privateChatPartner = null;
+        let messagesRef = null;
+        let statusTimeout = null;
+        let messagesListener = null;
+        let usersListener = null;
+        let bansListener = null;
+        let chatsListener = null;
+        let onlineListener = null;
+        let typingListener = null;
+        let unreadListener = null;
+        let pendingModalAction = null;
+        let contextMsgId = null;
+        let contextMsgSender = null;
+        let contextMsgText = null;
+        let contextUser = null;
+        let typingTimeout = null;
+        let newMessagesCount = 0;
+        let onlineInterval = null;
 
-        function shMod(ti, tx, ct, btn, cls, cb) {
-            document.getElementById('modalTitle').textContent = ti;
-            document.getElementById('modalText').textContent = tx || '';
-            document.getElementById('modalContent').innerHTML = ct || '';
-            const b = document.getElementById('modalConfirmBtn'); b.textContent = btn || 'ОК'; b.className = cls || 'modal-btn-confirm';
-            pendAct = cb; document.getElementById('modalOverlay').classList.remove('hide');
-            setTimeout(() => { const e = document.getElementById('modalSelect') || document.getElementById('modalInput'); if (e) e.focus(); }, 100);
+        // Хеширование пароля
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
-        function clMod() { document.getElementById('modalOverlay').classList.add('hide'); pendAct = null; }
-        document.getElementById('modalConfirmBtn').addEventListener('click', () => {
-            if (pendAct) { const s = document.getElementById('modalSelect'), i = document.getElementById('modalInput'); pendAct({ select: s?.value, input: i?.value?.trim() }); clMod(); }
+
+        // Функции бокового меню
+        function toggleSidebar() {
+            if (mainSidebar.classList.contains('open')) {
+                closeSidebar();
+            } else {
+                mainSidebar.classList.add('open');
+                sidebarOverlayEl.classList.add('active');
+            }
+        }
+
+        function closeSidebar() {
+            mainSidebar.classList.remove('open');
+            sidebarOverlayEl.classList.remove('active');
+        }
+
+        // Вспомогательные функции
+        function hasGWStatus(username) {
+            return allUsers[username]?.gw === true;
+        }
+
+        function isCreator(username) {
+            return username === 'tntrat';
+        }
+
+        function canSeeChat(chatData) {
+            if (!chatData.gwOnly) return true;
+            return hasGWStatus(currentUser) || isCreator(currentUser) || (isAdmin && allUsers[currentUser]?.gw);
+        }
+
+        // Онлайн статус
+        function setOnlineStatus() {
+            if (!currentUser) return;
+            onlineRef.child(currentUser).set(true);
+            onlineRef.child(currentUser).onDisconnect().remove();
+        }
+
+        function startOnlineHeartbeat() {
+            if (onlineInterval) clearInterval(onlineInterval);
+            setOnlineStatus();
+            onlineInterval = setInterval(() => {
+                if (currentUser) setOnlineStatus();
+            }, 30000);
+        }
+
+        function stopOnlineHeartbeat() {
+            if (onlineInterval) {
+                clearInterval(onlineInterval);
+                onlineInterval = null;
+            }
+        }
+
+        // Модальное окно
+        function showModal(title, text, contentHtml, confirmText, confirmClass, onConfirm) {
+            modalTitle.textContent = title;
+            modalText.textContent = text || '';
+            modalContent.innerHTML = contentHtml || '';
+            modalConfirmBtn.textContent = confirmText || 'ОК';
+            modalConfirmBtn.className = confirmClass || 'modal-btn-confirm';
+            pendingModalAction = onConfirm;
+            modalOverlay.classList.remove('hide');
+            setTimeout(() => {
+                const el = document.getElementById('modalSelect') || document.getElementById('modalInput');
+                if (el) el.focus();
+            }, 100);
+        }
+
+        function closeModal() {
+            modalOverlay.classList.add('hide');
+            pendingModalAction = null;
+        }
+
+        modalConfirmBtn.addEventListener('click', () => {
+            if (pendingModalAction) {
+                const sel = document.getElementById('modalSelect');
+                const inp = document.getElementById('modalInput');
+                const result = { select: sel?.value, input: inp?.value?.trim() };
+                pendingModalAction(result);
+                closeModal();
+            }
         });
 
-        function scBot() { const m = document.getElementById('messages'); m.scrollTop = m.scrollHeight; document.getElementById('newMessagesIndicator').classList.add('hide'); newCnt = 0; autoSc = true; }
-        function setTyp() { if (!cu || !msgRef) return; setOnl(); const tk = ctype === 'private' ? `private_${pcp ? [cu, pcp].sort().join('_') : ''}` : cid; typingRef.child(tk).child(cu).set(true); if (typTimeout) clearTimeout(typTimeout); typTimeout = setTimeout(() => typingRef.child(tk).child(cu).remove(), 4000); }
-        function pcId(a, b) { return [a, b].sort().join('_'); }
-        function updTyp() { if (!msgRef) { document.getElementById('typingIndicator').textContent = ''; return; } const tk = ctype === 'private' ? `private_${pcp ? pcId(cu, pcp) : ''}` : cid; const t = typing[tk] || {}; const n = Object.keys(t).filter(u => u !== cu); document.getElementById('typingIndicator').textContent = n.length ? (n.length === 1 ? `${esc(users[n[0]]?.name || n[0])} печатает...` : `${n.length} человека печатают...`) : ''; }
-        function updSub() { if (ctype === 'public') { const c = chats[cid]; document.getElementById('chatSubtitle').innerHTML = `${esc(c?.name || 'Общий')}${c?.gwOnly ? ' [GW]' : ''} <span class="chat-type-badge">общий</span>`; } else document.getElementById('chatSubtitle').innerHTML = `${esc(users[pcp]?.name || pcp)} <span class="chat-type-badge">личные</span>`; }
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
 
-        function shCrCh() { if (!isAdm) return; shMod('Создать чат', '', '<input id="modalInput" placeholder="Название"><br><select id="modalSelect"><option value="">Обычный</option><option value="gw">Только GW</option></select>', 'Создать', 'modal-btn-confirm', async (r) => { if (!r.input) return; const ref = chatsRef.push(); await ref.set({ name: r.input, gwOnly: r.select === 'gw', createdBy: cu, createdAt: new Date().toISOString() }); selPub(ref.key); st('Чат создан'); }); }
-        function shEdCh(id) { if (!isAdm) return; const c = chats[id]; if (!c) return; shMod('Редактировать', '', `<input id="modalInput" value="${esc(c.name||'')}"><br><select id="modalSelect"><option value="">Обычный</option><option value="gw" ${c.gwOnly ? 'selected' : ''}>Только GW</option></select>`, 'Сохранить', 'modal-btn-confirm', async (r) => { if (!r.input) return; await chatsRef.child(id).update({ name: r.input, gwOnly: r.select === 'gw' }); if (cid === id && ctype === 'public') updSub(); st('Чат обновлён'); }); }
-        async function delCh(id) { if (!isAdm) return; if (Object.keys(chats).length <= 1) { st('Нельзя удалить последний чат'); return; } shMod('Удалить', `Удалить "${chats[id]?.name || ''}"?`, '', 'Удалить', 'modal-btn-danger', async () => { await chatsRef.child(id).remove(); await db.ref(`messages/${id}`).remove(); if (cid === id && ctype === 'public') { const v = gVis(); if (v.length) selPub(v[0][0]); } st('Чат удалён'); }); }
-        function gVis() { return Object.entries(chats).filter(([, c]) => canSee(c)); }
+        // Прокрутка и печать
+        function scrollToBottom() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+            newMessagesIndicator.classList.add('hide');
+            newMessagesCount = 0;
+            autoScroll = true;
+        }
 
-        function selPub(id) { const c = chats[id]; if (c && !canSee(c)) { st('Нет доступа'); return; } cid = id; ctype = 'public'; pcp = null; msgRef = db.ref(`messages/${id}`); document.querySelectorAll('.chat-item,.user-item').forEach(e => e.classList.remove('active', 'active-chat')); document.querySelector(`.chat-item[data-chat-id="${id}"]`)?.classList.add('active'); updSub(); document.getElementById('typingIndicator').textContent = ''; ldMsg(); st(''); autoSc = true; newCnt = 0; document.getElementById('newMessagesIndicator').classList.add('hide'); document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; }
-        function selPrv(p) { ctype = 'private'; pcp = p; cid = pcId(cu, p); msgRef = db.ref(`messages/private_${cid}`); document.querySelectorAll('.chat-item,.user-item').forEach(e => e.classList.remove('active', 'active-chat')); document.querySelector(`.user-item[data-username="${p}"]`)?.classList.add('active-chat'); if (unread[p]) unreadRef.child(cu).child(p).remove(); updSub(); document.getElementById('typingIndicator').textContent = ''; ldMsg(); st(''); autoSc = true; newCnt = 0; document.getElementById('newMessagesIndicator').classList.add('hide'); document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; }
+        function setTyping() {
+            if (!currentUser || !messagesRef) return;
+            setOnlineStatus();
+            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
+            typingRef.child(typingKey).child(currentUser).set(true);
+            if (typingTimeout) clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                typingRef.child(typingKey).child(currentUser).remove();
+            }, 4000);
+        }
 
-        function rndCht() { const v = gVis().sort(([, a], [, b]) => (a.createdAt || '').localeCompare(b.createdAt || '')); if (!cid && ctype === 'public' && v.length > 0) selPub(v[0][0]); document.getElementById('chatList').innerHTML = v.map(([id, c]) => `<div class="chat-item ${id === cid && ctype === 'public' ? 'active' : ''}" data-chat-id="${id}" onclick="selPub('${id}')"><div class="chat-item-icon">${c.gwOnly ? '⭐' : '#'}</div><div class="chat-item-content"><div class="chat-item-name">${esc(c.name || 'Без названия')}</div><div class="chat-item-meta">${c.gwOnly ? '<span class="chat-item-badge">GW</span>' : '<span style="color:var(--text-light)">общий</span>'}</div></div>${isAdm ? `<div class="chat-item-actions" onclick="event.stopPropagation()"><button class="chat-item-btn" onclick="shEdCh('${id}')">✎</button><button class="chat-item-btn delete" onclick="delCh('${id}')">✕</button></div>` : ''}</div>`).join('') || '<div class="no-items">Нет чатов</div>'; }
+        function getPrivateChatId(user1, user2) {
+            return [user1, user2].sort().join('_');
+        }
 
-        function shMsgCtx(e, id, s, t) { e.preventDefault(); e.stopPropagation(); ctxId = id; ctxSnd = s; ctxTxt = t; const cd = s === cu || (isAdm && ctype === 'public'); document.querySelectorAll('#messageContextMenu .context-menu-item').forEach((it, i) => it.classList.toggle('hide', (i === 1 && s === cu) || (i === 2 && !cd))); posCtx(document.getElementById('messageContextMenu'), e); }
-        function shUsrCtx(e, u) { e.preventDefault(); e.stopPropagation(); ctxUsr = u; const me = u === cu, pr = u === 'tntrat', bn = !!banned[u]; document.querySelectorAll('#userContextMenu .context-menu-item')[0].classList.toggle('hide', me); document.getElementById('userMenuGW').classList.toggle('hide', !(isCr(cu) && !me && !pr)); if (isCr(cu) && !me && !pr) { document.getElementById('userMenuGWText').textContent = hasGW(u) ? 'Забрать GW' : 'Выдать GW'; document.getElementById('userMenuAdmin').classList.remove('hide'); document.getElementById('userMenuAdminText').textContent = users[u]?.isAdmin ? 'Забрать админку' : 'Сделать админом'; } else document.getElementById('userMenuAdmin').classList.add('hide'); document.getElementById('userMenuBan').classList.toggle('hide', !((isAdm || isCr(cu)) && !me && !pr)); if ((isAdm || isCr(cu)) && !me && !pr) document.getElementById('userMenuBanText').textContent = bn ? 'Разбанить' : 'Забанить'; document.getElementById('userMenuDelete').classList.toggle('hide', !(isCr(cu) && !me && !pr && bn)); posCtx(document.getElementById('userContextMenu'), e); }
-        function posCtx(m, e) { let x = e.clientX || (e.touches?.[0]?.clientX || 0), y = e.clientY || (e.touches?.[0]?.clientY || 0); if (e.touches?.[0]) { x = e.touches[0].clientX; y = e.touches[0].clientY; } const r = m.getBoundingClientRect(); x = Math.min(Math.max(x, 8), innerWidth - (r.width || 130) - 8); y = Math.min(Math.max(y, 8), innerHeight - (r.height || 90) - 8); m.style.left = x + 'px'; m.style.top = y + 'px'; m.classList.remove('hide'); }
-        function hidCtx() { document.getElementById('messageContextMenu').classList.add('hide'); document.getElementById('userContextMenu').classList.add('hide'); ctxId = ctxSnd = ctxTxt = ctxUsr = null; }
-        function ctxRep() { if (ctxId && ctxSnd) stRep(ctxId, ctxSnd, ctxTxt || ''); hidCtx(); }
-        function ctxPrv() { if (ctxSnd && ctxSnd !== cu) { selPrv(ctxSnd); clsSd(); } hidCtx(); }
-        function ctxDel() { if (ctxId) delMsg(ctxId); hidCtx(); }
-        function ctxUPrv() { if (ctxUsr && ctxUsr !== cu) { selPrv(ctxUsr); clsSd(); } hidCtx(); }
-        async function ctxUGW() { if (ctxUsr && isCr(cu)) { const ng = !hasGW(ctxUsr); await usersRef.child(ctxUsr).update({ gw: ng }); st(`${ctxUsr} ${ng ? 'получил GW' : 'лишён GW'}`); } hidCtx(); }
-        async function ctxUAdm() { if (ctxUsr) await togAdm(ctxUsr); hidCtx(); }
-        async function ctxUBan() { if (ctxUsr) await togBan(ctxUsr); hidCtx(); }
-        async function ctxUDel() { if (ctxUsr) await delUsr(ctxUsr); hidCtx(); }
-        document.addEventListener('click', e => { const mc = document.getElementById('messageContextMenu'), uc = document.getElementById('userContextMenu'); if (!mc.contains(e.target) && !uc.contains(e.target)) hidCtx(); });
-        document.addEventListener('touchstart', e => { const mc = document.getElementById('messageContextMenu'), uc = document.getElementById('userContextMenu'); if (!mc.contains(e.target) && !uc.contains(e.target)) hidCtx(); });
+        function updateTypingIndicator() {
+            if (!messagesRef) {
+                typingIndicator.textContent = '';
+                return;
+            }
+            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
+            const typers = typingUsers[typingKey] || {};
+            const names = Object.keys(typers).filter(u => u !== currentUser);
+            if (names.length === 0) {
+                typingIndicator.textContent = '';
+            } else if (names.length === 1) {
+                typingIndicator.textContent = `${escapeHtml(allUsers[names[0]]?.name || names[0])} печатает...`;
+            } else {
+                typingIndicator.textContent = `${names.length} человека печатают...`;
+            }
+        }
 
-        function stBanL() { if (banLis) bannedRef.off('value', banLis); banLis = (s) => { banned = s.val() || {}; if (cu && banned[cu]) shBan(); rndUsr(); if (msgLis) refMsg(); }; bannedRef.on('value', banLis); }
-        function stUsrL() { if (usrLis) usersRef.off('value', usrLis); usrLis = (s) => { users = s.val() || {}; if (cu && users[cu]) { const na = users[cu].isAdmin || false; if (na !== isAdm) { isAdm = na; updAdm(); } } rndUsr(); rndCht(); if (ctype === 'private' && pcp && !users[pcp]) { const v = gVis(); if (v.length) selPub(v[0][0]); } if (ctype === 'private') updSub(); }; usersRef.on('value', usrLis); }
-        function stUnrL() { if (unrLis && cu) unreadRef.child(cu).off('value', unrLis); if (!cu) return; unrLis = (s) => { unread = s.val() || {}; rndUsr(); }; unreadRef.child(cu).on('value', unrLis); }
-        function updAdm() { if (isAdm) { document.getElementById('adminBadge').classList.remove('hide'); document.getElementById('createChatBtn').classList.remove('hide'); document.getElementById('bannedSection').classList.remove('hide'); st('Вы администратор'); } else { document.getElementById('adminBadge').classList.add('hide'); document.getElementById('createChatBtn').classList.add('hide'); document.getElementById('bannedSection').classList.add('hide'); st('Права сняты'); } }
-        function stChtL() { if (chtLis) chatsRef.off('value', chtLis); chtLis = (s) => { chats = s.val() || {}; rndCht(); if (ctype === 'public') { if (!chats[cid] || !canSee(chats[cid])) { const v = gVis(); if (v.length) selPub(v[0][0]); } updSub(); } }; chatsRef.on('value', chtLis); }
-        function stOnlL() { if (onlLis) onlineRef.off('value', onlLis); onlLis = (s) => { online = s.val() || {}; rndUsr(); }; onlineRef.on('value', onlLis); }
-        function stTypL() { if (typLis) typingRef.off('value', typLis); typLis = (s) => { typing = s.val() || {}; updTyp(); }; typingRef.on('value', typLis); }
-        function shBan() { document.getElementById('banOverlay').classList.remove('hide'); document.getElementById('inputArea').classList.add('hide'); document.getElementById('mainSidebar').classList.add('hide'); document.getElementById('adminBadge').classList.add('hide'); document.getElementById('menuToggle').classList.add('hide'); document.getElementById('authOverlay').classList.add('hide'); clsSd(); }
+        function updateChatSubtitle() {
+            if (currentChatType === 'public') {
+                const chat = allChats[currentChatId];
+                const gwLabel = chat?.gwOnly ? ' [GW]' : '';
+                chatSubtitle.innerHTML = `${escapeHtml(chat?.name || 'Общий')}${gwLabel} <span class="chat-type-badge">общий</span>`;
+            } else {
+                chatSubtitle.innerHTML = `${escapeHtml(allUsers[privateChatPartner]?.name || privateChatPartner)} <span class="chat-type-badge">личные</span>`;
+            }
+        }
 
-        function rndUsr() {
-            const u = Object.entries(users).sort(([a], [b]) => a.localeCompare(b));
-            const act = u.filter(([x]) => !banned[x]);
-            document.getElementById('allUsersList').innerHTML = act.length ? act.map(([x, d]) => {
-                const on = !!online[x], me = x === cu, ia = ctype === 'private' && pcp === x, hu = !!unread[x] && !ia;
-                return `<div class="user-item ${ia ? 'active-chat' : ''} ${hu ? 'has-unread' : ''}" data-username="${x}" onclick="hUC(event,'${x}')" oncontextmenu="hUCtx(event,'${x}')"><span class="online-dot ${on ? '' : 'offline'}"></span><span class="user-name">${esc(x)}${me ? ' (вы)' : ''}</span>${d.gw ? '<span class="gw-badge">GW</span>' : ''}${d.isAdmin ? '<span class="user-badge admin">A</span>' : ''}${hu ? `<span class="unread-badge">${unread[x]}</span>` : ''}</div>`;
+        // Управление чатами
+        function showCreateChatModal() {
+            if (!isAdmin) return;
+            showModal('Создать чат', '', 
+                `<input id="modalInput" placeholder="Название чата"><br>
+                 <select id="modalSelect"><option value="">Обычный (для всех)</option><option value="gw">Только для GW</option></select>`,
+                'Создать', 'modal-btn-confirm', 
+                async (result) => {
+                    if (!result.input) return;
+                    const ref = chatsRef.push();
+                    await ref.set({ 
+                        name: result.input, 
+                        gwOnly: result.select === 'gw', 
+                        createdBy: currentUser, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    selectPublicChat(ref.key);
+                    setStatus('Чат создан');
+                }
+            );
+        }
+
+        function showEditChatModal(chatId) {
+            if (!isAdmin) return;
+            const chat = allChats[chatId];
+            if (!chat) return;
+            showModal('Редактировать чат', '', 
+                `<input id="modalInput" placeholder="Название" value="${escapeHtml(chat.name || '')}"><br>
+                 <select id="modalSelect"><option value="">Обычный</option><option value="gw" ${chat.gwOnly ? 'selected' : ''}>Только для GW</option></select>`,
+                'Сохранить', 'modal-btn-confirm', 
+                async (result) => {
+                    if (!result.input) return;
+                    await chatsRef.child(chatId).update({ 
+                        name: result.input, 
+                        gwOnly: result.select === 'gw' 
+                    });
+                    if (currentChatId === chatId && currentChatType === 'public') {
+                        updateChatSubtitle();
+                    }
+                    setStatus('Чат обновлён');
+                }
+            );
+        }
+
+        async function deleteChat(chatId) {
+            if (!isAdmin) return;
+            if (Object.keys(allChats).length <= 1) {
+                setStatus('Нельзя удалить последний чат');
+                return;
+            }
+            showModal('Удалить чат', `Удалить "${allChats[chatId]?.name || ''}"?`, '', 
+                'Удалить', 'modal-btn-danger', 
+                async () => {
+                    await chatsRef.child(chatId).remove();
+                    await database.ref(`messages/${chatId}`).remove();
+                    if (currentChatId === chatId && currentChatType === 'public') {
+                        const visible = getVisibleChats();
+                        if (visible.length) selectPublicChat(visible[0][0]);
+                    }
+                    setStatus('Чат удалён');
+                }
+            );
+        }
+
+        function getVisibleChats() {
+            return Object.entries(allChats).filter(([, chat]) => canSeeChat(chat));
+        }
+
+        function selectPublicChat(chatId) {
+            const chat = allChats[chatId];
+            if (chat && !canSeeChat(chat)) {
+                setStatus('Нет доступа: требуется GW статус');
+                return;
+            }
+            currentChatId = chatId;
+            currentChatType = 'public';
+            privateChatPartner = null;
+            messagesRef = database.ref(`messages/${chatId}`);
+            
+            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
+            const activeChatEl = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
+            if (activeChatEl) activeChatEl.classList.add('active');
+            
+            updateChatSubtitle();
+            typingIndicator.textContent = '';
+            loadMessages();
+            setStatus('');
+            autoScroll = true;
+            newMessagesCount = 0;
+            newMessagesIndicator.classList.add('hide');
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function selectPrivateChat(partner) {
+            currentChatType = 'private';
+            privateChatPartner = partner;
+            currentChatId = getPrivateChatId(currentUser, partner);
+            messagesRef = database.ref(`messages/private_${currentChatId}`);
+            
+            document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
+            const activeUserEl = document.querySelector(`.user-item[data-username="${partner}"]`);
+            if (activeUserEl) activeUserEl.classList.add('active-chat');
+            
+            if (unreadMessages[partner]) {
+                unreadRef.child(currentUser).child(partner).remove();
+            }
+            
+            updateChatSubtitle();
+            typingIndicator.textContent = '';
+            loadMessages();
+            setStatus('');
+            autoScroll = true;
+            newMessagesCount = 0;
+            newMessagesIndicator.classList.add('hide');
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        function renderChatList() {
+            const visibleChats = getVisibleChats().sort(([, a], [, b]) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+            
+            if (!currentChatId && currentChatType === 'public' && visibleChats.length > 0) {
+                selectPublicChat(visibleChats[0][0]);
+            }
+            
+            chatList.innerHTML = visibleChats.map(([id, chat]) => {
+                const isActive = id === currentChatId && currentChatType === 'public';
+                const icon = chat.gwOnly ? '⭐' : '#';
+                return `
+                <div class="chat-item ${isActive ? 'active' : ''}" data-chat-id="${id}" onclick="selectPublicChat('${id}')">
+                    <div class="chat-item-icon">${icon}</div>
+                    <div class="chat-item-content">
+                        <div class="chat-item-name">${escapeHtml(chat.name || 'Без названия')}</div>
+                        <div class="chat-item-meta">
+                            ${chat.gwOnly ? '<span class="chat-item-badge">GW</span>' : '<span style="color:var(--text-light)">общий</span>'}
+                        </div>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="chat-item-actions" onclick="event.stopPropagation()">
+                        <button class="chat-item-btn" onclick="showEditChatModal('${id}')" title="Редактировать">✎</button>
+                        <button class="chat-item-btn delete" onclick="deleteChat('${id}')" title="Удалить">✕</button>
+                    </div>` : ''}
+                </div>`;
+            }).join('') || '<div class="no-items">Нет доступных чатов</div>';
+        }
+
+        // Контекстные меню
+        function showMessageContextMenu(e, messageId, sender, text) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            contextMsgId = messageId;
+            contextMsgSender = sender;
+            contextMsgText = text;
+            
+            const canDelete = sender === currentUser || (isAdmin && currentChatType === 'public');
+            const items = messageContextMenu.querySelectorAll('.context-menu-item');
+            
+            items[0].classList.toggle('hide', false); // Ответить
+            items[1].classList.toggle('hide', sender === currentUser); // Личное
+            items[2].classList.toggle('hide', !canDelete); // Удалить
+            
+            positionMenu(messageContextMenu, e);
+        }
+
+        function showUserContextMenu(e, username) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            contextUser = username;
+            const isMe = username === currentUser;
+            const isProtected = username === 'tntrat';
+            const isBanned = !!bannedUsers[username];
+            const isUserAdmin = allUsers[username]?.isAdmin || false;
+            
+            const items = userContextMenu.querySelectorAll('.context-menu-item');
+            items[0].classList.toggle('hide', isMe); // Личные сообщения
+            
+            // GW статус - только создатель
+            if (isCreator(currentUser) && !isMe && !isProtected) {
+                userMenuGW.classList.remove('hide');
+                userMenuGWText.textContent = hasGWStatus(username) ? 'Забрать GW' : 'Выдать GW';
+            } else {
+                userMenuGW.classList.add('hide');
+            }
+            
+            // Админка - только создатель
+            if (isCreator(currentUser) && !isMe && !isProtected) {
+                userMenuAdmin.classList.remove('hide');
+                userMenuAdminText.textContent = isUserAdmin ? 'Забрать админку' : 'Сделать админом';
+            } else {
+                userMenuAdmin.classList.add('hide');
+            }
+            
+            // Бан - админы и создатель
+            if ((isAdmin || isCreator(currentUser)) && !isMe && !isProtected) {
+                userMenuBan.classList.remove('hide');
+                userMenuBanText.textContent = isBanned ? 'Разбанить' : 'Забанить';
+            } else {
+                userMenuBan.classList.add('hide');
+            }
+            
+            // Удаление - только создатель, только забаненные
+            userMenuDelete.classList.toggle('hide', !(isCreator(currentUser) && !isMe && !isProtected && isBanned));
+            
+            positionMenu(userContextMenu, e);
+        }
+
+        function positionMenu(menu, e) {
+            let x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+            let y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+            
+            if (e.touches && e.touches[0]) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            }
+            
+            const menuWidth = menu.offsetWidth || 150;
+            const menuHeight = menu.offsetHeight || 100;
+            
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = window.innerHeight - menuHeight - 10;
+            }
+            if (x < 10) x = 10;
+            if (y < 10) y = 10;
+            
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.remove('hide');
+        }
+
+        function hideAllContextMenus() {
+            messageContextMenu.classList.add('hide');
+            userContextMenu.classList.add('hide');
+            contextMsgId = null;
+            contextMsgSender = null;
+            contextMsgText = null;
+            contextUser = null;
+        }
+
+        // Действия контекстного меню сообщений
+        function contextReply() {
+            if (contextMsgId && contextMsgSender) {
+                setReplyTo(contextMsgId, contextMsgSender, contextMsgText || '');
+            }
+            hideAllContextMenus();
+        }
+
+        function contextPrivateMessage() {
+            if (contextMsgSender && contextMsgSender !== currentUser) {
+                selectPrivateChat(contextMsgSender);
+                closeSidebar();
+            }
+            hideAllContextMenus();
+        }
+
+        function contextDelete() {
+            if (contextMsgId) {
+                deleteMessage(contextMsgId);
+            }
+            hideAllContextMenus();
+        }
+
+        // Действия контекстного меню пользователей
+        function contextUserPrivateChat() {
+            if (contextUser && contextUser !== currentUser) {
+                selectPrivateChat(contextUser);
+                closeSidebar();
+            }
+            hideAllContextMenus();
+        }
+
+        async function contextUserToggleGW() {
+            if (contextUser && isCreator(currentUser)) {
+                const newGW = !hasGWStatus(contextUser);
+                await usersRef.child(contextUser).update({ gw: newGW });
+                setStatus(`${contextUser} ${newGW ? 'получил GW статус' : 'лишён GW статуса'}`);
+            }
+            hideAllContextMenus();
+        }
+
+        async function contextUserToggleAdmin() {
+            if (contextUser) {
+                await toggleAdmin(contextUser);
+            }
+            hideAllContextMenus();
+        }
+
+        async function contextUserToggleBan() {
+            if (contextUser) {
+                await toggleBanUser(contextUser);
+            }
+            hideAllContextMenus();
+        }
+
+        async function contextUserDelete() {
+            if (contextUser) {
+                await deleteUser(contextUser);
+            }
+            hideAllContextMenus();
+        }
+
+        // Глобальные слушатели для закрытия меню
+        document.addEventListener('click', function(e) {
+            if (!messageContextMenu.contains(e.target) && !userContextMenu.contains(e.target)) {
+                hideAllContextMenus();
+            }
+        });
+
+        document.addEventListener('touchstart', function(e) {
+            if (!messageContextMenu.contains(e.target) && !userContextMenu.contains(e.target)) {
+                hideAllContextMenus();
+            }
+        });
+
+        // Слушатели Firebase
+        function startListeningBans() {
+            if (bansListener) bannedUsersRef.off('value', bansListener);
+            
+            bansListener = function(snapshot) {
+                bannedUsers = snapshot.val() || {};
+                
+                if (currentUser && bannedUsers[currentUser]) {
+                    const banData = bannedUsers[currentUser];
+                    const reason = typeof banData === 'object' ? banData.reason : '';
+                    showBanScreen(reason);
+                }
+                
+                renderAllUsers();
+                
+                if (messagesListener) {
+                    refreshMessagesDisplay();
+                }
+            };
+            
+            bannedUsersRef.on('value', bansListener);
+        }
+
+        function startListeningUsers() {
+            if (usersListener) usersRef.off('value', usersListener);
+            
+            usersListener = function(snapshot) {
+                allUsers = snapshot.val() || {};
+                
+                if (currentUser && allUsers[currentUser]) {
+                    const newAdminStatus = allUsers[currentUser].isAdmin || false;
+                    if (newAdminStatus !== isAdmin) {
+                        isAdmin = newAdminStatus;
+                        updateAdminUI();
+                    }
+                }
+                
+                renderAllUsers();
+                renderChatList();
+                
+                if (currentChatType === 'private' && privateChatPartner && !allUsers[privateChatPartner]) {
+                    const visible = getVisibleChats();
+                    if (visible.length) selectPublicChat(visible[0][0]);
+                }
+                
+                if (currentChatType === 'private') {
+                    updateChatSubtitle();
+                }
+            };
+            
+            usersRef.on('value', usersListener);
+        }
+
+        function startListeningUnread() {
+            if (unreadListener && currentUser) {
+                unreadRef.child(currentUser).off('value', unreadListener);
+            }
+            if (!currentUser) return;
+            
+            unreadListener = function(snapshot) {
+                unreadMessages = snapshot.val() || {};
+                renderAllUsers();
+            };
+            
+            unreadRef.child(currentUser).on('value', unreadListener);
+        }
+
+        function updateAdminUI() {
+            if (isAdmin) {
+                adminBadge.classList.remove('hide');
+                createChatBtn.classList.remove('hide');
+                bannedSection.classList.remove('hide');
+                setStatus('Вы назначены администратором');
+            } else {
+                adminBadge.classList.add('hide');
+                createChatBtn.classList.add('hide');
+                bannedSection.classList.add('hide');
+                setStatus('Вы лишены прав администратора');
+            }
+        }
+
+        function startListeningChats() {
+            if (chatsListener) chatsRef.off('value', chatsListener);
+            
+            chatsListener = function(snapshot) {
+                allChats = snapshot.val() || {};
+                renderChatList();
+                
+                if (currentChatType === 'public') {
+                    if (!allChats[currentChatId] || !canSeeChat(allChats[currentChatId])) {
+                        const visible = getVisibleChats();
+                        if (visible.length) selectPublicChat(visible[0][0]);
+                    }
+                    updateChatSubtitle();
+                }
+            };
+            
+            chatsRef.on('value', chatsListener);
+        }
+
+        function startListeningOnline() {
+            if (onlineListener) onlineRef.off('value', onlineListener);
+            
+            onlineListener = function(snapshot) {
+                onlineUsers = snapshot.val() || {};
+                renderAllUsers();
+            };
+            
+            onlineRef.on('value', onlineListener);
+        }
+
+        function startListeningTyping() {
+            if (typingListener) typingRef.off('value', typingListener);
+            
+            typingListener = function(snapshot) {
+                typingUsers = snapshot.val() || {};
+                updateTypingIndicator();
+            };
+            
+            typingRef.on('value', typingListener);
+        }
+
+        function showBanScreen(reason) {
+            banReasonText.textContent = reason ? `Причина: ${reason}` : '';
+            banOverlay.classList.remove('hide');
+            inputArea.classList.add('hide');
+            mainSidebar.classList.add('hide');
+            adminBadge.classList.add('hide');
+            menuToggle.classList.add('hide');
+            authOverlay.classList.add('hide');
+            closeSidebar();
+        }
+
+        function renderAllUsers() {
+            const usersArray = Object.entries(allUsers).sort(([a], [b]) => a.localeCompare(b));
+            
+            // Активные пользователи
+            const activeUsers = usersArray.filter(([username]) => !bannedUsers[username]);
+            
+            allUsersList.innerHTML = activeUsers.length > 0 ? activeUsers.map(([username, userData]) => {
+                const online = !!onlineUsers[username];
+                const isMe = username === currentUser;
+                const isActive = currentChatType === 'private' && privateChatPartner === username;
+                const hasUnread = !!unreadMessages[username] && !isActive;
+                const userHasGW = userData.gw === true;
+                const isUserAdmin = userData.isAdmin || false;
+                
+                return `
+                <div class="user-item ${isActive ? 'active-chat' : ''} ${hasUnread ? 'has-unread' : ''}" 
+                     data-username="${username}" 
+                     onclick="handleUserClick(event, '${username}')" 
+                     oncontextmenu="handleUserContextMenu(event, '${username}')">
+                    <span class="online-dot ${online ? '' : 'offline'}"></span>
+                    <span class="user-name">${escapeHtml(username)}${isMe ? ' (вы)' : ''}</span>
+                    ${userHasGW ? '<span class="gw-badge">GW</span>' : ''}
+                    ${isUserAdmin ? '<span class="user-badge admin">A</span>' : ''}
+                    ${hasUnread ? `<span class="unread-badge">${unreadMessages[username]}</span>` : ''}
+                </div>`;
             }).join('') : '<div class="no-items">Нет пользователей</div>';
-            if (isAdm || isCr(cu)) {
-                const ba = u.filter(([x]) => banned[x]);
-                document.getElementById('bannedUsersList').innerHTML = ba.length ? ba.map(([x, d]) => {
-                    const ia = ctype === 'private' && pcp === x;
-                    return `<div class="user-item banned-highlight ${ia ? 'active-chat' : ''}" data-username="${x}" onclick="hUC(event,'${x}')" oncontextmenu="hUCtx(event,'${x}')"><span class="online-dot offline"></span><span class="user-name">${esc(x)}</span>${d.gw ? '<span class="gw-badge">GW</span>' : ''}</div>`;
+            
+            // Забаненные (видны только админам и создателю)
+            if (isAdmin || isCreator(currentUser)) {
+                const bannedArray = usersArray.filter(([username]) => bannedUsers[username]);
+                
+                bannedUsersList.innerHTML = bannedArray.length > 0 ? bannedArray.map(([username, userData]) => {
+                    const isActive = currentChatType === 'private' && privateChatPartner === username;
+                    const userHasGW = userData.gw === true;
+                    const banData = bannedUsers[username];
+                    const reason = typeof banData === 'object' ? banData.reason : '';
+                    
+                    return `
+                    <div class="user-item banned-highlight ${isActive ? 'active-chat' : ''}" 
+                         data-username="${username}" 
+                         onclick="handleUserClick(event, '${username}')" 
+                         oncontextmenu="handleUserContextMenu(event, '${username}')">
+                        <span class="online-dot offline"></span>
+                        <span class="user-name">${escapeHtml(username)}</span>
+                        ${userHasGW ? '<span class="gw-badge">GW</span>' : ''}
+                        ${reason ? `<span class="ban-reason">${escapeHtml(reason)}</span>` : ''}
+                    </div>`;
                 }).join('') : '<div class="no-items">Нет забаненных</div>';
             }
         }
 
-        function hUC(e, u) { if (u !== cu) { selPrv(u); clsSd(); } }
-        function hUCtx(e, u) { shUsrCtx(e, u); }
-        function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-        function fmtTm(ts) { const d = new Date() - new Date(ts); if (d < 60000) return 'сейчас'; if (d < 3600000) return Math.floor(d / 60000) + 'м'; return new Date(ts).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }); }
-        function st(t, dur = 3000) { const el = document.getElementById('status'); el.textContent = t; if (stTimeout) clearTimeout(stTimeout); if (t && dur > 0) stTimeout = setTimeout(() => { if (el.textContent === t) el.textContent = ''; }, dur); }
-        function shAE(t) { const el = document.getElementById('authError'); el.textContent = t; if (t) setTimeout(() => { if (el.textContent === t) el.textContent = ''; }, 3000); }
-        function updSB() { document.getElementById('sendButton').disabled = !document.getElementById('messageInput').value.trim(); }
-        function stRep(id, s, t) { repTo = { id, sender: s, text: t }; document.getElementById('replyText').innerHTML = `↩ ${esc(s)}: ${t.substring(0, 20)}${t.length > 20 ? '...' : ''}`; document.getElementById('replyIndicator').classList.remove('hide'); document.getElementById('messageInput').focus(); }
-        function clRep() { repTo = null; document.getElementById('replyIndicator').classList.add('hide'); }
-
-        async function togAdm(u) { if (!isCr(cu) || u === 'tntrat' || u === cu) { st('Невозможно'); return; } const d = users[u]; if (!d) return; await usersRef.child(u).update({ isAdmin: !d.isAdmin }); st(`${u} ${!d.isAdmin ? 'назначен администратором' : 'лишён прав'}`); }
-        async function togBan(u) {
-            if ((!isAdm && !isCr(cu)) || u === cu || u === 'tntrat') { st('Невозможно'); return; }
-            if (banned[u]) { await bannedRef.child(u).remove(); st(`${u} разбанен`); }
-            else { await bannedRef.child(u).set(true); st(`${u} забанен`); }
+        function handleUserClick(e, username) {
+            if (username !== currentUser) {
+                selectPrivateChat(username);
+                closeSidebar();
+            }
         }
-        async function delUsr(u) { if (!isCr(cu)) { st('Только создатель'); return; } shMod('Удаление', `Удалить "${u}"?`, '', 'Удалить', 'modal-btn-danger', async () => { await bannedRef.child(u).remove(); await usersRef.child(u).remove(); for (const cid2 of Object.keys(chats)) { const ms = await db.ref(`messages/${cid2}`).once('value'); if (ms.val()) { const ds = Object.entries(ms.val()).filter(([, m]) => m.sender === u).map(([k]) => db.ref(`messages/${cid2}/${k}`).remove()); await Promise.all(ds); } } st(`Аккаунт ${u} удалён`); }); }
-        async function delMsg(id) { if (!cu || !msgRef) return; const sn = await msgRef.child(id).once('value'), m = sn.val(); if (!m || (m.sender !== cu && !(isAdm && ctype === 'public'))) return; await msgRef.child(id).remove(); st('Удалено', 1500); }
 
-        async function refMsg() {
-            if (!msgRef) return; const sn = await msgRef.once('value'); const d = sn.val();
-            let ms = d ? Object.entries(d).map(([k, v]) => ({ id: k, ...v })).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
-            ms = ms.filter(m => !banned[m.sender]); if (!ms.length) { document.getElementById('messages').innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; }
-            const wb = document.getElementById('messages').scrollTop + document.getElementById('messages').clientHeight >= document.getElementById('messages').scrollHeight - 25;
-            const nm = {}; for (const m of ms) { if (!nm[m.sender]) { const s = await usersRef.child(m.sender).once('value'); nm[m.sender] = s.val()?.name || m.sender; } }
-            document.getElementById('messages').innerHTML = ms.map(m => {
-                const dn = nm[m.sender], im = m.sender === cu; let rh = '';
-                if (m.replyTo?.sender) rh = `<div class="reply-preview"><div class="reply-sender">↩ ${esc(nm[m.replyTo.sender] || m.replyTo.sender)}</div><div>${esc(m.replyTo.text || '')}</div></div>`;
-                const et = esc(m.text || ''), est = (m.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;'), cd = im || (isAdm && ctype === 'public');
-                return `<div class="message ${im ? 'user' : 'other'}" onclick="hMC(event,'${m.id}','${m.sender.replace(/'/g, "\\'")}','${est.substring(0, 100)}')" oncontextmenu="hMCtx(event,'${m.id}','${m.sender.replace(/'/g, "\\'")}','${est.substring(0, 100)}')">${rh}<div class="message-info"><span class="sender">${esc(dn)}</span><span class="time">${fmtTm(m.timestamp)}</span></div><div class="message-content">${et}</div><div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();stRep('${m.id}','${m.sender.replace(/'/g, "\\'")}','${est.substring(0, 50)}')">↩</button>${cd ? `<button class="action-btn delete" onclick="event.stopPropagation();delMsg('${m.id}')">x</button>` : ''}</div></div>`;
+        function handleUserContextMenu(e, username) {
+            showUserContextMenu(e, username);
+        }
+
+        // Утилиты
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTime(timestamp) {
+            const now = new Date();
+            const msgDate = new Date(timestamp);
+            const diff = now - msgDate;
+            if (diff < 60000) return 'сейчас';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'м';
+            return msgDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function setStatus(text, duration = 4000) {
+            statusEl.textContent = text;
+            if (statusTimeout) clearTimeout(statusTimeout);
+            if (text && duration > 0) {
+                statusTimeout = setTimeout(() => {
+                    if (statusEl.textContent === text) statusEl.textContent = '';
+                }, duration);
+            }
+        }
+
+        function showAuthError(text) {
+            authError.textContent = text;
+            if (text) {
+                setTimeout(() => {
+                    if (authError.textContent === text) authError.textContent = '';
+                }, 4000);
+            }
+        }
+
+        function updateSendButton() {
+            sendButton.disabled = !messageInput.value.trim();
+        }
+
+        function setReplyTo(id, sender, text) {
+            replyTo = { id, sender, text };
+            replyText.innerHTML = `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`;
+            replyIndicator.classList.remove('hide');
+            messageInput.focus();
+        }
+
+        function clearReply() {
+            replyTo = null;
+            replyIndicator.classList.add('hide');
+        }
+
+        // Административные функции
+        async function toggleAdmin(username) {
+            if (!isCreator(currentUser) || username === 'tntrat' || username === currentUser) {
+                setStatus(username === currentUser ? 'Нельзя изменить свои права' : 'Невозможно');
+                return;
+            }
+            const userData = allUsers[username];
+            if (!userData) return;
+            
+            const newStatus = !userData.isAdmin;
+            await usersRef.child(username).update({ isAdmin: newStatus });
+            setStatus(`${username} ${newStatus ? 'назначен администратором' : 'лишён прав администратора'}`);
+        }
+
+        async function toggleBanUser(username) {
+            if ((!isAdmin && !isCreator(currentUser)) || username === currentUser || username === 'tntrat') {
+                setStatus('Невозможно забанить этого пользователя');
+                return;
+            }
+            
+            if (bannedUsers[username]) {
+                // Разбан
+                await bannedUsersRef.child(username).remove();
+                setStatus(`${username} разбанен`);
+            } else {
+                // Бан
+                await bannedUsersRef.child(username).set({
+                    timestamp: new Date().toISOString(),
+                    bannedBy: currentUser
+                });
+                setStatus(`${username} забанен`);
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!isCreator(currentUser)) {
+                setStatus('Только создатель может удалять аккаунты');
+                return;
+            }
+            
+            showModal('Удаление аккаунта', `Вы уверены, что хотите удалить аккаунт "${username}"? Все его сообщения будут удалены.`, '', 
+                'Удалить', 'modal-btn-danger', 
+                async () => {
+                    await bannedUsersRef.child(username).remove();
+                    await usersRef.child(username).remove();
+                    
+                    // Удаляем сообщения из всех чатов
+                    for (const chatId of Object.keys(allChats)) {
+                        const messagesSnapshot = await database.ref(`messages/${chatId}`).once('value');
+                        const messages = messagesSnapshot.val();
+                        if (messages) {
+                            const deletePromises = Object.entries(messages)
+                                .filter(([, msg]) => msg.sender === username)
+                                .map(([key]) => database.ref(`messages/${chatId}/${key}`).remove());
+                            await Promise.all(deletePromises);
+                        }
+                    }
+                    
+                    setStatus(`Аккаунт ${username} удалён`);
+                }
+            );
+        }
+
+        async function deleteMessage(id) {
+            if (!currentUser || !messagesRef) return;
+            
+            const snapshot = await messagesRef.child(id).once('value');
+            const message = snapshot.val();
+            
+            if (!message) return;
+            if (message.sender !== currentUser && !(isAdmin && currentChatType === 'public')) {
+                setStatus('Можно удалять только свои сообщения');
+                return;
+            }
+            
+            await messagesRef.child(id).remove();
+            setStatus('Сообщение удалено', 2000);
+        }
+
+        // Отображение сообщений
+        async function refreshMessagesDisplay() {
+            if (!messagesRef) return;
+            
+            const snapshot = await messagesRef.once('value');
+            const data = snapshot.val();
+            
+            let messages = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value }))
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
+            
+            messages = messages.filter(msg => !bannedUsers[msg.sender]);
+            
+            if (messages.length === 0) {
+                messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>';
+                return;
+            }
+            
+            const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25;
+            
+            const userNames = {};
+            for (const msg of messages) {
+                if (msg.sender && !userNames[msg.sender]) {
+                    const userSnapshot = await usersRef.child(msg.sender).once('value');
+                    const userData = userSnapshot.val();
+                    userNames[msg.sender] = userData ? (userData.name || msg.sender) : msg.sender;
+                }
+            }
+            
+            messagesEl.innerHTML = messages.map(msg => {
+                const displayName = userNames[msg.sender] || msg.sender;
+                const isMe = msg.sender === currentUser;
+                
+                let replyHtml = '';
+                if (msg.replyTo && msg.replyTo.sender) {
+                    const replyName = userNames[msg.replyTo.sender] || msg.replyTo.sender;
+                    replyHtml = `
+                        <div class="reply-preview">
+                            <div class="reply-sender">&#8617; Ответ для ${escapeHtml(replyName)}</div>
+                            <div>${escapeHtml(msg.replyTo.text || '')}</div>
+                        </div>`;
+                }
+                
+                const escapedText = escapeHtml(msg.text || '');
+                const escapedSender = escapeHtml(displayName);
+                const escapedMsgText = (msg.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const canDelete = isMe || (isAdmin && currentChatType === 'public');
+                
+                return `
+                <div class="message ${isMe ? 'user' : 'other'}" 
+                     onclick="handleMessageClick(event, '${msg.id}', '${msg.sender.replace(/'/g, "\\'")}', '${escapedMsgText.substring(0, 100)}')" 
+                     oncontextmenu="handleMessageContextMenu(event, '${msg.id}', '${msg.sender.replace(/'/g, "\\'")}', '${escapedMsgText.substring(0, 100)}')">
+                    ${replyHtml}
+                    <div class="message-info">
+                        <span class="sender">${escapedSender}</span>
+                        <span class="time">${formatTime(msg.timestamp)}</span>
+                    </div>
+                    <div class="message-content">${escapedText}</div>
+                    <div class="message-actions">
+                        <button class="action-btn" onclick="event.stopPropagation(); setReplyTo('${msg.id}', '${msg.sender.replace(/'/g, "\\'")}', '${escapedMsgText.substring(0, 50)}')" title="Ответить">&#8617;</button>
+                        ${canDelete ? `<button class="action-btn delete" onclick="event.stopPropagation(); deleteMessage('${msg.id}')" title="Удалить">x</button>` : ''}
+                    </div>
+                </div>`;
             }).join('');
-            if (wb) { document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; newCnt = 0; document.getElementById('newMessagesIndicator').classList.add('hide'); }
-            else if (!autoSc && ms.length > 0) { newCnt++; document.getElementById('newMessagesIndicator').textContent = `Новые (${newCnt})`; document.getElementById('newMessagesIndicator').classList.remove('hide'); }
+            
+            if (wasAtBottom) {
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+                newMessagesCount = 0;
+                newMessagesIndicator.classList.add('hide');
+            } else if (!autoScroll && messages.length > 0) {
+                newMessagesCount++;
+                newMessagesIndicator.textContent = `Новые сообщения (${newMessagesCount}) ↓`;
+                newMessagesIndicator.classList.remove('hide');
+            }
         }
 
-        function hMC(e, id, s, t) { if ('ontouchstart' in window || navigator.maxTouchPoints > 0) shMsgCtx(e, id, s, t); }
-        function hMCtx(e, id, s, t) { shMsgCtx(e, id, s, t); }
-        function ldMsg() { if (msgLis && msgRef) msgRef.off('value', msgLis); if (!msgRef) return; msgLis = () => refMsg(); msgRef.on('value', msgLis); }
-
-        async function login() { const n = document.getElementById('nameInput').value.trim(), p = document.getElementById('passwordInput').value.trim(); if (!n || !p) { shAE('Заполните поля'); return; } try { await loadB(); if (banned[n]) { shAE('Аккаунт забанен'); return; } const sn = await usersRef.child(n).once('value'), d = sn.val(); if (!d || d.password !== await hashP(p)) { shAE('Неверные данные'); return; } cu = n; cun = d.name || n; isAdm = d.isAdmin || false; localStorage.setItem('chat_username', n); localStorage.setItem('chat_logged_in', 'true'); shChat(); st(`Добро пожаловать, ${cun}!`, 2000); } catch (e) { shAE('Ошибка'); } }
-        async function loadB() { banned = (await bannedRef.once('value')).val() || {}; }
-        async function registr() { const n = document.getElementById('nameInput').value.trim(), p = document.getElementById('passwordInput').value.trim(); if (!n || !p) { shAE('Заполните поля'); return; } if (p.length < 4) { shAE('Пароль: мин 4 символа'); return; } if ((await usersRef.child(n).once('value')).val()) { shAE('Имя занято'); return; } await usersRef.child(n).set({ name: n, password: await hashP(p), isAdmin: n === 'tntrat', gw: false }); cu = n; cun = n; isAdm = n === 'tntrat'; localStorage.setItem('chat_username', n); localStorage.setItem('chat_logged_in', 'true'); shChat(); st('Аккаунт создан!', 3000); }
-        function logout() { spOnlHB(); if (cu) { onlineRef.child(cu).remove(); if (msgRef) { const tk = ctype === 'private' ? `private_${pcp ? pcId(cu, pcp) : ''}` : cid; typingRef.child(tk).child(cu).remove(); } } cu = null; cun = ''; isAdm = false; repTo = null; localStorage.removeItem('chat_logged_in'); if (msgLis && msgRef) msgRef.off('value', msgLis); msgLis = null; msgRef = null; document.getElementById('banOverlay').classList.add('hide'); document.getElementById('authOverlay').classList.remove('hide'); document.getElementById('inputArea').classList.add('hide'); document.getElementById('mainSidebar').classList.add('hide'); document.getElementById('adminBadge').classList.add('hide'); document.getElementById('menuToggle').classList.add('hide'); document.getElementById('createChatBtn').classList.add('hide'); document.getElementById('bannedSection').classList.add('hide'); hidCtx(); clsSd(); document.getElementById('messages').innerHTML = '<div class="empty-state">Войдите в аккаунт</div>'; document.getElementById('nameInput').value = localStorage.getItem('chat_username') || ''; document.getElementById('passwordInput').value = ''; document.getElementById('nameInput').focus(); }
-
-        function shChat() {
-            document.getElementById('authOverlay').classList.add('hide'); document.getElementById('inputArea').classList.remove('hide');
-            document.getElementById('menuToggle').classList.remove('hide'); document.getElementById('mainSidebar').classList.remove('hide');
-            if (isAdm) { document.getElementById('adminBadge').classList.remove('hide'); document.getElementById('createChatBtn').classList.remove('hide'); document.getElementById('bannedSection').classList.remove('hide'); }
-            stBanL(); stUsrL(); stChtL(); stOnlL(); stTypL(); stUnrL(); stOnlHB();
-            chatsRef.once('value').then(s => { if (!s.val() || Object.keys(s.val()).length === 0) chatsRef.push().set({ name: 'Общий', createdBy: 'tntrat', createdAt: new Date().toISOString() }); });
-            document.getElementById('messageInput').focus();
+        function handleMessageClick(e, id, sender, text) {
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                showMessageContextMenu(e, id, sender, text);
+            }
         }
-        function sendMsg() { if (!cu || !msgRef) return; const t = document.getElementById('messageInput').value.trim(); if (!t) return; setOnl(); const d = { sender: cu, text: t, timestamp: new Date().toISOString() }; if (repTo) { d.replyTo = { sender: repTo.sender, text: repTo.text }; clRep(); } if (ctype === 'private' && pcp) { unreadRef.child(pcp).child(cu).once('value').then(s => { unreadRef.child(pcp).child(cu).set((s.val() || 0) + 1); }); } msgRef.push(d).catch(() => st('Ошибка')); document.getElementById('messageInput').value = ''; updSB(); const tk = ctype === 'private' ? `private_${pcp ? pcId(cu, pcp) : ''}` : cid; typingRef.child(tk).child(cu).remove(); if (typTimeout) clearTimeout(typTimeout); document.getElementById('messageInput').focus(); }
 
-        document.getElementById('loginBtn').addEventListener('click', login);
-        document.getElementById('registerBtn').addEventListener('click', registr);
-        document.getElementById('passwordInput').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
-        document.getElementById('nameInput').addEventListener('keypress', e => { if (e.key === 'Enter') document.getElementById('passwordInput').focus(); });
-        document.getElementById('sendButton').addEventListener('click', sendMsg);
-        document.getElementById('messageInput').addEventListener('keypress', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
-        document.getElementById('messageInput').addEventListener('input', () => { updSB(); setTyp(); });
-        document.getElementById('messages').addEventListener('scroll', () => { autoSc = document.getElementById('messages').scrollTop + document.getElementById('messages').clientHeight >= document.getElementById('messages').scrollHeight - 25; if (autoSc) { newCnt = 0; document.getElementById('newMessagesIndicator').classList.add('hide'); } });
+        function handleMessageContextMenu(e, id, sender, text) {
+            showMessageContextMenu(e, id, sender, text);
+        }
 
-        window.selPub = selPub; window.selPrv = selPrv; window.shEdCh = shEdCh; window.delCh = delCh; window.shCrCh = shCrCh;
-        window.logout = logout; window.clMod = clMod; window.tglSd = tglSd; window.clsSd = clsSd; window.scBot = scBot;
-        window.hMC = hMC; window.hMCtx = hMCtx; window.hUC = hUC; window.hUCtx = hUCtx;
-        window.ctxRep = ctxRep; window.ctxPrv = ctxPrv; window.ctxDel = ctxDel;
-        window.ctxUPrv = ctxUPrv; window.ctxUAdm = ctxUAdm; window.ctxUBan = ctxUBan; window.ctxUDel = ctxUDel; window.ctxUGW = ctxUGW;
-        window.stRep = stRep; window.clRep = clRep; window.delMsg = delMsg;
+        function loadMessages() {
+            if (messagesListener && messagesRef) {
+                messagesRef.off('value', messagesListener);
+            }
+            if (!messagesRef) return;
+            
+            messagesListener = function() {
+                refreshMessagesDisplay();
+            };
+            
+            messagesRef.on('value', messagesListener);
+        }
 
-        window.addEventListener('load', async () => {
-            await loadB(); const u = localStorage.getItem('chat_username');
-            if (u && localStorage.getItem('chat_logged_in') === 'true') {
-                if (banned[u]) { localStorage.removeItem('chat_logged_in'); document.getElementById('nameInput').value = u; return; }
-                const sn = await usersRef.child(u).once('value');
-                if (sn.val()) { cu = u; cun = sn.val().name || u; isAdm = sn.val().isAdmin || false; shChat(); st(`С возвращением!`, 1500); }
-                else { document.getElementById('nameInput').value = u; document.getElementById('passwordInput').focus(); }
+        // Аутентификация
+        async function login() {
+            const name = nameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!name || !password) {
+                showAuthError('Заполните все поля');
+                return;
+            }
+            
+            try {
+                await loadBans();
+                
+                if (bannedUsers[name]) {
+                    showAuthError('Этот аккаунт забанен');
+                    return;
+                }
+                
+                const userSnapshot = await usersRef.child(name).once('value');
+                const userData = userSnapshot.val();
+                
+                if (!userData) {
+                    showAuthError('Аккаунт не найден');
+                    return;
+                }
+                
+                const hashedPassword = await hashPassword(password);
+                if (userData.password !== hashedPassword) {
+                    showAuthError('Неверный пароль');
+                    return;
+                }
+                
+                currentUser = name;
+                currentUserName = userData.name || name;
+                isAdmin = userData.isAdmin || false;
+                
+                localStorage.setItem('chat_username', name);
+                localStorage.setItem('chat_logged_in', 'true');
+                
+                showChat();
+                setStatus(`Добро пожаловать, ${currentUserName}!`, 3000);
+            } catch (error) {
+                console.error(error);
+                showAuthError('Ошибка при входе');
+            }
+        }
+
+        async function loadBans() {
+            const snapshot = await bannedUsersRef.once('value');
+            bannedUsers = snapshot.val() || {};
+        }
+
+        async function register() {
+            const name = nameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!name || !password) {
+                showAuthError('Заполните все поля');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showAuthError('Пароль должен содержать минимум 4 символа');
+                return;
+            }
+            
+            if (name.length < 2) {
+                showAuthError('Имя должно содержать минимум 2 символа');
+                return;
+            }
+            
+            try {
+                const userSnapshot = await usersRef.child(name).once('value');
+                if (userSnapshot.val()) {
+                    showAuthError('Это имя уже занято');
+                    return;
+                }
+                
+                const hashedPassword = await hashPassword(password);
+                const userData = {
+                    name: name,
+                    password: hashedPassword,
+                    isAdmin: name === 'tntrat',
+                    gw: false
+                };
+                
+                await usersRef.child(name).set(userData);
+                
+                currentUser = name;
+                currentUserName = name;
+                isAdmin = name === 'tntrat';
+                
+                localStorage.setItem('chat_username', name);
+                localStorage.setItem('chat_logged_in', 'true');
+                
+                showChat();
+                setStatus(`Аккаунт создан! Добро пожаловать, ${name}!`, 4000);
+            } catch (error) {
+                console.error(error);
+                showAuthError('Ошибка при регистрации');
+            }
+        }
+
+        function logout() {
+            stopOnlineHeartbeat();
+            
+            if (currentUser) {
+                onlineRef.child(currentUser).remove();
+                if (messagesRef) {
+                    const typingKey = currentChatType === 'private' 
+                        ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
+                        : currentChatId;
+                    typingRef.child(typingKey).child(currentUser).remove();
+                }
+            }
+            
+            currentUser = null;
+            currentUserName = '';
+            isAdmin = false;
+            replyTo = null;
+            
+            localStorage.removeItem('chat_logged_in');
+            
+            if (messagesListener && messagesRef) {
+                messagesRef.off('value', messagesListener);
+            }
+            messagesListener = null;
+            messagesRef = null;
+            
+            banOverlay.classList.add('hide');
+            authOverlay.classList.remove('hide');
+            inputArea.classList.add('hide');
+            mainSidebar.classList.add('hide');
+            adminBadge.classList.add('hide');
+            menuToggle.classList.add('hide');
+            createChatBtn.classList.add('hide');
+            bannedSection.classList.add('hide');
+            
+            hideAllContextMenus();
+            closeSidebar();
+            
+            messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>';
+            
+            nameInput.value = localStorage.getItem('chat_username') || '';
+            passwordInput.value = '';
+            nameInput.focus();
+        }
+
+        function showChat() {
+            authOverlay.classList.add('hide');
+            inputArea.classList.remove('hide');
+            menuToggle.classList.remove('hide');
+            mainSidebar.classList.remove('hide');
+            
+            if (isAdmin) {
+                adminBadge.classList.remove('hide');
+                createChatBtn.classList.remove('hide');
+                bannedSection.classList.remove('hide');
+            }
+            
+            startListeningBans();
+            startListeningUsers();
+            startListeningChats();
+            startListeningOnline();
+            startListeningTyping();
+            startListeningUnread();
+            startOnlineHeartbeat();
+            
+            // Создаём общий чат если его нет
+            chatsRef.once('value').then(snapshot => {
+                if (!snapshot.val() || Object.keys(snapshot.val()).length === 0) {
+                    chatsRef.push().set({
+                        name: 'Общий',
+                        createdBy: 'tntrat',
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            });
+            
+            messageInput.focus();
+        }
+
+        function sendMessage() {
+            if (!currentUser || !messagesRef) return;
+            
+            const text = messageInput.value.trim();
+            if (!text) return;
+            
+            setOnlineStatus();
+            
+            const messageData = {
+                sender: currentUser,
+                text: text,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (replyTo) {
+                messageData.replyTo = {
+                    sender: replyTo.sender,
+                    text: replyTo.text
+                };
+                clearReply();
+            }
+            
+            // Отправляем уведомление о непрочитанных для личных сообщений
+            if (currentChatType === 'private' && privateChatPartner) {
+                unreadRef.child(privateChatPartner).child(currentUser).once('value').then(snap => {
+                    unreadRef.child(privateChatPartner).child(currentUser).set((snap.val() || 0) + 1);
+                });
+            }
+            
+            messagesRef.push(messageData).catch(err => {
+                console.error(err);
+                setStatus('Ошибка при отправке сообщения');
+            });
+            
+            messageInput.value = '';
+            updateSendButton();
+            
+            const typingKey = currentChatType === 'private' 
+                ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
+                : currentChatId;
+            typingRef.child(typingKey).child(currentUser).remove();
+            if (typingTimeout) clearTimeout(typingTimeout);
+            
+            messageInput.focus();
+        }
+
+        // Обработчики событий
+        loginBtn.addEventListener('click', login);
+        registerBtn.addEventListener('click', register);
+        
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+        
+        nameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') passwordInput.focus();
+        });
+        
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
             }
         });
-        usersRef.child('tntrat').once('value').then(s => { if (s.exists() && (!s.val().isAdmin || s.val().gw !== true)) s.ref.update({ isAdmin: true, gw: true }); });
-        window.addEventListener('beforeunload', () => { spOnlHB(); if (cu) { onlineRef.child(cu).remove(); if (msgRef) { const tk = ctype === 'private' ? `private_${pcp ? pcId(cu, pcp) : ''}` : cid; typingRef.child(tk).child(cu).remove(); } } });
+        
+        messageInput.addEventListener('input', function() {
+            updateSendButton();
+            setTyping();
+        });
+        
+        messagesEl.addEventListener('scroll', function() {
+            autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25;
+            if (autoScroll) {
+                newMessagesCount = 0;
+                newMessagesIndicator.classList.add('hide');
+            }
+        });
+
+        // Экспорт функций в глобальную область видимости
+        window.toggleSidebar = toggleSidebar;
+        window.closeSidebar = closeSidebar;
+        window.showCreateChatModal = showCreateChatModal;
+        window.showEditChatModal = showEditChatModal;
+        window.deleteChat = deleteChat;
+        window.selectPublicChat = selectPublicChat;
+        window.selectPrivateChat = selectPrivateChat;
+        window.logout = logout;
+        window.closeModal = closeModal;
+        window.scrollToBottom = scrollToBottom;
+        window.handleMessageClick = handleMessageClick;
+        window.handleMessageContextMenu = handleMessageContextMenu;
+        window.handleUserClick = handleUserClick;
+        window.handleUserContextMenu = handleUserContextMenu;
+        window.contextReply = contextReply;
+        window.contextPrivateMessage = contextPrivateMessage;
+        window.contextDelete = contextDelete;
+        window.contextUserPrivateChat = contextUserPrivateChat;
+        window.contextUserToggleGW = contextUserToggleGW;
+        window.contextUserToggleAdmin = contextUserToggleAdmin;
+        window.contextUserToggleBan = contextUserToggleBan;
+        window.contextUserDelete = contextUserDelete;
+        window.setReplyTo = setReplyTo;
+        window.clearReply = clearReply;
+        window.deleteMessage = deleteMessage;
+
+        // Инициализация при загрузке
+        window.addEventListener('load', async function() {
+            await loadBans();
+            
+            const savedUser = localStorage.getItem('chat_username');
+            const isLoggedIn = localStorage.getItem('chat_logged_in') === 'true';
+            
+            if (savedUser && isLoggedIn) {
+                if (bannedUsers[savedUser]) {
+                    localStorage.removeItem('chat_logged_in');
+                    nameInput.value = savedUser;
+                    return;
+                }
+                
+                const userSnapshot = await usersRef.child(savedUser).once('value');
+                if (userSnapshot.val()) {
+                    currentUser = savedUser;
+                    currentUserName = userSnapshot.val().name || savedUser;
+                    isAdmin = userSnapshot.val().isAdmin || false;
+                    showChat();
+                    setStatus(`С возвращением, ${currentUserName}!`, 2000);
+                } else {
+                    nameInput.value = savedUser;
+                    passwordInput.focus();
+                }
+            }
+        });
+
+        // Защита создателя
+        usersRef.child('tntrat').once('value').then(snapshot => {
+            if (snapshot.exists() && (!snapshot.val().isAdmin || snapshot.val().gw !== true)) {
+                snapshot.ref.update({ isAdmin: true, gw: true });
+            }
+        });
+
+        // Очистка при уходе
+        window.addEventListener('beforeunload', function() {
+            stopOnlineHeartbeat();
+            if (currentUser) {
+                onlineRef.child(currentUser).remove();
+                if (messagesRef) {
+                    const typingKey = currentChatType === 'private' 
+                        ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
+                        : currentChatId;
+                    typingRef.child(typingKey).child(currentUser).remove();
+                }
+            }
+        });
     </script>
 </body>
-</html>
+    </html>
