@@ -51,20 +51,13 @@
             cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
         }
         .chat-item.active { background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.35); }
-        .chat-item-icon {
-            width: 24px; height: 24px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; flex-shrink: 0; background: rgba(255,255,255,0.08);
-        }
+        .chat-item-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; background: rgba(255,255,255,0.08); }
         .chat-item-content { flex: 1; min-width: 0; }
         .chat-item-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-item-meta { font-size: 0.55rem; color: var(--text-light); margin-top: 1px; display: flex; gap: 3px; align-items: center; }
         .chat-item-badge { font-size: 0.48rem; padding: 1px 4px; border-radius: 5px; background: rgba(0,0,0,0.5); color: var(--primary); border: 1px solid rgba(255,215,0,0.4); font-weight: 600; }
         .chat-item-actions { display: flex; gap: 1px; flex-shrink: 0; }
-        .chat-item-btn {
-            background: rgba(255,255,255,0.08); border: none; border-radius: 3px;
-            cursor: pointer; font-size: 0.55rem; padding: 2px 4px; color: var(--text-light);
-        }
+        .chat-item-btn { background: rgba(255,255,255,0.08); border: none; border-radius: 3px; cursor: pointer; font-size: 0.55rem; padding: 2px 4px; color: var(--text-light); }
         .chat-item-btn.delete:hover { background: rgba(255,68,68,0.3); color: var(--error); }
         
         .user-item { 
@@ -85,47 +78,23 @@
         .user-badge.admin { background: var(--primary); color: #1a1a1a; }
         .ban-reason { font-size: 0.5rem; color: var(--error); opacity: 0.8; margin-top: 1px; width: 100%; padding-left: 9px; }
 
-        /* Кнопка выхода в сайдбаре */
-        .sidebar-logout {
-            flex-shrink: 0; margin-top: 6px; padding-top: 6px;
-            border-top: 1px solid var(--border);
-        }
-        .sidebar-logout-btn {
-            width: 100%; padding: 7px 10px; border: none; border-radius: 7px;
-            background: rgba(255,68,68,0.15); color: var(--error);
-            font-size: 0.72rem; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
-            transition: all 0.2s;
-        }
+        .sidebar-logout { flex-shrink: 0; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+        .sidebar-logout-btn { width: 100%; padding: 7px 10px; border: none; border-radius: 7px; background: rgba(255,68,68,0.15); color: var(--error); font-size: 0.72rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.2s; }
         .sidebar-logout-btn:hover { background: rgba(255,68,68,0.3); }
 
-        .menu-toggle {
-            display: none; position: absolute; top: 4px; left: 4px; z-index: 40;
-            background: rgba(255,255,255,0.1); border: none; color: var(--text);
-            padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
-        }
-        .sidebar-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); z-index: 25;
-        }
+        .menu-toggle { display: none; position: absolute; top: 4px; left: 4px; z-index: 40; background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 25; }
         .sidebar-overlay.active { display: block; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
-        header { 
-            text-align: center; padding: 4px 8px; border-bottom: 1px solid var(--border);
-            position: relative; flex-shrink: 0;
-        }
+        header { text-align: center; padding: 4px 8px; border-bottom: 1px solid var(--border); position: relative; flex-shrink: 0; }
         header h1 { color: var(--primary); font-size: 0.85rem; font-weight: 600; }
         .chat-subtitle { font-size: 0.62rem; color: var(--text-light); margin-top: 1px; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .chat-type-badge { font-size: 0.45rem; padding: 1px 3px; border-radius: 4px; background: rgba(255,215,0,0.2); color: var(--primary); }
         .admin-badge { position: absolute; top: 4px; right: 6px; background: var(--primary); color: #1a1a1a; padding: 1px 5px; border-radius: 6px; font-size: 0.5rem; font-weight: 600; }
         .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .messages { flex: 1; padding: 6px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .message { 
-            display: flex; flex-direction: column; max-width: 88%; padding: 5px 8px; 
-            border-radius: 12px; line-height: 1.4; animation: fadeIn 0.2s ease; 
-            position: relative; word-wrap: break-word; cursor: pointer;
-        }
+        .message { display: flex; flex-direction: column; max-width: 88%; padding: 5px 8px; border-radius: 12px; line-height: 1.4; animation: fadeIn 0.2s ease; position: relative; word-wrap: break-word; cursor: pointer; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .message.user { align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 3px; }
         .message.other { align-self: flex-start; background: rgba(255,255,255,0.08); color: var(--text); border-bottom-left-radius: 3px; }
@@ -135,25 +104,11 @@
         .message-content { font-size: 0.73rem; }
         .reply-preview { background: rgba(0,0,0,0.3); padding: 3px 5px; border-radius: 6px; margin-bottom: 3px; border-left: 2px solid var(--primary); font-size: 0.6rem; opacity: 0.8; }
         .reply-sender { color: var(--primary); margin-bottom: 1px; font-weight: 600; }
-        
-        .new-messages-indicator {
-            position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: #1a1a1a; padding: 4px 10px;
-            border-radius: 16px; font-size: 0.65rem; font-weight: 600;
-            cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: none;
-        }
+        .new-messages-indicator { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #1a1a1a; padding: 4px 10px; border-radius: 16px; font-size: 0.65rem; font-weight: 600; cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: none; }
 
-        .context-menu {
-            position: fixed; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 3px; min-width: 130px; z-index: 1000;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease;
-        }
+        .context-menu { position: fixed; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 3px; min-width: 130px; z-index: 1000; box-shadow: 0 4px 16px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease; }
         @keyframes menuFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .context-menu-item {
-            display: flex; align-items: center; gap: 6px; padding: 7px 9px;
-            border-radius: 7px; cursor: pointer; font-size: 0.7rem; color: var(--text);
-            transition: background 0.15s; white-space: nowrap;
-        }
+        .context-menu-item { display: flex; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 7px; cursor: pointer; font-size: 0.7rem; color: var(--text); transition: background 0.15s; white-space: nowrap; }
         .context-menu-item:hover { background: rgba(255,255,255,0.08); }
         .context-menu-item.delete-item { color: var(--error); }
         .context-menu-icon { font-size: 0.75rem; width: 14px; text-align: center; }
@@ -161,7 +116,6 @@
         .message-actions { position: absolute; top: 3px; right: 3px; display: flex; gap: 1px; opacity: 0; }
         .action-btn { background: rgba(0,0,0,0.3); border: none; border-radius: 50%; width: 16px; height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
         .action-btn.delete { color: #ff6b6b; }
-
         @media (hover: hover) and (pointer: fine) { .message:hover .message-actions { opacity: 1; } .message { cursor: default; } }
         @media (hover: none) and (pointer: coarse) { .message-actions { display: none; } .message { cursor: pointer; } }
         
@@ -200,10 +154,7 @@
         .modal-box { background: var(--bg-card); padding: 16px; border-radius: 14px; border: 1px solid var(--border); text-align: center; max-width: 280px; width: 85%; }
         .modal-box h3 { color: var(--text); margin-bottom: 5px; font-size: 0.8rem; }
         .modal-box p { color: var(--text-light); font-size: 0.68rem; margin-bottom: 8px; }
-        .modal-box input, .modal-box select, .modal-box textarea { 
-            width: 100%; padding: 6px; margin-bottom: 6px; border: 1px solid var(--border);
-            border-radius: 7px; background: var(--bg); color: var(--text); font-size: 0.72rem; outline: none; resize: vertical;
-        }
+        .modal-box input, .modal-box select, .modal-box textarea { width: 100%; padding: 6px; margin-bottom: 6px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--text); font-size: 0.72rem; outline: none; resize: vertical; }
         .modal-box textarea { min-height: 40px; font-family: inherit; }
         .modal-box input:focus, .modal-box select:focus, .modal-box textarea:focus { border-color: var(--primary); }
         .modal-box select option { background: var(--bg-card); color: var(--text); }
@@ -215,13 +166,7 @@
 
         @media (max-width: 768px) {
             .container { border-radius: 0; max-width: 100%; height: 100vh; height: 100dvh; }
-            .sidebar {
-                position: fixed; top: 0; left: 0; bottom: 0; width: 270px;
-                transform: translateX(-100%); border-radius: 0 10px 10px 0;
-                box-shadow: 4px 0 16px rgba(0,0,0,0.5);
-                padding-top: calc(var(--safe-top) + 8px);
-                padding-bottom: calc(var(--safe-bottom) + 8px);
-            }
+            .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 270px; transform: translateX(-100%); border-radius: 0 10px 10px 0; box-shadow: 4px 0 16px rgba(0,0,0,0.5); padding-top: calc(var(--safe-top) + 8px); padding-bottom: calc(var(--safe-bottom) + 8px); }
             .sidebar.open { transform: translateX(0); }
             .menu-toggle { display: block; top: calc(var(--safe-top) + 4px); }
             header { padding-left: 32px; }
@@ -395,7 +340,22 @@
         function contextUserPrivateChat() { if (contextUser && contextUser !== currentUser) { selectPrivateChat(contextUser); closeSidebar(); } hideAllContextMenus(); }
         async function contextUserToggleGW() { if (contextUser && isCreator(currentUser)) { const ng = !hasGWStatus(contextUser); await usersRef.child(contextUser).update({ gw: ng }); setStatus(`${contextUser} ${ng?'получил GW':'лишён GW'}`); } hideAllContextMenus(); }
         async function contextUserToggleAdmin() { if (contextUser) await toggleAdmin(contextUser); hideAllContextMenus(); }
-        async function contextUserToggleBan() { if (contextUser) { if (bannedUsers[contextUser]) await toggleBanUser(contextUser); else showModal('Забанить', `Причина для ${contextUser}:`, `<textarea id="modalTextarea" placeholder="Причина..."></textarea>`, 'Забанить', 'modal-btn-danger', async (r) => { await toggleBanUser(contextUser, r.textarea || ''); }); } hideAllContextMenus(); }
+        async function contextUserToggleBan() {
+            if (!contextUser) { hideAllContextMenus(); return; }
+            const isBanned = !!bannedUsers[contextUser];
+            if (isBanned) {
+                // Разбан — сразу выполняем
+                await toggleBanUser(contextUser);
+            } else {
+                // Бан — запрашиваем причину
+                showModal('Забанить пользователя', `Укажите причину бана для ${contextUser}:`, 
+                    `<textarea id="modalTextarea" placeholder="Причина бана..."></textarea>`,
+                    'Забанить', 'modal-btn-danger', async (r) => {
+                        await toggleBanUser(contextUser, r.textarea || '');
+                    });
+            }
+            hideAllContextMenus();
+        }
         async function contextUserDelete() { if (contextUser) await deleteUser(contextUser); hideAllContextMenus(); }
         document.addEventListener('click', e => { if (!messageContextMenu.contains(e.target) && !userContextMenu.contains(e.target)) hideAllContextMenus(); });
         document.addEventListener('touchstart', e => { if (!messageContextMenu.contains(e.target) && !userContextMenu.contains(e.target)) hideAllContextMenus(); });
@@ -428,13 +388,37 @@
         function clearReply() { replyTo = null; document.getElementById('replyIndicator').classList.add('hide'); }
 
         async function toggleAdmin(username) { if (!isCreator(currentUser) || username==='tntrat' || username===currentUser) { setStatus('Невозможно'); return; } const d = allUsers[username]; if (!d) return; await usersRef.child(username).update({isAdmin: !d.isAdmin}); setStatus(`${username} ${!d.isAdmin?'назначен администратором':'лишён прав'}`); }
-        async function toggleBanUser(username, reason = '') { if ((!isAdmin && !isCreator(currentUser)) || username===currentUser || username==='tntrat') { setStatus('Невозможно'); return; } if (bannedUsers[username]) { await bannedUsersRef.child(username).remove(); } else { const bd = { timestamp: new Date().toISOString(), bannedBy: currentUser }; if (reason) bd.reason = reason; await bannedUsersRef.child(username).set(bd); } setStatus(`${username} ${bannedUsers[username]?'разбанен':'забанен'}`); }
+
+        async function toggleBanUser(username, reason = '') {
+            if ((!isAdmin && !isCreator(currentUser)) || username === currentUser || username === 'tntrat') {
+                setStatus('Невозможно забанить этого пользователя');
+                return;
+            }
+            
+            const isCurrentlyBanned = !!bannedUsers[username];
+            
+            if (isCurrentlyBanned) {
+                // Разбаниваем
+                await bannedUsersRef.child(username).remove();
+                setStatus(`${username} разбанен`);
+            } else {
+                // Баним с причиной
+                const banData = { 
+                    timestamp: new Date().toISOString(), 
+                    bannedBy: currentUser 
+                };
+                if (reason && reason.trim()) {
+                    banData.reason = reason.trim();
+                }
+                await bannedUsersRef.child(username).set(banData);
+                setStatus(`${username} забанен${reason ? ` (${reason})` : ''}`);
+            }
+        }
+
         async function deleteUser(username) { if (!isCreator(currentUser)) { setStatus('Только создатель'); return; } showModal('Удаление', `Удалить "${username}"?`, '', 'Удалить', 'modal-btn-danger', async () => { await bannedUsersRef.child(username).remove(); await usersRef.child(username).remove(); for (const cid of Object.keys(allChats)) { const ms = await database.ref(`messages/${cid}`).once('value'); if (ms.val()) { const ds = Object.entries(ms.val()).filter(([,m])=>m.sender===username).map(([k])=>database.ref(`messages/${cid}/${k}`).remove()); await Promise.all(ds); } } setStatus(`Аккаунт ${username} удалён`); }); }
         async function deleteMessage(id) { if (!currentUser || !messagesRef) return; const snap = await messagesRef.child(id).once('value'), msg = snap.val(); if (!msg || (msg.sender !== currentUser && !(isAdmin && currentChatType === 'public'))) return; await messagesRef.child(id).remove(); setStatus('Удалено', 1500); }
 
-        async function refreshMessagesDisplay() { if (!messagesRef) return; const snap = await messagesRef.once('value'); const data = snap.val(); let msgs = data ? Object.entries(data).map(([k,v])=>({id:k,...v})).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)) : []; msgs = msgs.filter(m => !bannedUsers[m.sender]); if (!msgs.length) { messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; } const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; const names = {}; for (const m of msgs) { if (!names[m.sender]) { const s = await usersRef.child(m.sender).once('value'); names[m.sender] = s.val()?.name || m.sender; } }
-            messagesEl.innerHTML = msgs.map(m => { const dn = names[m.sender], isMe = m.sender === currentUser; let rhtml = ''; if (m.replyTo?.sender) rhtml = `<div class="reply-preview"><div class="reply-sender">&#8617; ${escapeHtml(names[m.replyTo.sender]||m.replyTo.sender)}</div><div>${escapeHtml(m.replyTo.text||'')}</div></div>`; const et = escapeHtml(m.text||''), est = (m.text||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'), canDelete = isMe || (isAdmin && currentChatType === 'public'); return `<div class="message ${isMe?'user':'other'}" onclick="handleMessageClick(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')" oncontextmenu="handleMessageContextMenu(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')">${rhtml}<div class="message-info"><span class="sender">${escapeHtml(dn)}</span><span class="time">${formatTime(m.timestamp)}</span></div><div class="message-content">${et}</div><div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${canDelete?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div></div>`; }).join('');
-            if (wasAtBottom) { messagesEl.scrollTop = messagesEl.scrollHeight; newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } else if (!autoScroll && msgs.length > 0) { newMessagesCount++; newMessagesIndicator.textContent = `Новые (${newMessagesCount})`; newMessagesIndicator.classList.remove('hide'); } }
+        async function refreshMessagesDisplay() { if (!messagesRef) return; const snap = await messagesRef.once('value'); const data = snap.val(); let msgs = data ? Object.entries(data).map(([k,v])=>({id:k,...v})).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)) : []; msgs = msgs.filter(m => !bannedUsers[m.sender]); if (!msgs.length) { messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; } const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; const names = {}; for (const m of msgs) { if (!names[m.sender]) { const s = await usersRef.child(m.sender).once('value'); names[m.sender] = s.val()?.name || m.sender; } } messagesEl.innerHTML = msgs.map(m => { const dn = names[m.sender], isMe = m.sender === currentUser; let rhtml = ''; if (m.replyTo?.sender) rhtml = `<div class="reply-preview"><div class="reply-sender">&#8617; ${escapeHtml(names[m.replyTo.sender]||m.replyTo.sender)}</div><div>${escapeHtml(m.replyTo.text||'')}</div></div>`; const et = escapeHtml(m.text||''), est = (m.text||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'), canDelete = isMe || (isAdmin && currentChatType === 'public'); return `<div class="message ${isMe?'user':'other'}" onclick="handleMessageClick(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')" oncontextmenu="handleMessageContextMenu(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')">${rhtml}<div class="message-info"><span class="sender">${escapeHtml(dn)}</span><span class="time">${formatTime(m.timestamp)}</span></div><div class="message-content">${et}</div><div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${canDelete?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div></div>`; }).join(''); if (wasAtBottom) { messagesEl.scrollTop = messagesEl.scrollHeight; newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } else if (!autoScroll && msgs.length > 0) { newMessagesCount++; newMessagesIndicator.textContent = `Новые (${newMessagesCount})`; newMessagesIndicator.classList.remove('hide'); } }
 
         function handleMessageClick(e, id, sender, text) { if ('ontouchstart' in window || navigator.maxTouchPoints > 0) showMessageContextMenu(e, id, sender, text); }
         function handleMessageContextMenu(e, id, sender, text) { showMessageContextMenu(e, id, sender, text); }
@@ -444,22 +428,9 @@
         async function loadBans() { bannedUsers = (await bannedUsersRef.once('value')).val() || {}; }
         async function register() { const name = nameInput.value.trim(), pass = passwordInput.value.trim(); if (!name || !pass) { showAuthError('Заполните все поля'); return; } if (pass.length < 4) { showAuthError('Пароль: мин 4 символа'); return; } if ((await usersRef.child(name).once('value')).val()) { showAuthError('Имя занято'); return; } await usersRef.child(name).set({name, password: await hashPassword(pass), isAdmin: name==='tntrat', gw: false}); currentUser = name; currentUserName = name; isAdmin = name==='tntrat'; localStorage.setItem('chat_username', name); localStorage.setItem('chat_logged_in', 'true'); showChat(); setStatus('Аккаунт создан!', 3000); }
 
-        function logout() {
-            stopOnlineHeartbeat();
-            if (currentUser) { onlineRef.child(currentUser).remove(); if (messagesRef) { const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); } }
-            currentUser = currentUserName = ''; isAdmin = false; replyTo = null; localStorage.removeItem('chat_logged_in'); if (messagesListener && messagesRef) messagesRef.off('value', messagesListener); messagesListener = null; messagesRef = null;
-            document.getElementById('banOverlay').classList.add('hide'); authOverlay.classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); createChatBtn.classList.add('hide'); bannedSection.classList.add('hide'); hideAllContextMenus(); closeSidebar(); messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>'; nameInput.value = localStorage.getItem('chat_username') || ''; passwordInput.value = ''; nameInput.focus();
-        }
+        function logout() { stopOnlineHeartbeat(); if (currentUser) { onlineRef.child(currentUser).remove(); if (messagesRef) { const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); } } currentUser = currentUserName = ''; isAdmin = false; replyTo = null; localStorage.removeItem('chat_logged_in'); if (messagesListener && messagesRef) messagesRef.off('value', messagesListener); messagesListener = null; messagesRef = null; document.getElementById('banOverlay').classList.add('hide'); authOverlay.classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); createChatBtn.classList.add('hide'); bannedSection.classList.add('hide'); hideAllContextMenus(); closeSidebar(); messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>'; nameInput.value = localStorage.getItem('chat_username') || ''; passwordInput.value = ''; nameInput.focus(); }
 
-        function showChat() {
-            authOverlay.classList.add('hide'); inputArea.classList.remove('hide'); menuToggle.classList.remove('hide'); mainSidebar.classList.remove('hide');
-            if (isAdmin) { adminBadge.classList.remove('hide'); createChatBtn.classList.remove('hide'); bannedSection.classList.remove('hide'); }
-            startListeningBans(); startListeningUsers(); startListeningChats(); startListeningOnline(); startListeningTyping(); startListeningUnread();
-            startOnlineHeartbeat();
-            chatsRef.once('value').then(snap => { if (!snap.val() || Object.keys(snap.val()).length === 0) chatsRef.push().set({name: 'Общий', createdBy: 'tntrat', createdAt: new Date().toISOString()}); });
-            messageInput.focus();
-        }
-
+        function showChat() { authOverlay.classList.add('hide'); inputArea.classList.remove('hide'); menuToggle.classList.remove('hide'); mainSidebar.classList.remove('hide'); if (isAdmin) { adminBadge.classList.remove('hide'); createChatBtn.classList.remove('hide'); bannedSection.classList.remove('hide'); } startListeningBans(); startListeningUsers(); startListeningChats(); startListeningOnline(); startListeningTyping(); startListeningUnread(); startOnlineHeartbeat(); chatsRef.once('value').then(snap => { if (!snap.val() || Object.keys(snap.val()).length === 0) chatsRef.push().set({name: 'Общий', createdBy: 'tntrat', createdAt: new Date().toISOString()}); }); messageInput.focus(); }
         function sendMessage() { if (!currentUser || !messagesRef) return; const text = messageInput.value.trim(); if (!text) return; setOnlineStatus(); const data = { sender: currentUser, text, timestamp: new Date().toISOString() }; if (replyTo) { data.replyTo = {sender: replyTo.sender, text: replyTo.text}; clearReply(); } if (currentChatType === 'private' && privateChatPartner) { unreadRef.child(privateChatPartner).child(currentUser).once('value').then(snap => { unreadRef.child(privateChatPartner).child(currentUser).set((snap.val() || 0) + 1); }); } messagesRef.push(data).catch(() => setStatus('Ошибка')); messageInput.value = ''; updateSendButton(); const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); if (typingTimeout) clearTimeout(typingTimeout); messageInput.focus(); }
 
         loginBtn.addEventListener('click', login); registerBtn.addEventListener('click', register); passwordInput.addEventListener('keypress', e => { if(e.key==='Enter') login(); }); nameInput.addEventListener('keypress', e => { if(e.key==='Enter') passwordInput.focus(); }); sendButton.addEventListener('click', sendMessage); messageInput.addEventListener('keypress', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }); messageInput.addEventListener('input', () => { updateSendButton(); setTyping(); }); messagesEl.addEventListener('scroll', () => { autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; if (autoScroll) { newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } });
