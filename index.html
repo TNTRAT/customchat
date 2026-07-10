@@ -85,6 +85,20 @@
         .user-badge.admin { background: var(--primary); color: #1a1a1a; }
         .ban-reason { font-size: 0.5rem; color: var(--error); opacity: 0.8; margin-top: 1px; width: 100%; padding-left: 9px; }
 
+        /* Кнопка выхода в сайдбаре */
+        .sidebar-logout {
+            flex-shrink: 0; margin-top: 6px; padding-top: 6px;
+            border-top: 1px solid var(--border);
+        }
+        .sidebar-logout-btn {
+            width: 100%; padding: 7px 10px; border: none; border-radius: 7px;
+            background: rgba(255,68,68,0.15); color: var(--error);
+            font-size: 0.72rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+            transition: all 0.2s;
+        }
+        .sidebar-logout-btn:hover { background: rgba(255,68,68,0.3); }
+
         .menu-toggle {
             display: none; position: absolute; top: 4px; left: 4px; z-index: 40;
             background: rgba(255,255,255,0.1); border: none; color: var(--text);
@@ -173,7 +187,6 @@
         .status { color: var(--primary); font-size: 0.55rem; text-align: center; margin-top: 2px; min-height: 10px; }
         .hide { display: none !important; }
         .empty-state { text-align: center; padding: 16px; color: var(--text-light); font-size: 0.7rem; }
-        .logout-btn { position: absolute; top: 4px; left: 6px; background: rgba(255,255,255,0.1); border: none; color: var(--text); padding: 1px 6px; border-radius: 6px; cursor: pointer; font-size: 0.55rem; z-index: 5; }
         .no-items { text-align: center; color: var(--text-light); font-size: 0.55rem; padding: 3px; opacity: 0.6; }
 
         .ban-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 20; }
@@ -211,7 +224,6 @@
             }
             .sidebar.open { transform: translateX(0); }
             .menu-toggle { display: block; top: calc(var(--safe-top) + 4px); }
-            .logout-btn { left: 32px; top: calc(var(--safe-top) + 4px); }
             header { padding-left: 32px; }
             .auth-box { width: 85%; max-width: 240px; }
             .main-content { padding-top: var(--safe-top); }
@@ -239,6 +251,9 @@
                     <div class="user-list" id="bannedUsersList"></div>
                 </div>
             </div>
+            <div class="sidebar-logout">
+                <button class="sidebar-logout-btn" onclick="logout()">&#128682; Выйти из аккаунта</button>
+            </div>
         </div>
 
         <div class="main-content">
@@ -257,7 +272,7 @@
                 <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить аккаунт</span></div>
             </div>
             <div class="auth-overlay" id="authOverlay"><div class="auth-box"><h2>Ghost Chat</h2><input type="text" id="nameInput" placeholder="Имя пользователя" autocomplete="off"><input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off"><div class="auth-buttons"><button id="loginBtn">Войти</button><button id="registerBtn">Зарегистрироваться</button></div><div class="auth-error" id="authError"></div></div></div>
-            <header><button class="logout-btn hide" id="logoutBtn" onclick="logout()">Выйти</button><h1>Ghost chat</h1><div class="chat-subtitle" id="chatSubtitle"></div><span id="adminBadge" class="admin-badge hide">Админ</span></header>
+            <header><h1>Ghost chat</h1><div class="chat-subtitle" id="chatSubtitle"></div><span id="adminBadge" class="admin-badge hide">Админ</span></header>
             <div class="chat-container">
                 <div class="messages" id="messages"><div class="empty-state">Войдите в аккаунт</div></div>
                 <div class="new-messages-indicator hide" id="newMessagesIndicator" onclick="scrollToBottom()">Новые ↓</div>
@@ -310,7 +325,6 @@
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
         const authError = document.getElementById('authError');
-        const logoutBtn = document.getElementById('logoutBtn');
         const mainSidebar = document.getElementById('mainSidebar');
         const menuToggle = document.getElementById('menuToggle');
         const createChatBtn = document.getElementById('createChatBtn');
@@ -347,60 +361,19 @@
         function isCreator(username) { return username === 'tntrat'; }
         function canSeeChat(chatData) { if (!chatData.gwOnly) return true; return hasGWStatus(currentUser) || isCreator(currentUser) || (isAdmin && allUsers[currentUser]?.gw); }
 
-        // Установка онлайн-статуса с защитой от пропадания
-        function setOnlineStatus() {
-            if (!currentUser) return;
-            onlineRef.child(currentUser).set(true);
-            onlineRef.child(currentUser).onDisconnect().remove();
-        }
+        function setOnlineStatus() { if (!currentUser) return; onlineRef.child(currentUser).set(true); onlineRef.child(currentUser).onDisconnect().remove(); }
+        function startOnlineHeartbeat() { if (onlineInterval) clearInterval(onlineInterval); setOnlineStatus(); onlineInterval = setInterval(() => { if (currentUser) setOnlineStatus(); }, 30000); }
+        function stopOnlineHeartbeat() { if (onlineInterval) { clearInterval(onlineInterval); onlineInterval = null; } }
 
-        // Периодическое обновление онлайн-статуса каждые 30 секунд
-        function startOnlineHeartbeat() {
-            if (onlineInterval) clearInterval(onlineInterval);
-            setOnlineStatus();
-            onlineInterval = setInterval(() => {
-                if (currentUser) setOnlineStatus();
-            }, 30000);
-        }
-
-        function stopOnlineHeartbeat() {
-            if (onlineInterval) { clearInterval(onlineInterval); onlineInterval = null; }
-        }
-
-        function showModal(title, text, contentHtml, confirmText, confirmClass, onConfirm) {
-            modalTitle.textContent = title; modalText.textContent = text || ''; modalContent.innerHTML = contentHtml || '';
-            modalConfirmBtn.textContent = confirmText || 'ОК'; modalConfirmBtn.className = confirmClass || 'modal-btn-confirm';
-            pendingModalAction = onConfirm; modalOverlay.classList.remove('hide');
-            setTimeout(() => { const el = document.getElementById('modalTextarea') || document.getElementById('modalSelect') || document.getElementById('modalInput'); if (el) el.focus(); }, 100);
-        }
+        function showModal(title, text, contentHtml, confirmText, confirmClass, onConfirm) { modalTitle.textContent = title; modalText.textContent = text || ''; modalContent.innerHTML = contentHtml || ''; modalConfirmBtn.textContent = confirmText || 'ОК'; modalConfirmBtn.className = confirmClass || 'modal-btn-confirm'; pendingModalAction = onConfirm; modalOverlay.classList.remove('hide'); setTimeout(() => { const el = document.getElementById('modalTextarea') || document.getElementById('modalSelect') || document.getElementById('modalInput'); if (el) el.focus(); }, 100); }
         function closeModal() { modalOverlay.classList.add('hide'); pendingModalAction = null; }
         modalConfirmBtn.addEventListener('click', () => { if (pendingModalAction) { const sel = document.getElementById('modalSelect'), inp = document.getElementById('modalInput'), ta = document.getElementById('modalTextarea'); pendingModalAction({ select: sel?.value, input: inp?.value?.trim(), textarea: ta?.value?.trim() }); closeModal(); } });
 
         function scrollToBottom() { messagesEl.scrollTop = messagesEl.scrollHeight; newMessagesIndicator.classList.add('hide'); newMessagesCount = 0; autoScroll = true; }
-
-        function setTyping() {
-            if (!currentUser || !messagesRef) return;
-            // При печати всегда обновляем онлайн-статус
-            setOnlineStatus();
-            const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
-            typingRef.child(tk).child(currentUser).set(true);
-            if (typingTimeout) clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => typingRef.child(tk).child(currentUser).remove(), 4000);
-        }
-
+        function setTyping() { if (!currentUser || !messagesRef) return; setOnlineStatus(); const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).set(true); if (typingTimeout) clearTimeout(typingTimeout); typingTimeout = setTimeout(() => typingRef.child(tk).child(currentUser).remove(), 4000); }
         function getPrivateChatId(u1, u2) { return [u1, u2].sort().join('_'); }
-
-        function updateTypingIndicator() {
-            if (!messagesRef) { typingIndicator.textContent = ''; return; }
-            const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
-            const typers = typingUsers[tk] || {}; const names = Object.keys(typers).filter(u => u !== currentUser);
-            typingIndicator.textContent = names.length ? (names.length === 1 ? `${escapeHtml(allUsers[names[0]]?.name || names[0])} печатает...` : `${names.length} человека печатают...`) : '';
-        }
-
-        function updateChatSubtitle() {
-            if (currentChatType === 'public') { const chat = allChats[currentChatId]; chatSubtitle.innerHTML = `${escapeHtml(chat?.name || 'Общий')}${chat?.gwOnly?' [GW]':''} <span class="chat-type-badge">общий</span>`; }
-            else chatSubtitle.innerHTML = `${escapeHtml(allUsers[privateChatPartner]?.name || privateChatPartner)} <span class="chat-type-badge">личные</span>`;
-        }
+        function updateTypingIndicator() { if (!messagesRef) { typingIndicator.textContent = ''; return; } const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; const typers = typingUsers[tk] || {}; const names = Object.keys(typers).filter(u => u !== currentUser); typingIndicator.textContent = names.length ? (names.length === 1 ? `${escapeHtml(allUsers[names[0]]?.name || names[0])} печатает...` : `${names.length} человека печатают...`) : ''; }
+        function updateChatSubtitle() { if (currentChatType === 'public') { const chat = allChats[currentChatId]; chatSubtitle.innerHTML = `${escapeHtml(chat?.name || 'Общий')}${chat?.gwOnly?' [GW]':''} <span class="chat-type-badge">общий</span>`; } else chatSubtitle.innerHTML = `${escapeHtml(allUsers[privateChatPartner]?.name || privateChatPartner)} <span class="chat-type-badge">личные</span>`; }
 
         function showCreateChatModal() { if (!isAdmin) return; showModal('Создать чат', '', `<input id="modalInput" placeholder="Название чата"><br><select id="modalSelect"><option value="">Обычный (для всех)</option><option value="gw">Только для GW</option></select>`, 'Создать', 'modal-btn-confirm', async (r) => { if (!r.input) return; const ref = chatsRef.push(); await ref.set({ name: r.input, gwOnly: r.select === 'gw', createdBy: currentUser, createdAt: new Date().toISOString() }); selectPublicChat(ref.key); setStatus('Чат создан'); }); }
         function showEditChatModal(chatId) { if (!isAdmin) return; const c = allChats[chatId]; if (!c) return; showModal('Редактировать чат', '', `<input id="modalInput" placeholder="Название" value="${escapeHtml(c.name||'')}"><br><select id="modalSelect"><option value="">Обычный</option><option value="gw" ${c.gwOnly?'selected':''}>Только для GW</option></select>`, 'Сохранить', 'modal-btn-confirm', async (r) => { if (!r.input) return; await chatsRef.child(chatId).update({ name: r.input, gwOnly: r.select === 'gw' }); if (currentChatId === chatId && currentChatType === 'public') updateChatSubtitle(); setStatus('Чат обновлён'); }); }
@@ -435,15 +408,12 @@
         function startListeningOnline() { if (onlineListener) onlineRef.off('value', onlineListener); onlineListener = (s) => { onlineUsers = s.val() || {}; renderAllUsers(); }; onlineRef.on('value', onlineListener); }
         function startListeningTyping() { if (typingListener) typingRef.off('value', typingListener); typingListener = (s) => { typingUsers = s.val() || {}; updateTypingIndicator(); }; typingRef.on('value', typingListener); }
 
-        function showBanScreen(reason) { banReasonText.textContent = reason ? `Причина: ${reason}` : ''; document.getElementById('banOverlay').classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); logoutBtn.classList.add('hide'); authOverlay.classList.add('hide'); closeSidebar(); }
+        function showBanScreen(reason) { banReasonText.textContent = reason ? `Причина: ${reason}` : ''; document.getElementById('banOverlay').classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); authOverlay.classList.add('hide'); closeSidebar(); }
 
         function renderAllUsers() {
             const users = Object.entries(allUsers).sort(([a],[b]) => a.localeCompare(b));
             const activeUsers = users.filter(([u]) => !bannedUsers[u]);
-            allUsersList.innerHTML = activeUsers.length ? activeUsers.map(([u,d]) => {
-                const online = !!onlineUsers[u], isMe = u === currentUser, isActive = currentChatType === 'private' && privateChatPartner === u, hasUnread = !!unreadMessages[u] && !isActive;
-                return `<div class="user-item ${isActive?'active-chat':''} ${hasUnread?'has-unread':''}" data-username="${u}" onclick="handleUserClick(event,'${u}')" oncontextmenu="handleUserContextMenu(event,'${u}')"><span class="online-dot ${online?'':'offline'}"></span><span class="user-name">${escapeHtml(u)}${isMe?' (вы)':''}</span>${d.gw?'<span class="gw-badge">GW</span>':''}${d.isAdmin?'<span class="user-badge admin">A</span>':''}${hasUnread?`<span class="unread-badge">${unreadMessages[u]}</span>`:''}</div>`;
-            }).join('') : '<div class="no-items">Нет пользователей</div>';
+            allUsersList.innerHTML = activeUsers.length ? activeUsers.map(([u,d]) => { const online = !!onlineUsers[u], isMe = u === currentUser, isActive = currentChatType === 'private' && privateChatPartner === u, hasUnread = !!unreadMessages[u] && !isActive; return `<div class="user-item ${isActive?'active-chat':''} ${hasUnread?'has-unread':''}" data-username="${u}" onclick="handleUserClick(event,'${u}')" oncontextmenu="handleUserContextMenu(event,'${u}')"><span class="online-dot ${online?'':'offline'}"></span><span class="user-name">${escapeHtml(u)}${isMe?' (вы)':''}</span>${d.gw?'<span class="gw-badge">GW</span>':''}${d.isAdmin?'<span class="user-badge admin">A</span>':''}${hasUnread?`<span class="unread-badge">${unreadMessages[u]}</span>`:''}</div>`; }).join('') : '<div class="no-items">Нет пользователей</div>';
             if (isAdmin || isCreator(currentUser)) { const barr = users.filter(([u]) => bannedUsers[u]); bannedUsersList.innerHTML = barr.length ? barr.map(([u,d]) => { const isActive = currentChatType === 'private' && privateChatPartner === u, bd = bannedUsers[u], reason = typeof bd === 'object' ? bd.reason : ''; return `<div class="user-item banned-highlight ${isActive?'active-chat':''}" data-username="${u}" onclick="handleUserClick(event,'${u}')" oncontextmenu="handleUserContextMenu(event,'${u}')"><span class="online-dot offline"></span><span class="user-name">${escapeHtml(u)}</span>${d.gw?'<span class="gw-badge">GW</span>':''}${reason?`<span class="ban-reason">${escapeHtml(reason)}</span>`:''}</div>`; }).join('') : '<div class="no-items">Нет забаненных</div>'; }
         }
 
@@ -462,11 +432,9 @@
         async function deleteUser(username) { if (!isCreator(currentUser)) { setStatus('Только создатель'); return; } showModal('Удаление', `Удалить "${username}"?`, '', 'Удалить', 'modal-btn-danger', async () => { await bannedUsersRef.child(username).remove(); await usersRef.child(username).remove(); for (const cid of Object.keys(allChats)) { const ms = await database.ref(`messages/${cid}`).once('value'); if (ms.val()) { const ds = Object.entries(ms.val()).filter(([,m])=>m.sender===username).map(([k])=>database.ref(`messages/${cid}/${k}`).remove()); await Promise.all(ds); } } setStatus(`Аккаунт ${username} удалён`); }); }
         async function deleteMessage(id) { if (!currentUser || !messagesRef) return; const snap = await messagesRef.child(id).once('value'), msg = snap.val(); if (!msg || (msg.sender !== currentUser && !(isAdmin && currentChatType === 'public'))) return; await messagesRef.child(id).remove(); setStatus('Удалено', 1500); }
 
-        async function refreshMessagesDisplay() {
-            if (!messagesRef) return; const snap = await messagesRef.once('value'); const data = snap.val(); let msgs = data ? Object.entries(data).map(([k,v])=>({id:k,...v})).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)) : []; msgs = msgs.filter(m => !bannedUsers[m.sender]); if (!msgs.length) { messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; } const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; const names = {}; for (const m of msgs) { if (!names[m.sender]) { const s = await usersRef.child(m.sender).once('value'); names[m.sender] = s.val()?.name || m.sender; } }
+        async function refreshMessagesDisplay() { if (!messagesRef) return; const snap = await messagesRef.once('value'); const data = snap.val(); let msgs = data ? Object.entries(data).map(([k,v])=>({id:k,...v})).sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp)) : []; msgs = msgs.filter(m => !bannedUsers[m.sender]); if (!msgs.length) { messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>'; return; } const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; const names = {}; for (const m of msgs) { if (!names[m.sender]) { const s = await usersRef.child(m.sender).once('value'); names[m.sender] = s.val()?.name || m.sender; } }
             messagesEl.innerHTML = msgs.map(m => { const dn = names[m.sender], isMe = m.sender === currentUser; let rhtml = ''; if (m.replyTo?.sender) rhtml = `<div class="reply-preview"><div class="reply-sender">&#8617; ${escapeHtml(names[m.replyTo.sender]||m.replyTo.sender)}</div><div>${escapeHtml(m.replyTo.text||'')}</div></div>`; const et = escapeHtml(m.text||''), est = (m.text||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'), canDelete = isMe || (isAdmin && currentChatType === 'public'); return `<div class="message ${isMe?'user':'other'}" onclick="handleMessageClick(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')" oncontextmenu="handleMessageContextMenu(event,'${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,100)}')">${rhtml}<div class="message-info"><span class="sender">${escapeHtml(dn)}</span><span class="time">${formatTime(m.timestamp)}</span></div><div class="message-content">${et}</div><div class="message-actions"><button class="action-btn" onclick="event.stopPropagation();setReplyTo('${m.id}','${m.sender.replace(/'/g,"\\'")}','${est.substring(0,50)}')">&#8617;</button>${canDelete?`<button class="action-btn delete" onclick="event.stopPropagation();deleteMessage('${m.id}')">x</button>`:''}</div></div>`; }).join('');
-            if (wasAtBottom) { messagesEl.scrollTop = messagesEl.scrollHeight; newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } else if (!autoScroll && msgs.length > 0) { newMessagesCount++; newMessagesIndicator.textContent = `Новые (${newMessagesCount})`; newMessagesIndicator.classList.remove('hide'); }
-        }
+            if (wasAtBottom) { messagesEl.scrollTop = messagesEl.scrollHeight; newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } else if (!autoScroll && msgs.length > 0) { newMessagesCount++; newMessagesIndicator.textContent = `Новые (${newMessagesCount})`; newMessagesIndicator.classList.remove('hide'); } }
 
         function handleMessageClick(e, id, sender, text) { if ('ontouchstart' in window || navigator.maxTouchPoints > 0) showMessageContextMenu(e, id, sender, text); }
         function handleMessageContextMenu(e, id, sender, text) { showMessageContextMenu(e, id, sender, text); }
@@ -480,11 +448,11 @@
             stopOnlineHeartbeat();
             if (currentUser) { onlineRef.child(currentUser).remove(); if (messagesRef) { const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); } }
             currentUser = currentUserName = ''; isAdmin = false; replyTo = null; localStorage.removeItem('chat_logged_in'); if (messagesListener && messagesRef) messagesRef.off('value', messagesListener); messagesListener = null; messagesRef = null;
-            document.getElementById('banOverlay').classList.add('hide'); authOverlay.classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); createChatBtn.classList.add('hide'); bannedSection.classList.add('hide'); logoutBtn.classList.add('hide'); hideAllContextMenus(); closeSidebar(); messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>'; nameInput.value = localStorage.getItem('chat_username') || ''; passwordInput.value = ''; nameInput.focus();
+            document.getElementById('banOverlay').classList.add('hide'); authOverlay.classList.remove('hide'); inputArea.classList.add('hide'); mainSidebar.classList.add('hide'); adminBadge.classList.add('hide'); menuToggle.classList.add('hide'); createChatBtn.classList.add('hide'); bannedSection.classList.add('hide'); hideAllContextMenus(); closeSidebar(); messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>'; nameInput.value = localStorage.getItem('chat_username') || ''; passwordInput.value = ''; nameInput.focus();
         }
 
         function showChat() {
-            authOverlay.classList.add('hide'); inputArea.classList.remove('hide'); logoutBtn.classList.remove('hide'); menuToggle.classList.remove('hide'); mainSidebar.classList.remove('hide');
+            authOverlay.classList.add('hide'); inputArea.classList.remove('hide'); menuToggle.classList.remove('hide'); mainSidebar.classList.remove('hide');
             if (isAdmin) { adminBadge.classList.remove('hide'); createChatBtn.classList.remove('hide'); bannedSection.classList.remove('hide'); }
             startListeningBans(); startListeningUsers(); startListeningChats(); startListeningOnline(); startListeningTyping(); startListeningUnread();
             startOnlineHeartbeat();
@@ -492,13 +460,7 @@
             messageInput.focus();
         }
 
-        function sendMessage() {
-            if (!currentUser || !messagesRef) return; const text = messageInput.value.trim(); if (!text) return;
-            setOnlineStatus();
-            const data = { sender: currentUser, text, timestamp: new Date().toISOString() }; if (replyTo) { data.replyTo = {sender: replyTo.sender, text: replyTo.text}; clearReply(); }
-            if (currentChatType === 'private' && privateChatPartner) { unreadRef.child(privateChatPartner).child(currentUser).once('value').then(snap => { unreadRef.child(privateChatPartner).child(currentUser).set((snap.val() || 0) + 1); }); }
-            messagesRef.push(data).catch(() => setStatus('Ошибка')); messageInput.value = ''; updateSendButton(); const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); if (typingTimeout) clearTimeout(typingTimeout); messageInput.focus();
-        }
+        function sendMessage() { if (!currentUser || !messagesRef) return; const text = messageInput.value.trim(); if (!text) return; setOnlineStatus(); const data = { sender: currentUser, text, timestamp: new Date().toISOString() }; if (replyTo) { data.replyTo = {sender: replyTo.sender, text: replyTo.text}; clearReply(); } if (currentChatType === 'private' && privateChatPartner) { unreadRef.child(privateChatPartner).child(currentUser).once('value').then(snap => { unreadRef.child(privateChatPartner).child(currentUser).set((snap.val() || 0) + 1); }); } messagesRef.push(data).catch(() => setStatus('Ошибка')); messageInput.value = ''; updateSendButton(); const tk = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId; typingRef.child(tk).child(currentUser).remove(); if (typingTimeout) clearTimeout(typingTimeout); messageInput.focus(); }
 
         loginBtn.addEventListener('click', login); registerBtn.addEventListener('click', register); passwordInput.addEventListener('keypress', e => { if(e.key==='Enter') login(); }); nameInput.addEventListener('keypress', e => { if(e.key==='Enter') passwordInput.focus(); }); sendButton.addEventListener('click', sendMessage); messageInput.addEventListener('keypress', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }); messageInput.addEventListener('input', () => { updateSendButton(); setTyping(); }); messagesEl.addEventListener('scroll', () => { autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25; if (autoScroll) { newMessagesCount = 0; newMessagesIndicator.classList.add('hide'); } });
 
