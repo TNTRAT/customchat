@@ -317,7 +317,7 @@
         async function togBan(u) {
             if ((!isAdm && !isCr(cu)) || u === cu || u === 'tntrat') { st('Невозможно'); return; }
             if (banned[u]) { await bannedRef.child(u).remove(); st(`${u} разбанен`); }
-            else { await bannedRef.child(u).set({ timestamp: new Date().toISOString(), bannedBy: cu }); st(`${u} забанен`); }
+            else { await bannedRef.child(u).set(true); st(`${u} забанен`); }
         }
         async function delUsr(u) { if (!isCr(cu)) { st('Только создатель'); return; } shMod('Удаление', `Удалить "${u}"?`, '', 'Удалить', 'modal-btn-danger', async () => { await bannedRef.child(u).remove(); await usersRef.child(u).remove(); for (const cid2 of Object.keys(chats)) { const ms = await db.ref(`messages/${cid2}`).once('value'); if (ms.val()) { const ds = Object.entries(ms.val()).filter(([, m]) => m.sender === u).map(([k]) => db.ref(`messages/${cid2}/${k}`).remove()); await Promise.all(ds); } } st(`Аккаунт ${u} удалён`); }); }
         async function delMsg(id) { if (!cu || !msgRef) return; const sn = await msgRef.child(id).once('value'), m = sn.val(); if (!m || (m.sender !== cu && !(isAdm && ctype === 'public'))) return; await msgRef.child(id).remove(); st('Удалено', 1500); }
