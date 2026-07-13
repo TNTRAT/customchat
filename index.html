@@ -4,221 +4,916 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ghost chat</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
+    </script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         :root {
-            --primary: #FFD700; --bg: #1a1a1a; --bg-card: #2a2a2a;
-            --text: #e0e0e0; --text-light: #9e9e9e; --border: #3a3a3a;
-            --error: #ff4444; --success: #10b981;
+            --primary: #FFD700;
+            --bg: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text: #e0e0e0;
+            --text-light: #9e9e9e;
+            --border: #3a3a3a;
+            --error: #ff4444;
+            --success: #10b981;
             --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
-        body { 
-            font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); 
-            height: 100vh; height: 100dvh; display: flex; justify-content: center; align-items: center;
-            padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; overflow: hidden;
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            overflow: hidden;
         }
-        .container { 
-            display: flex; width: 100%; max-width: 950px; 
-            height: 100vh; height: 100dvh;
-            background: var(--bg-card); overflow: hidden; position: relative; border-radius: 0;
-            padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 950px;
+            height: 100vh;
+            height: 100dvh;
+            background: var(--bg-card);
+            overflow: hidden;
+            position: relative;
+            border-radius: 0;
+            padding-top: var(--safe-top);
+            padding-bottom: var(--safe-bottom);
         }
-        .sidebar { 
-            width: 260px; background: var(--bg-card); padding: 8px; 
-            display: flex; flex-direction: column; border-right: 1px solid var(--border);
-            overflow: hidden; flex-shrink: 0; transition: transform 0.3s ease; z-index: 30;
+        .sidebar {
+            width: 260px;
+            background: var(--bg-card);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            z-index: 30;
         }
-        .sidebar h3 { color: var(--primary); font-size: 0.75rem; margin-bottom: 5px; text-align: center; flex-shrink: 0; }
-        .sidebar-section { margin-bottom: 5px; }
+        .sidebar h3 {
+            color: var(--primary);
+            font-size: 0.75rem;
+            margin-bottom: 5px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-section {
+            margin-bottom: 5px;
+        }
         .sidebar-section-title {
-            font-size: 0.6rem; color: var(--text-light); text-transform: uppercase;
-            letter-spacing: 0.5px; margin-bottom: 2px; padding-bottom: 2px;
-            border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.6rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .sidebar-section-title button {
-            background: rgba(255,255,255,0.1); border: none; color: var(--primary);
-            cursor: pointer; font-size: 0.6rem; padding: 1px 4px; border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.6rem;
+            padding: 1px 4px;
+            border-radius: 3px;
         }
-        .chat-list, .user-list { display: flex; flex-direction: column; gap: 1px; }
-        .sidebar-scroll { flex: 1; overflow-y: auto; }
-        
-        .chat-item { 
-            display: flex; align-items: center; gap: 5px; padding: 6px 7px; 
-            border-radius: 7px; background: rgba(0,0,0,0.25); font-size: 0.73rem;
-            cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+        .chat-list,
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
         }
-        .chat-item.active { background: rgba(255,215,0,0.12); border: 1px solid rgba(255,215,0,0.35); }
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 7px;
+            border-radius: 7px;
+            background: rgba(0, 0, 0, 0.25);
+            font-size: 0.73rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .chat-item.active {
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+        }
         .chat-item-icon {
-            width: 24px; height: 24px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; flex-shrink: 0; background: rgba(255,255,255,0.08);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.08);
         }
-        .chat-item-content { flex: 1; min-width: 0; }
-        .chat-item-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-item-meta { font-size: 0.55rem; color: var(--text-light); margin-top: 1px; display: flex; gap: 3px; align-items: center; }
-        .chat-item-badge { font-size: 0.48rem; padding: 1px 4px; border-radius: 5px; background: rgba(0,0,0,0.5); color: var(--primary); border: 1px solid rgba(255,215,0,0.4); font-weight: 600; }
-        .chat-item-actions { display: flex; gap: 1px; flex-shrink: 0; }
+        .chat-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-item-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .chat-item-meta {
+            font-size: 0.55rem;
+            color: var(--text-light);
+            margin-top: 1px;
+            display: flex;
+            gap: 3px;
+            align-items: center;
+        }
+        .chat-item-badge {
+            font-size: 0.48rem;
+            padding: 1px 4px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--primary);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            font-weight: 600;
+        }
+        .chat-item-actions {
+            display: flex;
+            gap: 1px;
+            flex-shrink: 0;
+        }
         .chat-item-btn {
-            background: rgba(255,255,255,0.08); border: none; border-radius: 3px;
-            cursor: pointer; font-size: 0.55rem; padding: 2px 4px; color: var(--text-light);
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.55rem;
+            padding: 2px 4px;
+            color: var(--text-light);
         }
-        .chat-item-btn.delete:hover { background: rgba(255,68,68,0.3); color: var(--error); }
-        
-        .user-item { 
-            display: flex; align-items: center; gap: 3px; padding: 3px 5px; 
-            border-radius: 5px; background: rgba(0,0,0,0.3); flex-wrap: wrap; font-size: 0.68rem;
-            cursor: pointer; position: relative;
+        .chat-item-btn.delete:hover {
+            background: rgba(255, 68, 68, 0.3);
+            color: var(--error);
         }
-        .user-item.active-chat { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.3); }
-        .user-item.banned-highlight { background: rgba(255,68,68,0.15); }
-        .user-item.has-unread { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); } 50% { box-shadow: 0 0 0 2px rgba(255,215,0,0); } }
-        .user-name { flex: 1; min-width: 40px; word-break: break-all; }
-        .online-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-        .online-dot.offline { background: var(--border); }
-        .unread-badge { background: var(--primary); color: #1a1a1a; font-size: 0.45rem; font-weight: 700; padding: 1px 3px; border-radius: 5px; }
-        .gw-badge { font-size: 0.5rem; font-weight: 700; padding: 1px 4px; border-radius: 5px; background: #1a1a1a; color: var(--primary); border: 1px solid var(--primary); }
-        .user-badge { font-size: 0.48rem; padding: 1px 2px; border-radius: 4px; }
-        .user-badge.admin { background: var(--primary); color: #1a1a1a; }
-        .ban-reason { font-size: 0.5rem; color: var(--error); opacity: 0.8; margin-top: 1px; width: 100%; padding-left: 9px; }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 5px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            font-size: 0.68rem;
+            cursor: pointer;
+            position: relative;
+        }
+        .user-item.active-chat {
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        .user-item.banned-highlight {
+            background: rgba(255, 68, 68, 0.15);
+        }
+        .user-item.has-unread {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 2px rgba(255, 215, 0, 0);
+            }
+        }
+        .user-name {
+            flex: 1;
+            min-width: 40px;
+            word-break: break-all;
+        }
+        .online-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            flex-shrink: 0;
+        }
+        .online-dot.offline {
+            background: var(--border);
+        }
+        .unread-badge {
+            background: var(--primary);
+            color: #1a1a1a;
+            font-size: 0.45rem;
+            font-weight: 700;
+            padding: 1px 3px;
+            border-radius: 5px;
+        }
+        .gw-badge {
+            font-size: 0.5rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 5px;
+            background: #1a1a1a;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        .user-badge {
+            font-size: 0.48rem;
+            padding: 1px 2px;
+            border-radius: 4px;
+        }
+        .user-badge.admin {
+            background: var(--primary);
+            color: #1a1a1a;
+        }
+        .ban-reason {
+            font-size: 0.5rem;
+            color: var(--error);
+            opacity: 0.8;
+            margin-top: 1px;
+            width: 100%;
+            padding-left: 9px;
+        }
 
         .sidebar-logout {
-            flex-shrink: 0; margin-top: 6px; padding-top: 6px;
+            flex-shrink: 0;
+            margin-top: 6px;
+            padding-top: 6px;
             border-top: 1px solid var(--border);
         }
         .sidebar-logout-btn {
-            width: 100%; padding: 7px 10px; border: none; border-radius: 7px;
-            background: rgba(255,68,68,0.15); color: var(--error);
-            font-size: 0.72rem; font-weight: 600; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 5px;
+            width: 100%;
+            padding: 7px 10px;
+            border: none;
+            border-radius: 7px;
+            background: rgba(255, 68, 68, 0.15);
+            color: var(--error);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             transition: all 0.2s;
         }
-        .sidebar-logout-btn:hover { background: rgba(255,68,68,0.3); }
+        .sidebar-logout-btn:hover {
+            background: rgba(255, 68, 68, 0.3);
+        }
 
         .menu-toggle {
-            display: none; position: absolute; top: 4px; left: 4px; z-index: 40;
-            background: rgba(255,255,255,0.1); border: none; color: var(--text);
-            padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+            display: none;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            z-index: 40;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text);
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
         }
         .sidebar-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); z-index: 25;
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 25;
         }
-        .sidebar-overlay.active { display: block; }
+        .sidebar-overlay.active {
+            display: block;
+        }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
-        header { 
-            text-align: center; padding: 4px 8px; border-bottom: 1px solid var(--border);
-            position: relative; flex-shrink: 0;
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            position: relative;
         }
-        header h1 { color: var(--primary); font-size: 0.85rem; font-weight: 600; }
-        .chat-subtitle { font-size: 0.62rem; color: var(--text-light); margin-top: 1px; display: flex; align-items: center; justify-content: center; gap: 4px; }
-        .chat-type-badge { font-size: 0.45rem; padding: 1px 3px; border-radius: 4px; background: rgba(255,215,0,0.2); color: var(--primary); }
-        .admin-badge { position: absolute; top: 4px; right: 6px; background: var(--primary); color: #1a1a1a; padding: 1px 5px; border-radius: 6px; font-size: 0.5rem; font-weight: 600; }
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .messages { flex: 1; padding: 6px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
-        .message { 
-            display: flex; flex-direction: column; max-width: 88%; padding: 5px 8px; 
-            border-radius: 12px; line-height: 1.4; animation: fadeIn 0.2s ease; 
-            position: relative; word-wrap: break-word; cursor: pointer;
+        header {
+            text-align: center;
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            flex-shrink: 0;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .message.user { align-self: flex-end; background: var(--primary); color: #1a1a1a; border-bottom-right-radius: 3px; }
-        .message.other { align-self: flex-start; background: rgba(255,255,255,0.08); color: var(--text); border-bottom-left-radius: 3px; }
-        .message:active { opacity: 0.8; }
-        .message-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px; gap: 5px; }
-        .sender { font-weight: 600; font-size: 0.6rem; opacity: 0.8; }
-        .time { font-size: 0.5rem; opacity: 0.5; white-space: nowrap; }
-        .message-content { font-size: 0.73rem; }
-        .reply-preview { background: rgba(0,0,0,0.3); padding: 3px 5px; border-radius: 6px; margin-bottom: 3px; border-left: 2px solid var(--primary); font-size: 0.6rem; opacity: 0.8; }
-        .reply-sender { color: var(--primary); margin-bottom: 1px; font-weight: 600; }
-        
+        header h1 {
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .chat-subtitle {
+            font-size: 0.62rem;
+            color: var(--text-light);
+            margin-top: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .chat-type-badge {
+            font-size: 0.45rem;
+            padding: 1px 3px;
+            border-radius: 4px;
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--primary);
+        }
+        .admin-badge {
+            position: absolute;
+            top: 4px;
+            right: 6px;
+            background: var(--primary);
+            color: #1a1a1a;
+            padding: 1px 5px;
+            border-radius: 6px;
+            font-size: 0.5rem;
+            font-weight: 600;
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        .messages {
+            flex: 1;
+            padding: 6px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 88%;
+            padding: 5px 8px;
+            border-radius: 12px;
+            line-height: 1.4;
+            animation: fadeIn 0.2s ease;
+            position: relative;
+            word-wrap: break-word;
+            cursor: pointer;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: #1a1a1a;
+            border-bottom-right-radius: 3px;
+        }
+        .message.other {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            border-bottom-left-radius: 3px;
+        }
+        .message:active {
+            opacity: 0.8;
+        }
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1px;
+            gap: 5px;
+        }
+        .sender {
+            font-weight: 600;
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+        .time {
+            font-size: 0.5rem;
+            opacity: 0.5;
+            white-space: nowrap;
+        }
+        .message-content {
+            font-size: 0.73rem;
+        }
+        .reply-preview {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px 5px;
+            border-radius: 6px;
+            margin-bottom: 3px;
+            border-left: 2px solid var(--primary);
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+        .reply-sender {
+            color: var(--primary);
+            margin-bottom: 1px;
+            font-weight: 600;
+        }
+
         .new-messages-indicator {
-            position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%);
-            background: var(--primary); color: #1a1a1a; padding: 4px 10px;
-            border-radius: 16px; font-size: 0.65rem; font-weight: 600;
-            cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: none;
+            position: absolute;
+            bottom: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: #1a1a1a;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 5;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            display: none;
         }
 
         .context-menu {
-            position: fixed; background: var(--bg-card); border: 1px solid var(--border);
-            border-radius: 10px; padding: 3px; min-width: 130px; z-index: 1000;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5); animation: menuFadeIn 0.15s ease;
+            position: fixed;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 3px;
+            min-width: 130px;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            animation: menuFadeIn 0.15s ease;
         }
-        @keyframes menuFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes menuFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
         .context-menu-item {
-            display: flex; align-items: center; gap: 6px; padding: 7px 9px;
-            border-radius: 7px; cursor: pointer; font-size: 0.7rem; color: var(--text);
-            transition: background 0.15s; white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 9px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--text);
+            transition: background 0.15s;
+            white-space: nowrap;
         }
-        .context-menu-item:hover { background: rgba(255,255,255,0.08); }
-        .context-menu-item:active { background: rgba(255,255,255,0.15); }
-        .context-menu-item.delete-item { color: var(--error); }
-        .context-menu-icon { font-size: 0.75rem; width: 14px; text-align: center; }
+        .context-menu-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .context-menu-item:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .context-menu-item.delete-item {
+            color: var(--error);
+        }
+        .context-menu-icon {
+            font-size: 0.75rem;
+            width: 14px;
+            text-align: center;
+        }
 
-        .message-actions { position: absolute; top: 3px; right: 3px; display: flex; gap: 1px; opacity: 0; }
-        .action-btn { background: rgba(0,0,0,0.3); border: none; border-radius: 50%; width: 16px; height: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; }
-        .action-btn:hover { background: rgba(0,0,0,0.5); }
-        .action-btn.delete { color: #ff6b6b; }
+        .message-actions {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            display: flex;
+            gap: 1px;
+            opacity: 0;
+        }
+        .action-btn {
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+        }
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .action-btn.delete {
+            color: #ff6b6b;
+        }
 
-        @media (hover: hover) and (pointer: fine) { .message:hover .message-actions { opacity: 1; } .message { cursor: default; } }
-        @media (hover: none) and (pointer: coarse) { .message-actions { display: none; } .message { cursor: pointer; } }
-        
-        .auth-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: var(--bg); z-index: 10; }
-        .auth-box { background: var(--bg-card); padding: 18px; border-radius: 14px; width: 240px; text-align: center; border: 1px solid var(--border); }
-        .auth-box h2 { color: var(--primary); margin-bottom: 12px; font-size: 1.1rem; }
-        .auth-box input { width: 100%; padding: 8px; margin-bottom: 6px; border: 1px solid var(--border); border-radius: 8px; background: #1a1a1a; color: var(--text); font-size: 0.8rem; outline: none; }
-        .auth-box input:focus { border-color: var(--primary); }
-        .auth-buttons { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
-        .auth-box button { width: 100%; padding: 8px; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--primary); color: #1a1a1a; }
-        .auth-box button:hover { opacity: 0.9; }
-        .auth-error { color: var(--error); font-size: 0.65rem; margin-top: 5px; min-height: 14px; }
+        @media (hover: hover) and (pointer: fine) {
+            .message:hover .message-actions {
+                opacity: 1;
+            }
+            .message {
+                cursor: default;
+            }
+        }
+        @media (hover: none) and (pointer: coarse) {
+            .message-actions {
+                display: none;
+            }
+            .message {
+                cursor: pointer;
+            }
+        }
 
-        .input-area { padding: 5px 6px; border-top: 1px solid var(--border); background: var(--bg-card); flex-shrink: 0; }
-        .typing-indicator { font-size: 0.58rem; color: var(--text-light); font-style: italic; min-height: 12px; margin-bottom: 2px; padding-left: 2px; }
-        .input-row { display: flex; gap: 4px; }
-        .input-area input { flex: 1; padding: 6px 9px; border: 1px solid var(--border); border-radius: 16px; font-size: 0.73rem; background: var(--bg); color: var(--text); outline: none; }
-        .input-area input:focus { border-color: var(--primary); }
-        .send-button { padding: 6px 12px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 16px; font-size: 0.73rem; font-weight: 600; cursor: pointer; min-width: 36px; display: flex; align-items: center; justify-content: center; }
-        .send-button:disabled { background: var(--border); cursor: not-allowed; opacity: 0.5; }
-        .send-arrow { font-size: 0.85rem; line-height: 1; }
-        .reply-indicator { font-size: 0.6rem; color: var(--primary); margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,215,0,0.1); padding: 2px 5px; border-radius: 6px; }
-        .reply-close { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 0.7rem; }
-        .status { color: var(--primary); font-size: 0.55rem; text-align: center; margin-top: 2px; min-height: 10px; }
-        .hide { display: none !important; }
-        .empty-state { text-align: center; padding: 16px; color: var(--text-light); font-size: 0.7rem; }
-        .no-items { text-align: center; color: var(--text-light); font-size: 0.55rem; padding: 3px; opacity: 0.6; }
+        .auth-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            z-index: 10;
+        }
+        .auth-box {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 14px;
+            width: 240px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .auth-box h2 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: var(--text);
+            font-size: 0.8rem;
+            outline: none;
+        }
+        .auth-box input:focus {
+            border-color: var(--primary);
+        }
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 2px;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--primary);
+            color: #1a1a1a;
+        }
+        .auth-box button:hover {
+            opacity: 0.9;
+        }
+        .auth-error {
+            color: var(--error);
+            font-size: 0.65rem;
+            margin-top: 5px;
+            min-height: 14px;
+        }
 
-        .ban-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 20; }
-        .ban-message { background: var(--bg-card); padding: 18px; border-radius: 14px; text-align: center; border: 1px solid var(--border); }
-        .ban-message h2 { color: var(--error); font-size: 1.1rem; margin-bottom: 5px; }
-        .ban-message p { color: var(--text-light); margin-bottom: 12px; font-size: 0.73rem; }
-        .ban-message button { padding: 6px 16px; background: var(--primary); color: #1a1a1a; border: none; border-radius: 8px; font-size: 0.73rem; font-weight: 600; cursor: pointer; }
+        .input-area {
+            padding: 5px 6px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+        .typing-indicator {
+            font-size: 0.58rem;
+            color: var(--text-light);
+            font-style: italic;
+            min-height: 12px;
+            margin-bottom: 2px;
+            padding-left: 2px;
+        }
+        .input-row {
+            display: flex;
+            gap: 4px;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 6px 9px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            font-size: 0.73rem;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+        }
+        .input-area input:focus {
+            border-color: var(--primary);
+        }
+        .send-button {
+            padding: 6px 12px;
+            background: var(--primary);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 16px;
+            font-size: 0.73rem;
+            font-weight: 600;
+            cursor: pointer;
+            min-width: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .send-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        .send-arrow {
+            font-size: 0.85rem;
+            line-height: 1;
+        }
+        .reply-indicator {
+            font-size: 0.6rem;
+            color: var(--primary);
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 215, 0, 0.1);
+            padding: 2px 5px;
+            border-radius: 6px;
+        }
+        .reply-close {
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+        .status {
+            color: var(--primary);
+            font-size: 0.55rem;
+            text-align: center;
+            margin-top: 2px;
+            min-height: 10px;
+        }
+        .hide {
+            display: none !important;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 16px;
+            color: var(--text-light);
+            font-size: 0.7rem;
+        }
+        .no-items {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.55rem;
+            padding: 3px;
+            opacity: 0.6;
+        }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-box { background: var(--bg-card); padding: 16px; border-radius: 14px; border: 1px solid var(--border); text-align: center; max-width: 280px; width: 85%; }
-        .modal-box h3 { color: var(--text); margin-bottom: 5px; font-size: 0.8rem; }
-        .modal-box p { color: var(--text-light); font-size: 0.68rem; margin-bottom: 8px; }
-        .modal-box input, .modal-box select { width: 100%; padding: 6px; margin-bottom: 6px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--text); font-size: 0.72rem; outline: none; }
-        .modal-box input:focus, .modal-box select:focus { border-color: var(--primary); }
-        .modal-box select option { background: var(--bg-card); color: var(--text); }
-        .modal-buttons { display: flex; gap: 6px; justify-content: center; }
-        .modal-buttons button { padding: 6px 14px; border: none; border-radius: 8px; font-size: 0.72rem; font-weight: 600; cursor: pointer; }
-        .modal-btn-cancel { background: var(--border); color: var(--text); }
-        .modal-btn-confirm { background: var(--primary); color: #1a1a1a; }
-        .modal-btn-danger { background: var(--error); color: white; }
+        .ban-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+        .ban-message {
+            background: var(--bg-card);
+            padding: 18px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .ban-message h2 {
+            color: var(--error);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .ban-message p {
+            color: var(--text-light);
+            margin-bottom: 12px;
+            font-size: 0.73rem;
+        }
+        .ban-message button {
+            padding: 6px 16px;
+            background: var(--primary);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.73rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-box {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 280px;
+            width: 85%;
+        }
+        .modal-box h3 {
+            color: var(--text);
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+        }
+        .modal-box p {
+            color: var(--text-light);
+            font-size: 0.68rem;
+            margin-bottom: 8px;
+        }
+        .modal-box input,
+        .modal-box select {
+            width: 100%;
+            padding: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 0.72rem;
+            outline: none;
+        }
+        .modal-box input:focus,
+        .modal-box select:focus {
+            border-color: var(--primary);
+        }
+        .modal-box select option {
+            background: var(--bg-card);
+            color: var(--text);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .modal-buttons button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .modal-btn-cancel {
+            background: var(--border);
+            color: var(--text);
+        }
+        .modal-btn-confirm {
+            background: var(--primary);
+            color: #1a1a1a;
+        }
+        .modal-btn-danger {
+            background: var(--error);
+            color: white;
+        }
 
         @media (max-width: 768px) {
-            .container { border-radius: 0; max-width: 100%; height: 100vh; height: 100dvh; }
-            .sidebar { position: fixed; top: 0; left: 0; bottom: 0; width: 270px; transform: translateX(-100%); border-radius: 0 10px 10px 0; box-shadow: 4px 0 16px rgba(0,0,0,0.5); padding-top: calc(var(--safe-top) + 8px); padding-bottom: calc(var(--safe-bottom) + 8px); }
-            .sidebar.open { transform: translateX(0); }
-            .menu-toggle { display: block; top: calc(var(--safe-top) + 4px); }
-            header { padding-left: 32px; }
-            .auth-box { width: 85%; max-width: 240px; }
-            .main-content { padding-top: var(--safe-top); }
+            .container {
+                border-radius: 0;
+                max-width: 100%;
+                height: 100vh;
+                height: 100dvh;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 270px;
+                transform: translateX(-100%);
+                border-radius: 0 10px 10px 0;
+                box-shadow: 4px 0 16px rgba(0, 0, 0, 0.5);
+                padding-top: calc(var(--safe-top) + 8px);
+                padding-bottom: calc(var(--safe-bottom) + 8px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .menu-toggle {
+                display: block;
+                top: calc(var(--safe-top) + 4px);
+            }
+            header {
+                padding-left: 32px;
+            }
+            .auth-box {
+                width: 85%;
+                max-width: 240px;
+            }
+            .main-content {
+                padding-top: var(--safe-top);
+            }
+        }
+
+        /* Стили для модального окна карты */
+        #mapModal .modal-box {
+            max-width: 96vw;
+            max-height: 92vh;
+            width: 96vw;
+            height: 92vh;
+            padding: 0;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #mapModal .modal-box .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        #mapModal .modal-box .map-header span {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        #mapModal .modal-box .map-header button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+        #mapModal .modal-box iframe {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #1a1a1a;
+            min-height: 0;
         }
     </style>
 </head>
@@ -242,6 +937,13 @@
                     <div class="sidebar-section-title">Забаненные</div>
                     <div class="user-list" id="bannedUsersList"></div>
                 </div>
+                <!-- Кнопка "Карта" – только для GW -->
+                <div class="sidebar-section" id="mapSection">
+                    <div class="sidebar-section-title">Карта</div>
+                    <div style="display:flex; gap:4px; padding:4px 0;">
+                        <button id="openMapBtn" class="hide" style="flex:1; background:rgba(255,215,0,0.12); border:1px solid var(--primary); color:var(--primary); border-radius:6px; padding:5px 0; font-weight:600; font-size:0.7rem; cursor:pointer; transition:0.2s;">🗺️ Открыть карту</button>
+                    </div>
+                </div>
             </div>
             <div class="sidebar-logout">
                 <button class="sidebar-logout-btn" onclick="logout()">&#128682; Выйти из аккаунта</button>
@@ -249,9 +951,17 @@
         </div>
 
         <div class="main-content">
-            <div class="ban-overlay hide" id="banOverlay"><div class="ban-message"><h2>Вы забанены</h2><p>Ваш аккаунт заблокирован.</p><div class="ban-reason-text" id="banReasonText"></div><button onclick="logout()">Выйти</button></div></div>
-            <div class="modal-overlay hide" id="modalOverlay"><div class="modal-box" id="modalBox"><h3 id="modalTitle"></h3><p id="modalText"></p><div id="modalContent"></div><div class="modal-buttons"><button class="modal-btn-cancel" onclick="closeModal()">Отмена</button><button class="modal-btn-confirm" id="modalConfirmBtn">ОК</button></div></div></div>
-            
+            <div class="ban-overlay hide" id="banOverlay">
+                <div class="ban-message"><h2>Вы забанены</h2><p>Ваш аккаунт заблокирован.</p>
+                    <div class="ban-reason-text" id="banReasonText"></div><button onclick="logout()">Выйти</button></div>
+            </div>
+            <div class="modal-overlay hide" id="modalOverlay">
+                <div class="modal-box" id="modalBox"><h3 id="modalTitle"></h3><p id="modalText"></p>
+                    <div id="modalContent"></div>
+                    <div class="modal-buttons"><button class="modal-btn-cancel" onclick="closeModal()">Отмена</button><button class="modal-btn-confirm" id="modalConfirmBtn">ОК</button></div>
+                </div>
+            </div>
+
             <div class="context-menu hide" id="messageContextMenu">
                 <div class="context-menu-item" onclick="contextReply()"><span class="context-menu-icon">&#8617;</span><span>Ответить</span></div>
                 <div class="context-menu-item" onclick="contextPrivateMessage()"><span class="context-menu-icon">&#9993;</span><span>Личное сообщение</span></div>
@@ -265,12 +975,21 @@
                 <div class="context-menu-item delete-item hide" id="userMenuDelete" onclick="contextUserDelete()"><span class="context-menu-icon">&#10005;</span><span>Удалить аккаунт</span></div>
             </div>
 
-            <div class="auth-overlay" id="authOverlay"><div class="auth-box"><h2>Ghost Chat</h2><input type="text" id="nameInput" placeholder="Имя пользователя" autocomplete="off"><input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off"><div class="auth-buttons"><button id="loginBtn">Войти</button><button id="registerBtn">Зарегистрироваться</button></div><div class="auth-error" id="authError"></div></div></div>
-            
-            <header><h1>Ghost chat</h1><div class="chat-subtitle" id="chatSubtitle"></div><span id="adminBadge" class="admin-badge hide">Админ</span></header>
-            
+            <div class="auth-overlay" id="authOverlay">
+                <div class="auth-box"><h2>Ghost Chat</h2><input type="text" id="nameInput" placeholder="Имя пользователя" autocomplete="off"><input type="password" id="passwordInput" placeholder="Пароль" autocomplete="off">
+                    <div class="auth-buttons"><button id="loginBtn">Войти</button><button id="registerBtn">Зарегистрироваться</button></div>
+                    <div class="auth-error" id="authError"></div>
+                </div>
+            </div>
+
+            <header><h1>Ghost chat</h1>
+                <div class="chat-subtitle" id="chatSubtitle"></div><span id="adminBadge" class="admin-badge hide">Админ</span>
+            </header>
+
             <div class="chat-container">
-                <div class="messages" id="messages"><div class="empty-state">Войдите в аккаунт</div></div>
+                <div class="messages" id="messages">
+                    <div class="empty-state">Войдите в аккаунт</div>
+                </div>
                 <div class="new-messages-indicator hide" id="newMessagesIndicator" onclick="scrollToBottom()">Новые сообщения ↓</div>
                 <div class="input-area hide" id="inputArea">
                     <div class="typing-indicator" id="typingIndicator"></div>
@@ -279,6 +998,17 @@
                     <div class="status" id="status"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно карты (встроенный iframe) -->
+    <div class="modal-overlay hide" id="mapModal" style="z-index:9999;">
+        <div class="modal-box" style="max-width:96vw; max-height:92vh; width:96vw; height:92vh; padding:0; background:var(--bg-card); border-radius:16px; overflow:hidden; display:flex; flex-direction:column;">
+            <div class="map-header" style="display:flex; justify-content:space-between; align-items:center; padding:8px 16px; border-bottom:1px solid var(--border); flex-shrink:0;">
+                <span style="color:var(--primary); font-weight:600; font-size:0.9rem;">🗺️ Тактическая карта</span>
+                <button onclick="document.getElementById('mapModal').classList.add('hide')" style="background:none; border:none; color:var(--text-light); font-size:1.4rem; cursor:pointer;">✕</button>
+            </div>
+            <iframe id="mapFrame" style="flex:1; width:100%; border:none; background:#1a1a1a; min-height:0;"></iframe>
         </div>
     </div>
 
@@ -346,6 +1076,9 @@
         const replyText = document.getElementById('replyText');
         const banReasonText = document.getElementById('banReasonText');
         const sidebarOverlayEl = document.getElementById('sidebarOverlay');
+        const openMapBtn = document.getElementById('openMapBtn');
+        const mapModal = document.getElementById('mapModal');
+        const mapFrame = document.getElementById('mapFrame');
 
         // Состояние приложения
         let currentUser = null;
@@ -380,11 +1113,20 @@
         let newMessagesCount = 0;
         let onlineInterval = null;
 
-        // Хеширование пароля
+        // Хеширование пароля (используется и в чате, и в карте)
         async function hashPassword(password) {
             const encoder = new TextEncoder();
             const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
             return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(16);
         }
 
         // Функции бокового меню
@@ -483,7 +1225,8 @@
         function setTyping() {
             if (!currentUser || !messagesRef) return;
             setOnlineStatus();
-            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
+            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` :
+                currentChatId;
             typingRef.child(typingKey).child(currentUser).set(true);
             if (typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
@@ -500,13 +1243,15 @@
                 typingIndicator.textContent = '';
                 return;
             }
-            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` : currentChatId;
+            const typingKey = currentChatType === 'private' ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` :
+                currentChatId;
             const typers = typingUsers[typingKey] || {};
             const names = Object.keys(typers).filter(u => u !== currentUser);
             if (names.length === 0) {
                 typingIndicator.textContent = '';
             } else if (names.length === 1) {
-                typingIndicator.textContent = `${escapeHtml(allUsers[names[0]]?.name || names[0])} печатает...`;
+                typingIndicator.textContent =
+                    `${escapeHtml(allUsers[names[0]]?.name || names[0])} печатает...`;
             } else {
                 typingIndicator.textContent = `${names.length} человека печатают...`;
             }
@@ -516,27 +1261,29 @@
             if (currentChatType === 'public') {
                 const chat = allChats[currentChatId];
                 const gwLabel = chat?.gwOnly ? ' [GW]' : '';
-                chatSubtitle.innerHTML = `${escapeHtml(chat?.name || 'Общий')}${gwLabel} <span class="chat-type-badge">общий</span>`;
+                chatSubtitle.innerHTML =
+                    `${escapeHtml(chat?.name || 'Общий')}${gwLabel} <span class="chat-type-badge">общий</span>`;
             } else {
-                chatSubtitle.innerHTML = `${escapeHtml(allUsers[privateChatPartner]?.name || privateChatPartner)} <span class="chat-type-badge">личные</span>`;
+                chatSubtitle.innerHTML =
+                    `${escapeHtml(allUsers[privateChatPartner]?.name || privateChatPartner)} <span class="chat-type-badge">личные</span>`;
             }
         }
 
         // Управление чатами
         function showCreateChatModal() {
             if (!isAdmin) return;
-            showModal('Создать чат', '', 
+            showModal('Создать чат', '',
                 `<input id="modalInput" placeholder="Название чата"><br>
                  <select id="modalSelect"><option value="">Обычный (для всех)</option><option value="gw">Только для GW</option></select>`,
-                'Создать', 'modal-btn-confirm', 
+                'Создать', 'modal-btn-confirm',
                 async (result) => {
                     if (!result.input) return;
                     const ref = chatsRef.push();
-                    await ref.set({ 
-                        name: result.input, 
-                        gwOnly: result.select === 'gw', 
-                        createdBy: currentUser, 
-                        createdAt: new Date().toISOString() 
+                    await ref.set({
+                        name: result.input,
+                        gwOnly: result.select === 'gw',
+                        createdBy: currentUser,
+                        createdAt: new Date().toISOString()
                     });
                     selectPublicChat(ref.key);
                     setStatus('Чат создан');
@@ -548,15 +1295,15 @@
             if (!isAdmin) return;
             const chat = allChats[chatId];
             if (!chat) return;
-            showModal('Редактировать чат', '', 
+            showModal('Редактировать чат', '',
                 `<input id="modalInput" placeholder="Название" value="${escapeHtml(chat.name || '')}"><br>
                  <select id="modalSelect"><option value="">Обычный</option><option value="gw" ${chat.gwOnly ? 'selected' : ''}>Только для GW</option></select>`,
-                'Сохранить', 'modal-btn-confirm', 
+                'Сохранить', 'modal-btn-confirm',
                 async (result) => {
                     if (!result.input) return;
-                    await chatsRef.child(chatId).update({ 
-                        name: result.input, 
-                        gwOnly: result.select === 'gw' 
+                    await chatsRef.child(chatId).update({
+                        name: result.input,
+                        gwOnly: result.select === 'gw'
                     });
                     if (currentChatId === chatId && currentChatType === 'public') {
                         updateChatSubtitle();
@@ -572,8 +1319,8 @@
                 setStatus('Нельзя удалить последний чат');
                 return;
             }
-            showModal('Удалить чат', `Удалить "${allChats[chatId]?.name || ''}"?`, '', 
-                'Удалить', 'modal-btn-danger', 
+            showModal('Удалить чат', `Удалить "${allChats[chatId]?.name || ''}"?`, '',
+                'Удалить', 'modal-btn-danger',
                 async () => {
                     await chatsRef.child(chatId).remove();
                     await database.ref(`messages/${chatId}`).remove();
@@ -600,12 +1347,12 @@
             currentChatType = 'public';
             privateChatPartner = null;
             messagesRef = database.ref(`messages/${chatId}`);
-            
+
             document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
             const activeChatEl = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
             if (activeChatEl) activeChatEl.classList.add('active');
-            
+
             updateChatSubtitle();
             typingIndicator.textContent = '';
             loadMessages();
@@ -621,16 +1368,16 @@
             privateChatPartner = partner;
             currentChatId = getPrivateChatId(currentUser, partner);
             messagesRef = database.ref(`messages/private_${currentChatId}`);
-            
+
             document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.user-item').forEach(el => el.classList.remove('active-chat'));
             const activeUserEl = document.querySelector(`.user-item[data-username="${partner}"]`);
             if (activeUserEl) activeUserEl.classList.add('active-chat');
-            
+
             if (unreadMessages[partner]) {
                 unreadRef.child(currentUser).child(partner).remove();
             }
-            
+
             updateChatSubtitle();
             typingIndicator.textContent = '';
             loadMessages();
@@ -643,11 +1390,11 @@
 
         function renderChatList() {
             const visibleChats = getVisibleChats().sort(([, a], [, b]) => (a.createdAt || '').localeCompare(b.createdAt || ''));
-            
+
             if (!currentChatId && currentChatType === 'public' && visibleChats.length > 0) {
                 selectPublicChat(visibleChats[0][0]);
             }
-            
+
             chatList.innerHTML = visibleChats.map(([id, chat]) => {
                 const isActive = id === currentChatId && currentChatType === 'public';
                 const icon = chat.gwOnly ? '⭐' : '#';
@@ -673,34 +1420,34 @@
         function showMessageContextMenu(e, messageId, sender, text) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             contextMsgId = messageId;
             contextMsgSender = sender;
             contextMsgText = text;
-            
+
             const canDelete = sender === currentUser || (isAdmin && currentChatType === 'public');
             const items = messageContextMenu.querySelectorAll('.context-menu-item');
-            
+
             items[0].classList.toggle('hide', false); // Ответить
             items[1].classList.toggle('hide', sender === currentUser); // Личное
             items[2].classList.toggle('hide', !canDelete); // Удалить
-            
+
             positionMenu(messageContextMenu, e);
         }
 
         function showUserContextMenu(e, username) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             contextUser = username;
             const isMe = username === currentUser;
             const isProtected = username === 'tntrat';
             const isBanned = !!bannedUsers[username];
             const isUserAdmin = allUsers[username]?.isAdmin || false;
-            
+
             const items = userContextMenu.querySelectorAll('.context-menu-item');
             items[0].classList.toggle('hide', isMe); // Личные сообщения
-            
+
             // GW статус - только создатель
             if (isCreator(currentUser) && !isMe && !isProtected) {
                 userMenuGW.classList.remove('hide');
@@ -708,7 +1455,7 @@
             } else {
                 userMenuGW.classList.add('hide');
             }
-            
+
             // Админка - только создатель
             if (isCreator(currentUser) && !isMe && !isProtected) {
                 userMenuAdmin.classList.remove('hide');
@@ -716,7 +1463,7 @@
             } else {
                 userMenuAdmin.classList.add('hide');
             }
-            
+
             // Бан - админы и создатель
             if ((isAdmin || isCreator(currentUser)) && !isMe && !isProtected) {
                 userMenuBan.classList.remove('hide');
@@ -724,25 +1471,25 @@
             } else {
                 userMenuBan.classList.add('hide');
             }
-            
+
             // Удаление - только создатель, только забаненные
             userMenuDelete.classList.toggle('hide', !(isCreator(currentUser) && !isMe && !isProtected && isBanned));
-            
+
             positionMenu(userContextMenu, e);
         }
 
         function positionMenu(menu, e) {
             let x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
             let y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-            
+
             if (e.touches && e.touches[0]) {
                 x = e.touches[0].clientX;
                 y = e.touches[0].clientY;
             }
-            
+
             const menuWidth = menu.offsetWidth || 150;
             const menuHeight = menu.offsetHeight || 100;
-            
+
             if (x + menuWidth > window.innerWidth) {
                 x = window.innerWidth - menuWidth - 10;
             }
@@ -751,7 +1498,7 @@
             }
             if (x < 10) x = 10;
             if (y < 10) y = 10;
-            
+
             menu.style.left = x + 'px';
             menu.style.top = y + 'px';
             menu.classList.remove('hide');
@@ -803,6 +1550,7 @@
                 const newGW = !hasGWStatus(contextUser);
                 await usersRef.child(contextUser).update({ gw: newGW });
                 setStatus(`${contextUser} ${newGW ? 'получил GW статус' : 'лишён GW статуса'}`);
+                updateMapButtonVisibility();
             }
             hideAllContextMenus();
         }
@@ -844,32 +1592,32 @@
         // Слушатели Firebase
         function startListeningBans() {
             if (bansListener) bannedUsersRef.off('value', bansListener);
-            
+
             bansListener = function(snapshot) {
                 bannedUsers = snapshot.val() || {};
-                
+
                 if (currentUser && bannedUsers[currentUser]) {
                     const banData = bannedUsers[currentUser];
                     const reason = typeof banData === 'object' ? banData.reason : '';
                     showBanScreen(reason);
                 }
-                
+
                 renderAllUsers();
-                
+
                 if (messagesListener) {
                     refreshMessagesDisplay();
                 }
             };
-            
+
             bannedUsersRef.on('value', bansListener);
         }
 
         function startListeningUsers() {
             if (usersListener) usersRef.off('value', usersListener);
-            
+
             usersListener = function(snapshot) {
                 allUsers = snapshot.val() || {};
-                
+
                 if (currentUser && allUsers[currentUser]) {
                     const newAdminStatus = allUsers[currentUser].isAdmin || false;
                     if (newAdminStatus !== isAdmin) {
@@ -877,20 +1625,22 @@
                         updateAdminUI();
                     }
                 }
-                
+
                 renderAllUsers();
                 renderChatList();
-                
+
+                updateMapButtonVisibility();
+
                 if (currentChatType === 'private' && privateChatPartner && !allUsers[privateChatPartner]) {
                     const visible = getVisibleChats();
                     if (visible.length) selectPublicChat(visible[0][0]);
                 }
-                
+
                 if (currentChatType === 'private') {
                     updateChatSubtitle();
                 }
             };
-            
+
             usersRef.on('value', usersListener);
         }
 
@@ -899,12 +1649,12 @@
                 unreadRef.child(currentUser).off('value', unreadListener);
             }
             if (!currentUser) return;
-            
+
             unreadListener = function(snapshot) {
                 unreadMessages = snapshot.val() || {};
                 renderAllUsers();
             };
-            
+
             unreadRef.child(currentUser).on('value', unreadListener);
         }
 
@@ -924,11 +1674,11 @@
 
         function startListeningChats() {
             if (chatsListener) chatsRef.off('value', chatsListener);
-            
+
             chatsListener = function(snapshot) {
                 allChats = snapshot.val() || {};
                 renderChatList();
-                
+
                 if (currentChatType === 'public') {
                     if (!allChats[currentChatId] || !canSeeChat(allChats[currentChatId])) {
                         const visible = getVisibleChats();
@@ -937,29 +1687,29 @@
                     updateChatSubtitle();
                 }
             };
-            
+
             chatsRef.on('value', chatsListener);
         }
 
         function startListeningOnline() {
             if (onlineListener) onlineRef.off('value', onlineListener);
-            
+
             onlineListener = function(snapshot) {
                 onlineUsers = snapshot.val() || {};
                 renderAllUsers();
             };
-            
+
             onlineRef.on('value', onlineListener);
         }
 
         function startListeningTyping() {
             if (typingListener) typingRef.off('value', typingListener);
-            
+
             typingListener = function(snapshot) {
                 typingUsers = snapshot.val() || {};
                 updateTypingIndicator();
             };
-            
+
             typingRef.on('value', typingListener);
         }
 
@@ -976,10 +1726,9 @@
 
         function renderAllUsers() {
             const usersArray = Object.entries(allUsers).sort(([a], [b]) => a.localeCompare(b));
-            
-            // Активные пользователи
+
             const activeUsers = usersArray.filter(([username]) => !bannedUsers[username]);
-            
+
             allUsersList.innerHTML = activeUsers.length > 0 ? activeUsers.map(([username, userData]) => {
                 const online = !!onlineUsers[username];
                 const isMe = username === currentUser;
@@ -987,7 +1736,7 @@
                 const hasUnread = !!unreadMessages[username] && !isActive;
                 const userHasGW = userData.gw === true;
                 const isUserAdmin = userData.isAdmin || false;
-                
+
                 return `
                 <div class="user-item ${isActive ? 'active-chat' : ''} ${hasUnread ? 'has-unread' : ''}" 
                      data-username="${username}" 
@@ -1000,17 +1749,16 @@
                     ${hasUnread ? `<span class="unread-badge">${unreadMessages[username]}</span>` : ''}
                 </div>`;
             }).join('') : '<div class="no-items">Нет пользователей</div>';
-            
-            // Забаненные (видны только админам и создателю)
+
             if (isAdmin || isCreator(currentUser)) {
                 const bannedArray = usersArray.filter(([username]) => bannedUsers[username]);
-                
+
                 bannedUsersList.innerHTML = bannedArray.length > 0 ? bannedArray.map(([username, userData]) => {
                     const isActive = currentChatType === 'private' && privateChatPartner === username;
                     const userHasGW = userData.gw === true;
                     const banData = bannedUsers[username];
                     const reason = typeof banData === 'object' ? banData.reason : '';
-                    
+
                     return `
                     <div class="user-item banned-highlight ${isActive ? 'active-chat' : ''}" 
                          data-username="${username}" 
@@ -1077,7 +1825,8 @@
 
         function setReplyTo(id, sender, text) {
             replyTo = { id, sender, text };
-            replyText.innerHTML = `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`;
+            replyText.innerHTML =
+                `&#8617; Ответ для ${escapeHtml(sender)}: ${text.substring(0, 30)}${text.length > 30 ? '...' : ''}`;
             replyIndicator.classList.remove('hide');
             messageInput.focus();
         }
@@ -1095,7 +1844,7 @@
             }
             const userData = allUsers[username];
             if (!userData) return;
-            
+
             const newStatus = !userData.isAdmin;
             await usersRef.child(username).update({ isAdmin: newStatus });
             setStatus(`${username} ${newStatus ? 'назначен администратором' : 'лишён прав администратора'}`);
@@ -1106,13 +1855,11 @@
                 setStatus('Невозможно забанить этого пользователя');
                 return;
             }
-            
+
             if (bannedUsers[username]) {
-                // Разбан
                 await bannedUsersRef.child(username).remove();
                 setStatus(`${username} разбанен`);
             } else {
-                // Бан
                 await bannedUsersRef.child(username).set({
                     timestamp: new Date().toISOString(),
                     bannedBy: currentUser
@@ -1126,14 +1873,13 @@
                 setStatus('Только создатель может удалять аккаунты');
                 return;
             }
-            
-            showModal('Удаление аккаунта', `Вы уверены, что хотите удалить аккаунт "${username}"? Все его сообщения будут удалены.`, '', 
-                'Удалить', 'modal-btn-danger', 
+
+            showModal('Удаление аккаунта', `Вы уверены, что хотите удалить аккаунт "${username}"? Все его сообщения будут удалены.`, '',
+                'Удалить', 'modal-btn-danger',
                 async () => {
                     await bannedUsersRef.child(username).remove();
                     await usersRef.child(username).remove();
-                    
-                    // Удаляем сообщения из всех чатов
+
                     for (const chatId of Object.keys(allChats)) {
                         const messagesSnapshot = await database.ref(`messages/${chatId}`).once('value');
                         const messages = messagesSnapshot.val();
@@ -1144,7 +1890,7 @@
                             await Promise.all(deletePromises);
                         }
                     }
-                    
+
                     setStatus(`Аккаунт ${username} удалён`);
                 }
             );
@@ -1152,16 +1898,16 @@
 
         async function deleteMessage(id) {
             if (!currentUser || !messagesRef) return;
-            
+
             const snapshot = await messagesRef.child(id).once('value');
             const message = snapshot.val();
-            
+
             if (!message) return;
             if (message.sender !== currentUser && !(isAdmin && currentChatType === 'public')) {
                 setStatus('Можно удалять только свои сообщения');
                 return;
             }
-            
+
             await messagesRef.child(id).remove();
             setStatus('Сообщение удалено', 2000);
         }
@@ -1169,22 +1915,22 @@
         // Отображение сообщений
         async function refreshMessagesDisplay() {
             if (!messagesRef) return;
-            
+
             const snapshot = await messagesRef.once('value');
             const data = snapshot.val();
-            
+
             let messages = data ? Object.entries(data).map(([key, value]) => ({ id: key, ...value }))
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)) : [];
-            
+
             messages = messages.filter(msg => !bannedUsers[msg.sender]);
-            
+
             if (messages.length === 0) {
                 messagesEl.innerHTML = '<div class="empty-state">Нет сообщений</div>';
                 return;
             }
-            
+
             const wasAtBottom = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25;
-            
+
             const userNames = {};
             for (const msg of messages) {
                 if (msg.sender && !userNames[msg.sender]) {
@@ -1193,11 +1939,11 @@
                     userNames[msg.sender] = userData ? (userData.name || msg.sender) : msg.sender;
                 }
             }
-            
+
             messagesEl.innerHTML = messages.map(msg => {
                 const displayName = userNames[msg.sender] || msg.sender;
                 const isMe = msg.sender === currentUser;
-                
+
                 let replyHtml = '';
                 if (msg.replyTo && msg.replyTo.sender) {
                     const replyName = userNames[msg.replyTo.sender] || msg.replyTo.sender;
@@ -1207,12 +1953,12 @@
                             <div>${escapeHtml(msg.replyTo.text || '')}</div>
                         </div>`;
                 }
-                
+
                 const escapedText = escapeHtml(msg.text || '');
                 const escapedSender = escapeHtml(displayName);
                 const escapedMsgText = (msg.text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const canDelete = isMe || (isAdmin && currentChatType === 'public');
-                
+
                 return `
                 <div class="message ${isMe ? 'user' : 'other'}" 
                      onclick="handleMessageClick(event, '${msg.id}', '${msg.sender.replace(/'/g, "\\'")}', '${escapedMsgText.substring(0, 100)}')" 
@@ -1229,7 +1975,7 @@
                     </div>
                 </div>`;
             }).join('');
-            
+
             if (wasAtBottom) {
                 messagesEl.scrollTop = messagesEl.scrollHeight;
                 newMessagesCount = 0;
@@ -1256,53 +2002,679 @@
                 messagesRef.off('value', messagesListener);
             }
             if (!messagesRef) return;
-            
+
             messagesListener = function() {
                 refreshMessagesDisplay();
             };
-            
+
             messagesRef.on('value', messagesListener);
         }
+
+        // --- Кнопка "Карта" ---
+        function updateMapButtonVisibility() {
+            const hasGW = hasGWStatus(currentUser) || isCreator(currentUser) || (isAdmin && allUsers[currentUser]?.gw);
+            if (hasGW) {
+                openMapBtn.classList.remove('hide');
+            } else {
+                openMapBtn.classList.add('hide');
+            }
+        }
+
+        // Открыть карту (встроенный iframe) – используем единую авторизацию
+        openMapBtn.addEventListener('click', function() {
+            // Вставляем HTML карты с объединённой авторизацией
+            const mapHtml = `<!DOCTYPE html>
+        <html lang="ru">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Тактическая Карта</title>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"><\/script>
+            <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"><\/script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+            <style>
+                :root { --primary: #FFD700; --bg: #1a1a1a; --bg-card: #2a2a2a; --text: #e0e0e0; --text-light: #9e9e9e; --border: #3a3a3a; --error: #ff4444; --sidebar-width: 56px; --radius: 20px; }
+                * { margin:0; padding:0; box-sizing:border-box; }
+                body { background:var(--bg); font-family:'Segoe UI',system-ui,sans-serif; height:100vh; width:100vw; overflow:hidden; user-select:none; -webkit-user-select:none; display:flex; }
+                .auth-screen { position:fixed; inset:0; z-index:99999; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+                .auth-box { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:32px 28px; width:360px; text-align:center; }
+                .auth-box h2 { color:var(--primary); margin-bottom:20px; font-size:22px; font-weight:600; }
+                .auth-input { width:100%; padding:12px 16px; margin-bottom:12px; border:1px solid var(--border); border-radius:20px; background:var(--bg); color:var(--text); font-size:15px; outline:none; transition:border-color .2s; }
+                .auth-input:focus { border-color:var(--primary); }
+                .auth-btn { width:100%; padding:12px; border-radius:20px; font-weight:600; cursor:pointer; font-size:15px; margin-top:6px; border:none; transition:opacity .2s; background:var(--primary); color:var(--bg); }
+                .auth-btn:hover { opacity:.9; }
+                .auth-error { color:var(--error); font-size:13px; margin-top:8px; min-height:20px; }
+                .sidebar { width:var(--sidebar-width); height:100vh; background:var(--bg-card); border-right:1px solid var(--border); display:flex; flex-direction:column; align-items:center; padding:16px 0; gap:8px; z-index:9998; }
+                .tool-btn { width:42px; height:42px; border-radius:50%; border:1px solid var(--border); background:var(--bg); color:var(--text-light); cursor:pointer; font-size:14px; font-weight:700; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+                .tool-btn:hover { border-color:var(--primary); color:var(--primary); }
+                .tool-btn.active { border-color:var(--primary); background:var(--bg-card); color:var(--primary); box-shadow:0 0 12px rgba(255,215,0,.2); }
+                .sidebar-colors { display:flex; flex-direction:column; gap:8px; margin-top:auto; margin-bottom:12px; }
+                .sidebar-color-dot { width:20px; height:20px; border-radius:50%; cursor:pointer; border:2px solid var(--border); transition:all .15s; }
+                .sidebar-color-dot:hover { border-color:var(--primary); transform:scale(1.15); }
+                .sidebar-color-dot.active { border-color:var(--primary); box-shadow:0 0 10px currentColor; }
+                .logout-btn, .clear-btn { background:none; border:1px solid var(--error); color:var(--error); border-radius:50%; width:42px; height:42px; padding:0; font-size:15px; cursor:pointer; margin-top:6px; font-weight:700; transition:all .2s; display:flex; align-items:center; justify-content:center; }
+                .logout-btn:hover, .clear-btn:hover { background:rgba(255,68,68,.1); }
+                .clear-btn { border-color:#e67e22; color:#e67e22; margin-top:4px; }
+                .clear-btn:hover { background:rgba(230,126,34,.1); }
+                #map-container { flex:1; position:relative; }
+                #map { width:100%; height:100%; background:var(--bg); }
+                .user-nick-label { position:fixed; bottom:20px; left:76px; z-index:9999; background:rgba(0,0,0,.5); color:rgba(255,255,255,.5); padding:6px 14px; border-radius:20px; font-size:12px; font-weight:500; pointer-events:none; backdrop-filter:blur(4px); }
+                .screenshot-btn { position:fixed; top:20px; right:20px; z-index:9999; background:var(--bg-card); border:1px solid var(--border); color:var(--primary); width:44px; height:44px; border-radius:50%; cursor:pointer; font-size:16px; font-weight:700; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+                .screenshot-btn:hover { border-color:var(--primary); background:var(--bg); }
+                .search-panel { position:fixed; top:20px; left:76px; z-index:9999; display:flex; flex-direction:column; gap:6px; }
+                .search-input { padding:8px 14px; border:1px solid var(--border); border-radius:20px; background:var(--bg-card); color:var(--text); font-size:13px; outline:none; width:200px; }
+                .search-input:focus { border-color:var(--primary); }
+                .search-results { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; max-height:150px; overflow-y:auto; display:none; }
+                .search-result-item { padding:8px 12px; cursor:pointer; color:var(--text); font-size:12px; border-bottom:1px solid var(--border); }
+                .search-result-item:hover { background:var(--bg); color:var(--primary); }
+                .leaflet-popup-content-wrapper { background:var(--bg-card)!important; color:var(--text)!important; border:1px solid var(--border)!important; border-radius:var(--radius)!important; box-shadow:0 8px 32px rgba(0,0,0,.6)!important; padding:0!important; }
+                .leaflet-popup-tip { background:var(--bg-card)!important; border:1px solid var(--border)!important; }
+                .leaflet-popup-close-button { color:var(--primary)!important; font-size:20px!important; top:8px!important; right:10px!important; }
+                .leaflet-popup-content { margin:0!important; padding:16px!important; min-width:200px; }
+                .marker-popup, .line-popup, .zone-popup { display:flex; flex-direction:column; gap:10px; }
+                .popup-section { display:flex; flex-direction:column; gap:4px; }
+                .popup-section label { font-size:12px; color:var(--text-light); font-weight:500; }
+                .shape-selector, .color-selector { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+                .shape-btn { width:32px; height:32px; border-radius:50%; cursor:pointer; border:1px solid var(--border); background:var(--bg); display:flex; align-items:center; justify-content:center; transition:all .15s; }
+                .shape-btn svg { width:18px; height:18px; fill:none; stroke:var(--text-light); stroke-width:2.5; }
+                .shape-btn:hover { border-color:var(--primary); }
+                .shape-btn.active { border-color:var(--primary); background:var(--bg-card); box-shadow:0 0 8px rgba(255,215,0,.2); }
+                .shape-btn.active svg { stroke:var(--primary); }
+                .color-dot { width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all .15s; }
+                .color-dot:hover { transform:scale(1.2); border-color:var(--text); }
+                .color-dot.active { border-color:var(--primary); box-shadow:0 0 10px currentColor; }
+                .popup-actions { display:flex; gap:8px; margin-top:4px; }
+                .popup-btn { flex:1; padding:8px 0; border:1px solid var(--border); border-radius:20px; cursor:pointer; font-size:13px; font-weight:500; transition:all .2s; background:var(--bg); color:var(--text); text-align:center; font-family:inherit; }
+                .popup-btn.rename-btn { color:var(--primary); }
+                .popup-btn.rename-btn:hover { background:var(--bg-card); border-color:var(--primary); }
+                .popup-btn.delete-btn { color:var(--error); }
+                .popup-btn.delete-btn:hover { background:rgba(255,68,68,.1); border-color:var(--error); }
+                .meta-info { font-size:10px; color:var(--text-light); margin-top:2px; }
+                .marker-label, .zone-label { background:rgba(10,10,10,.85); border:1px solid #fff; color:#fff; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:600; white-space:nowrap; box-shadow:0 4px 12px rgba(0,0,0,.7); }
+                .marker-label::before, .zone-label::before { content:''; position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:5px solid #fff; }
+                .shape-marker { display:flex!important; align-items:center; justify-content:center; width:36px!important; height:36px!important; cursor:pointer; filter:drop-shadow(0 0 6px rgba(0,0,0,.9)); transition:transform .15s,filter .15s; background:transparent!important; border:none!important; }
+                .shape-marker:hover { transform:scale(1.25); filter:drop-shadow(0 0 12px rgba(255,215,0,.5)); }
+                .ruler-point { width:14px!important; height:14px!important; border-radius:50%; cursor:pointer; border:2px solid var(--bg); box-shadow:0 0 8px rgba(0,0,0,.8); transition:transform .1s; }
+                .ruler-point:hover { transform:scale(1.4); }
+                .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:9999; display:flex; align-items:center; justify-content:center; animation:fadeIn .2s; }
+                @keyframes fadeIn { from { opacity:0; } }
+                .modal-dialog { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius); padding:24px 22px; width:90%; max-width:380px; animation:slideUp .25s; color:var(--text); }
+                @keyframes slideUp { from { transform:translateY(30px); opacity:0; } }
+                .modal-title { font-size:16px; font-weight:600; color:var(--primary); margin-bottom:16px; }
+                .modal-input { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:20px; background:var(--bg); color:var(--text); font-size:15px; outline:none; }
+                .modal-input:focus { border-color:var(--primary); }
+                .modal-buttons { display:flex; gap:10px; margin-top:18px; }
+                .modal-btn { flex:1; padding:10px; border-radius:20px; font-weight:600; font-size:14px; cursor:pointer; transition:all .2s; text-align:center; border:1px solid transparent; font-family:inherit; }
+                .modal-btn.cancel { background:transparent; border-color:var(--border); color:var(--text-light); }
+                .modal-btn.cancel:hover { background:var(--bg); }
+                .modal-btn.confirm { background:var(--primary); color:var(--bg); font-weight:700; }
+                .modal-btn.confirm:hover { opacity:.9; }
+                .modal-btn.danger { background:var(--error); color:#fff; }
+                .modal-btn.danger:hover { opacity:.9; }
+                .mode-indicator { position:fixed; bottom:52px; left:76px; z-index:9999; background:var(--bg-card); border:1px solid var(--primary); color:var(--primary); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; pointer-events:none; opacity:0; transition:opacity .3s; }
+                .mode-indicator.visible { opacity:1; }
+                @media (max-width:480px) { .sidebar { width:48px; padding:10px 0; } .tool-btn { width:36px; height:36px; font-size:13px; } .mode-indicator { left:64px; font-size:11px; bottom:48px; } .user-nick-label { left:64px; bottom:16px; } .search-panel { left:64px; } }
+            </style>
+        </head>
+        <body>
+            <div class="auth-screen" id="authScreen">
+                <div class="auth-box">
+                    <h2>Тактическая Карта</h2>
+                    <input class="auth-input" id="authNickname" placeholder="Имя" maxlength="20" autocomplete="off">
+                    <input class="auth-input" id="authPassword" type="password" placeholder="Пароль" maxlength="30" autocomplete="off">
+                    <button class="auth-btn login" id="loginBtn">Войти</button>
+                    <button class="auth-btn register" id="registerBtn">Зарегистрироваться</button>
+                    <div class="auth-error" id="authError"></div>
+                </div>
+            </div>
+            <div id="appInterface" style="display:none; width:100%; height:100%; display:none; flex;">
+                <div class="sidebar">
+                    <button class="tool-btn active" data-tool="marker" id="markerToolBtn">M</button>
+                    <button class="tool-btn" data-tool="ruler" id="rulerToolBtn">L</button>
+                    <button class="tool-btn" data-tool="line" id="lineToolBtn">—</button>
+                    <button class="tool-btn" data-tool="zone" id="zoneToolBtn">Z</button>
+                    <div class="sidebar-colors" id="sidebarColors"></div>
+                    <button class="clear-btn" id="clearMyBtn" title="Удалить все мои объекты">C</button>
+                    <button class="logout-btn" id="logoutBtn" title="Выйти">E</button>
+                </div>
+                <div id="map-container">
+                    <div id="map"></div>
+                </div>
+                <div class="search-panel">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Поиск метки...">
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <div class="mode-indicator" id="modeIndicator"></div>
+                <div class="user-nick-label" id="userNickLabel"></div>
+                <button class="screenshot-btn" id="screenshotBtn" title="Снимок">S</button>
+            </div>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"><\/script>
+            <script>
+            (function() {
+                // Та же конфигурация Firebase
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCF2izLpJOUc90hF2hpnhVLJm4bgmD6xyE",
+                    authDomain: "database-5cf6d.firebaseapp.com",
+                    databaseURL: "https://database-5cf6d-default-rtdb.firebaseio.com",
+                    projectId: "database-5cf6d",
+                    storageBucket: "database-5cf6d.firebasestorage.app",
+                    messagingSenderId: "1081787251376",
+                    appId: "1:1081787251376:web:e7514d7ce3278b16221975"
+                };
+                firebase.initializeApp(firebaseConfig);
+                const database = firebase.database();
+
+                let currentUser = null;
+                const authScreen = document.getElementById('authScreen');
+                const appInterface = document.getElementById('appInterface');
+
+                function showAuthError(msg) { document.getElementById('authError').textContent = msg; setTimeout(() => document.getElementById('authError').textContent = '', 4000); }
+
+                // Используем ту же хеш-функцию, что и в чате
+                function simpleHash(str) {
+                    let hash = 0;
+                    for (let i = 0; i < str.length; i++) {
+                        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                        hash |= 0;
+                    }
+                    return Math.abs(hash).toString(16);
+                }
+
+                // Вход через общую таблицу users
+                document.getElementById('loginBtn').addEventListener('click', async () => {
+                    const nickname = document.getElementById('authNickname').value.trim().toLowerCase();
+                    const password = document.getElementById('authPassword').value.trim();
+                    if (!nickname || !password) { showAuthError('Введите имя и пароль'); return; }
+                    // Используем общую таблицу users
+                    const snapshot = await database.ref('users').orderByChild('name').equalTo(nickname).once('value');
+                    const users = snapshot.val();
+                    if (!users) { showAuthError('Пользователь не найден'); return; }
+                    const userId = Object.keys(users)[0];
+                    const userData = users[userId];
+                    // Проверяем пароль через общий hashPassword (SHA-256)
+                    const encoder = new TextEncoder();
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+                    const hashed = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                    if (userData.password !== hashed) { showAuthError('Неверный пароль'); return; }
+                    currentUser = { nickname: userData.name, uid: userId };
+                    enterApp();
+                });
+
+                // Регистрация через общую таблицу users
+                document.getElementById('registerBtn').addEventListener('click', async () => {
+                    const nickname = document.getElementById('authNickname').value.trim().toLowerCase();
+                    const password = document.getElementById('authPassword').value.trim();
+                    if (!nickname || !password) { showAuthError('Введите имя и пароль'); return; }
+                    if (password.length < 3) { showAuthError('Пароль от 3 символов'); return; }
+                    // Проверяем в общей таблице users
+                    const snapshot = await database.ref('users').orderByChild('name').equalTo(nickname).once('value');
+                    if (snapshot.exists()) { showAuthError('Имя занято'); return; }
+                    const encoder = new TextEncoder();
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(password));
+                    const hashed = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+                    const ref = database.ref('users').push();
+                    await ref.set({
+                        name: nickname,
+                        password: hashed,
+                        isAdmin: nickname === 'tntrat',
+                        gw: nickname === 'tntrat' ? true : false,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    currentUser = { nickname, uid: ref.key };
+                    enterApp();
+                });
+
+                document.getElementById('authPassword').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
+
+                function enterApp() {
+                    authScreen.style.display = 'none';
+                    appInterface.style.display = 'flex';
+                    document.getElementById('userNickLabel').textContent = currentUser.nickname;
+                    initMap();
+                }
+
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    currentUser = null;
+                    appInterface.style.display = 'none';
+                    authScreen.style.display = 'flex';
+                    if (window._mapInstance) { window._mapInstance.remove(); window._mapInstance = null; }
+                });
+
+                document.getElementById('clearMyBtn').addEventListener('click', async () => {
+                    if (!currentUser) return;
+                    const ok = await showConfirm('Удалить всё?', 'Все ваши метки, линии и зоны будут удалены безвозвратно.', 'Удалить всё');
+                    if (!ok) return;
+                    const types = ['markers', 'rulers', 'lines', 'zones'];
+                    for (const type of types) {
+                        const snapshot = await database.ref(type).once('value');
+                        const data = snapshot.val();
+                        if (!data) continue;
+                        for (const [key, val] of Object.entries(data)) {
+                            if (val.author === currentUser.nickname) {
+                                await database.ref(type + '/' + key).remove();
+                            }
+                        }
+                    }
+                });
+
+                let map, markersLayer, rulersLayer, linesLayer, zonesLayer, markersMap, rulersMap, linesMap, zonesMap, tempLayer;
+                let currentTool = 'marker', currentColor = '#FFD700', tempPoints = [];
+
+                const colorPalette = [
+                    { hex: '#FFD700', name: 'Золотой' },
+                    { hex: '#e74c3c', name: 'Красный' },
+                    { hex: '#2ecc71', name: 'Зелёный' },
+                    { hex: '#3498db', name: 'Синий' },
+                    { hex: '#9b59b6', name: 'Фиолетовый' },
+                    { hex: '#C2B280', name: 'Песчаный' },
+                    { hex: '#C3B091', name: 'Хаки' },
+                    { hex: '#808080', name: 'Серый' },
+                    { hex: '#C0C0C0', name: 'Светло-серый' },
+                    { hex: '#ffffff', name: 'Белый' },
+                ];
+
+                const shapes = [
+                    { id: 'cross', name: 'Крестик', svg: '<line x1="6" y1="6" x2="34" y2="34"/><line x1="34" y1="6" x2="6" y2="34"/>' },
+                    { id: 'circle', name: 'Круг', svg: '<circle cx="20" cy="20" r="13"/>' },
+                    { id: 'square', name: 'Квадрат', svg: '<rect x="5" y="5" width="30" height="30" rx="3"/>' },
+                    { id: 'triangle', name: 'Треугольник', svg: '<polygon points="20,5 36,34 4,34"/>' },
+                    { id: 'triangle-down', name: 'Перевёрнутый', svg: '<polygon points="4,6 36,6 20,34"/>' },
+                    { id: 'exclamation', name: '!', svg: '<rect x="17" y="6" width="6" height="16" rx="2" fill="currentColor"/><rect x="17" y="27" width="6" height="6" rx="2" fill="currentColor"/>' },
+                    { id: 'heart', name: 'Сердце', svg: '<path d="M20 34 C8 24 2 16 2 10 C2 4 8 2 13 2 C17 2 19 5 20 8 C21 5 23 2 27 2 C32 2 38 4 38 10 C38 16 32 24 20 34Z" fill="currentColor"/>' },
+                    { id: 'eye', name: 'Глаз', svg: '<path d="M2 20 C2 20 8 8 20 8 C32 8 38 20 38 20 C38 20 32 32 20 32 C8 32 2 20 2 20Z"/><circle cx="20" cy="20" r="6"/>' },
+                ];
+
+                function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+                function formatTime(ts) { if (!ts) return ''; return new Date(ts).toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' }); }
+
+                const searchInput = document.getElementById('searchInput');
+                const searchResults = document.getElementById('searchResults');
+                searchInput.addEventListener('input', () => {
+                    const query = searchInput.value.trim().toLowerCase();
+                    searchResults.innerHTML = '';
+                    if (!query) { searchResults.style.display = 'none'; return; }
+                    const results = [];
+                    markersMap.forEach((val, key) => {
+                        if (val.name.toLowerCase().includes(query)) results.push({ id: key, name: val.name, lat: val.lat, lng: val.lng });
+                    });
+                    if (results.length === 0) { searchResults.style.display = 'none'; return; }
+                    results.slice(0, 5).forEach(r => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.textContent = r.name;
+                        item.addEventListener('click', () => {
+                            map.setView([r.lat, r.lng], 16);
+                            const marker = markersMap.get(r.id)?.marker;
+                            if (marker) marker.openPopup();
+                            searchResults.style.display = 'none';
+                            searchInput.value = '';
+                        });
+                        searchResults.appendChild(item);
+                    });
+                    searchResults.style.display = 'block';
+                });
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.search-panel')) searchResults.style.display = 'none';
+                });
+
+                function initMap() {
+                    if (window._mapInstance) window._mapInstance.remove();
+                    map = L.map('map', { center: [56.1365, 40.3966], zoom: 13, zoomControl: false, attributionControl: false });
+                    window._mapInstance = map;
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+                    L.control.zoom({ position: 'bottomright' }).addTo(map);
+                    setTimeout(() => {
+                        const zi = document.querySelector('.leaflet-control-zoom-in');
+                        const zo = document.querySelector('.leaflet-control-zoom-out');
+                        if (zi) zi.style.cssText = 'background:#2a2a2a!important;color:#FFD700!important;border:1px solid #3a3a3a!important;border-radius:50%!important;font-size:18px!important;width:32px!important;height:32px!important;';
+                        if (zo) zo.style.cssText = 'background:#2a2a2a!important;color:#FFD700!important;border:1px solid #3a3a3a!important;border-radius:50%!important;font-size:18px!important;width:32px!important;height:32px!important;margin-top:4px!important;';
+                    }, 300);
+                    markersLayer = L.layerGroup().addTo(map);
+                    rulersLayer = L.layerGroup().addTo(map);
+                    linesLayer = L.layerGroup().addTo(map);
+                    zonesLayer = L.layerGroup().addTo(map);
+                    tempLayer = L.layerGroup().addTo(map);
+                    markersMap = new Map(); rulersMap = new Map(); linesMap = new Map(); zonesMap = new Map();
+
+                    document.getElementById('markerToolBtn').onclick = () => setTool('marker');
+                    document.getElementById('rulerToolBtn').onclick = () => setTool('ruler');
+                    document.getElementById('lineToolBtn').onclick = () => setTool('line');
+                    document.getElementById('zoneToolBtn').onclick = () => setTool('zone');
+
+                    const sc = document.getElementById('sidebarColors'); sc.innerHTML = '';
+                    colorPalette.forEach(c => {
+                        const dot = document.createElement('div'); dot.className = 'sidebar-color-dot';
+                        dot.style.backgroundColor = c.hex; dot.dataset.color = c.hex;
+                        if (c.hex === currentColor) dot.classList.add('active');
+                        dot.onclick = () => { currentColor = c.hex; document.querySelectorAll('.sidebar-color-dot').forEach(d => d.classList.remove('active')); dot.classList.add('active'); };
+                        sc.appendChild(dot);
+                    });
+                    map.on('click', onMapClick);
+                    map.on('dblclick', onMapDblClick);
+                    database.ref('markers').on('value', renderMarkers);
+                    database.ref('rulers').on('value', renderRulers);
+                    database.ref('lines').on('value', renderLines);
+                    database.ref('zones').on('value', renderZones);
+                    document.getElementById('screenshotBtn').onclick = takeScreenshot;
+                    setTool('marker');
+                }
+
+                function setTool(t) {
+                    currentTool = t;
+                    document.getElementById('markerToolBtn').classList.toggle('active', t==='marker');
+                    document.getElementById('rulerToolBtn').classList.toggle('active', t==='ruler');
+                    document.getElementById('lineToolBtn').classList.toggle('active', t==='line');
+                    document.getElementById('zoneToolBtn').classList.toggle('active', t==='zone');
+                    const ind = document.getElementById('modeIndicator');
+                    ind.textContent = {marker:'Метка',ruler:'Пунктир',line:'Линия',zone:'Зона'}[t]||'';
+                    ind.classList.add('visible'); clearTimeout(window._mt); window._mt = setTimeout(() => ind.classList.remove('visible'), 2000);
+                    clearTemp(); if (map) map.getContainer().style.cursor = (t==='ruler'||t==='line'||t==='zone')?'crosshair':'';
+                }
+
+                function createShapeIcon(shapeId, colorHex) {
+                    const shape = shapes.find(s => s.id === shapeId) || shapes[0];
+                    return L.divIcon({
+                        className: 'shape-marker',
+                        html: '<div style="color:' + colorHex + ';"><svg viewBox="0 0 40 40" width="36" height="36"><g stroke="' + colorHex + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">' + shape.svg + '</g></svg></div>',
+                        iconSize: [36, 36], iconAnchor: [18, 18], popupAnchor: [0, -18],
+                    });
+                }
+
+                function createPointIcon(colorHex) {
+                    return L.divIcon({
+                        className: 'ruler-point', iconSize: [14, 14], iconAnchor: [7, 7],
+                        html: '<div style="width:100%;height:100%;background:' + colorHex + ';border-radius:50%;border:2px solid #1a1a1a;"></div>'
+                    });
+                }
+
+                function updateMarkerLabel(mid, name) {
+                    const e = markersMap.get(mid); if (!e) return;
+                    if (e.label) e.marker.unbindTooltip();
+                    if (name?.trim()) {
+                        const t = L.tooltip({ permanent: true, direction: 'top', offset: [0, -26], className: 'marker-label' }).setContent(escapeHtml(name));
+                        e.marker.bindTooltip(t).openTooltip(); e.label = t;
+                    }
+                }
+
+                function updateZoneLabel(zid, name) {
+                    const e = zonesMap.get(zid); if (!e || !e.polygon) return;
+                    if (e.label) e.polygon.unbindTooltip();
+                    if (name?.trim()) {
+                        const center = e.polygon.getBounds().getCenter();
+                        const t = L.tooltip({ permanent: true, direction: 'center', className: 'zone-label' })
+                            .setLatLng(center)
+                            .setContent(escapeHtml(name));
+                        e.polygon.bindTooltip(t).openTooltip();
+                        e.label = t;
+                    }
+                }
+
+                function clearTemp() { tempLayer.clearLayers(); tempPoints.forEach(p => p.marker?.remove()); tempPoints = []; }
+
+                function drawTempLine(dashArray) {
+                    tempLayer.clearLayers();
+                    if (tempPoints.length >= 2) {
+                        const opts = { color: currentColor, weight: 3 };
+                        if (dashArray) opts.dashArray = dashArray;
+                        L.polyline(tempPoints.map(p => [p.lat, p.lng]), opts).addTo(tempLayer);
+                    }
+                }
+
+                function drawTempPolygon() {
+                    tempLayer.clearLayers();
+                    if (tempPoints.length >= 3) {
+                        L.polygon(tempPoints.map(p => [p.lat, p.lng]), {
+                            color: currentColor,
+                            fillColor: currentColor,
+                            fillOpacity: 0.2,
+                            weight: 2
+                        }).addTo(tempLayer);
+                    }
+                }
+
+                function addTempPoint(lat, lng, dashArray) {
+                    const pm = L.marker([lat, lng], { icon: createPointIcon(currentColor), draggable: true }).addTo(map);
+                    pm.on('dragend', () => {
+                        const i = tempPoints.findIndex(p => p.marker === pm);
+                        if (i !== -1) {
+                            const pos = pm.getLatLng();
+                            tempPoints[i].lat = pos.lat;
+                            tempPoints[i].lng = pos.lng;
+                            if (currentTool === 'zone') drawTempPolygon();
+                            else drawTempLine(dashArray);
+                        }
+                    });
+                    tempPoints.push({ lat, lng, marker: pm });
+                    if (currentTool === 'zone') drawTempPolygon();
+                    else drawTempLine(dashArray);
+                }
+
+                async function onMapClick(e) {
+                    if (e.originalEvent?.target?.closest('.shape-marker,.leaflet-popup,.screenshot-btn,.sidebar,.ruler-point')) return;
+                    if (currentTool === 'marker') {
+                        const n = await showModal('Метка', '', 'Название...');
+                        if (n) database.ref('markers').push({ lat: e.latlng.lat, lng: e.latlng.lng, name: n, shape: 'cross', color: currentColor, author: currentUser.nickname, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                    } else if (currentTool === 'ruler') {
+                        addTempPoint(e.latlng.lat, e.latlng.lng, '8 8');
+                        if (tempPoints.length === 2) {
+                            setTimeout(async () => {
+                                if (await showConfirm('Сохранить?', 'Добавить пунктирную линию?', 'Сохранить', 'confirm'))
+                                    database.ref('rulers').push({ points: tempPoints.map(p => ({ lat: p.lat, lng: p.lng })), color: currentColor, author: currentUser.nickname, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                                clearTemp();
+                            }, 300);
+                        }
+                    } else if (currentTool === 'line') {
+                        addTempPoint(e.latlng.lat, e.latlng.lng);
+                        if (tempPoints.length === 2) {
+                            setTimeout(async () => {
+                                if (await showConfirm('Сохранить?', 'Добавить сплошную линию?', 'Сохранить', 'confirm'))
+                                    database.ref('lines').push({ points: tempPoints.map(p => ({ lat: p.lat, lng: p.lng })), color: currentColor, author: currentUser.nickname, createdAt: firebase.database.ServerValue.TIMESTAMP });
+                                clearTemp();
+                            }, 300);
+                        }
+                    } else if (currentTool === 'zone') {
+                        addTempPoint(e.latlng.lat, e.latlng.lng);
+                    }
+                }
+
+                function onMapDblClick(e) {
+                    if (currentTool !== 'zone') return;
+                    if (tempPoints.length < 3) return;
+                    (async () => {
+                        const name = await showModal('Название зоны', '', 'Введите название...');
+                        if (!name) return;
+                        if (await showConfirm('Сохранить зону?', 'Добавить выделенную область?', 'Сохранить', 'confirm')) {
+                            database.ref('zones').push({
+                                points: tempPoints.map(p => ({ lat: p.lat, lng: p.lng })),
+                                color: currentColor,
+                                name: name,
+                                author: currentUser.nickname,
+                                createdAt: firebase.database.ServerValue.TIMESTAMP
+                            });
+                        }
+                        clearTemp();
+                    })();
+                }
+
+                function createMarkerPopup(id, name, shape, color, author, createdAt) {
+                    let sb = '';
+                    shapes.forEach(s => sb += '<button class="shape-btn ' + (s.id === shape ? 'active' : '') + '" data-shape="' + s.id + '"><svg viewBox="0 0 40 40" width="18" height="18"><g stroke="#9e9e9e" stroke-width="2.5" fill="none">' + s.svg + '</g></svg></button>');
+                    let cd = '';
+                    colorPalette.forEach(c => cd += '<span class="color-dot ' + (c.hex === color ? 'active' : '') + '" data-color="' + c.hex + '" style="background:' + c.hex + ';"></span>');
+                    const canDelete = (author === currentUser.nickname);
+                    return '<div class="marker-popup" data-id="' + id + '" data-type="marker"><div style="font-weight:600;color:#FFD700;">' + escapeHtml(name) + '</div><div class="meta-info">' + (author ? 'Автор: ' + escapeHtml(author) : '') + (createdAt ? ' | ' + formatTime(createdAt) : '') + '</div><div class="popup-section"><label>Форма:</label><div class="shape-selector">' + sb + '</div></div><div class="popup-section"><label>Цвет:</label><div class="color-selector">' + cd + '</div></div><div class="popup-actions"><button class="popup-btn rename-btn" data-action="rename" data-id="' + id + '">Имя</button>' + (canDelete ? '<button class="popup-btn delete-btn" data-action="delete" data-id="' + id + '">Удалить</button>' : '') + '</div></div>';
+                }
+
+                function createLinePopup(id, type, color, author, createdAt) {
+                    let cd = '';
+                    colorPalette.forEach(c => cd += '<span class="color-dot ' + (c.hex === color ? 'active' : '') + '" data-color="' + c.hex + '" style="background:' + c.hex + ';"></span>');
+                    const label = type === 'ruler' ? 'Пунктир' : 'Линия';
+                    const canDelete = (author === currentUser.nickname);
+                    return '<div class="line-popup" data-id="' + id + '" data-type="' + type + '"><div style="font-weight:600;color:#FFD700;">' + label + '</div><div class="meta-info">' + (author ? 'Автор: ' + escapeHtml(author) : '') + (createdAt ? ' | ' + formatTime(createdAt) : '') + '</div><div class="popup-section"><label>Цвет:</label><div class="color-selector">' + cd + '</div></div><div class="popup-actions">' + (canDelete ? '<button class="popup-btn delete-btn" data-action="delete" data-id="' + id + '">Удалить</button>' : '') + '</div></div>';
+                }
+
+                function createZonePopup(id, name, color, author, createdAt) {
+                    let cd = '';
+                    colorPalette.forEach(c => cd += '<span class="color-dot ' + (c.hex === color ? 'active' : '') + '" data-color="' + c.hex + '" style="background:' + c.hex + ';"></span>');
+                    const canDelete = (author === currentUser.nickname);
+                    return '<div class="zone-popup" data-id="' + id + '" data-type="zones"><div style="font-weight:600;color:#FFD700;">' + escapeHtml(name) + '</div><div class="meta-info">' + (author ? 'Автор: ' + escapeHtml(author) : '') + (createdAt ? ' | ' + formatTime(createdAt) : '') + '</div><div class="popup-section"><label>Цвет:</label><div class="color-selector">' + cd + '</div></div><div class="popup-actions"><button class="popup-btn rename-btn" data-action="rename" data-id="' + id + '">Имя</button>' + (canDelete ? '<button class="popup-btn delete-btn" data-action="delete" data-id="' + id + '">Удалить</button>' : '') + '</div></div>';
+                }
+
+                document.addEventListener('click', async (e) => {
+                    const pop = e.target.closest('.marker-popup,.line-popup,.zone-popup');
+                    if (!pop) return;
+                    const id = pop.dataset.id, type = pop.dataset.type;
+                    if (e.target.closest('.color-dot')) { database.ref(type + (type === 'zones' ? '' : 's') + '/' + id).update({ color: e.target.closest('.color-dot').dataset.color }); return; }
+                    if (e.target.closest('.shape-btn') && type === 'marker') { database.ref('markers/' + id).update({ shape: e.target.closest('.shape-btn').dataset.shape }); return; }
+                    const btn = e.target.closest('.popup-btn');
+                    if (!btn) return;
+                    if (btn.dataset.action === 'delete') {
+                        const refPath = type + (type === 'zones' ? '' : 's') + '/' + id;
+                        const snap = await database.ref(refPath).once('value');
+                        const obj = snap.val();
+                        if (obj && obj.author !== currentUser.nickname) {
+                            alert('Нельзя удалить чужой объект');
+                            return;
+                        }
+                        if (await showConfirm('Удалить?', 'Удалить этот объект?')) database.ref(refPath).remove();
+                    } else if (btn.dataset.action === 'rename') {
+                        if (type === 'marker') {
+                            const md = markersMap.get(id);
+                            if (md) { const nn = await showModal('Имя', md.name); if (nn && nn !== md.name) database.ref('markers/' + id).update({ name: nn }); }
+                        } else if (type === 'zones') {
+                            const zd = zonesMap.get(id);
+                            if (zd) { const nn = await showModal('Имя', zd.name); if (nn && nn !== zd.name) database.ref('zones/' + id).update({ name: nn }); }
+                        }
+                    }
+                    markersMap.get(id)?.marker?.closePopup();
+                    rulersMap.get(id)?.polyline?.closePopup();
+                    linesMap.get(id)?.polyline?.closePopup();
+                    zonesMap.get(id)?.polygon?.closePopup();
+                });
+
+                function renderMarkers(s) {
+                    if (!markersLayer) return;
+                    markersLayer.clearLayers();
+                    markersMap.clear();
+                    const d = s.val();
+                    if (!d) return;
+                    Object.entries(d).forEach(([k, v]) => {
+                        if (v.lat == null || v.lng == null || !v.name) return;
+                        const col = v.color || '#FFD700';
+                        const m = L.marker([v.lat, v.lng], { icon: createShapeIcon(v.shape || 'cross', col), draggable: true });
+                        m.bindPopup(createMarkerPopup(k, v.name, v.shape || 'cross', col, v.author, v.createdAt));
+                        m.on('click', () => m.openPopup());
+                        m.on('dragend', () => { const p = m.getLatLng(); database.ref('markers/' + k).update({ lat: p.lat, lng: p.lng }); });
+                        m.addTo(markersLayer);
+                        markersMap.set(k, { marker: m, name: v.name, label: null, lat: v.lat, lng: v.lng });
+                        updateMarkerLabel(k, v.name);
+                    });
+                }
+
+                function renderPolylines(s, layer, mapStore, type, dashArray) {
+                    if (!layer) return;
+                    layer.clearLayers();
+                    mapStore.clear();
+                    const d = s.val();
+                    if (!d) return;
+                    Object.entries(d).forEach(([k, v]) => {
+                        if (!v.points || v.points.length < 2) return;
+                        const col = v.color || '#FFD700';
+                        const opts = { color: col, weight: 4, opacity: 0.9 };
+                        if (dashArray) opts.dashArray = dashArray;
+                        const poly = L.polyline(v.points.map(p => [p.lat, p.lng]), opts).addTo(layer);
+                        poly.bindPopup(createLinePopup(k, type, col, v.author, v.createdAt));
+                        poly.on('click', () => poly.openPopup());
+                        v.points.forEach((p, i) => {
+                            const pt = L.marker([p.lat, p.lng], { icon: createPointIcon(col), draggable: true }).addTo(layer);
+                            pt.on('dragend', () => { const np = pt.getLatLng(); const upd = [...v.points]; upd[i] = { lat: np.lat, lng: np.lng }; database.ref(type + 's/' + k).update({ points: upd }); });
+                        });
+                        mapStore.set(k, { polyline: poly, points: v.points, color: col });
+                    });
+                }
+
+                function renderRulers(s) { renderPolylines(s, rulersLayer, rulersMap, 'ruler', '8 8'); }
+                function renderLines(s) { renderPolylines(s, linesLayer, linesMap, 'line'); }
+
+                function renderZones(s) {
+                    if (!zonesLayer) return;
+                    zonesLayer.clearLayers();
+                    zonesMap.clear();
+                    const d = s.val();
+                    if (!d) return;
+                    Object.entries(d).forEach(([k, v]) => {
+                        if (!v.points || v.points.length < 3) return;
+                        const col = v.color || '#FFD700';
+                        const poly = L.polygon(v.points.map(p => [p.lat, p.lng]), {
+                            color: col, fillColor: col, fillOpacity: 0.2, weight: 2
+                        }).addTo(zonesLayer);
+                        poly.bindPopup(createZonePopup(k, v.name || 'Зона', col, v.author, v.createdAt));
+                        poly.on('click', () => poly.openPopup());
+                        zonesMap.set(k, { polygon: poly, points: v.points, color: col, name: v.name || 'Зона', label: null });
+                        updateZoneLabel(k, v.name || 'Зона');
+                    });
+                }
+
+                function showModal(t, d) { return new Promise(r => { const o = document.querySelector('.modal-overlay'); if (o) o.remove(); const ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.innerHTML = '<div class="modal-dialog"><div class="modal-title">' + t + '</div><input class="modal-input" value="' + escapeHtml(d || '') + '" placeholder="Введите..." autofocus><div class="modal-buttons"><button class="modal-btn cancel">Отмена</button><button class="modal-btn confirm">ОК</button></div></div>'; document.body.appendChild(ov); const inp = ov.querySelector('input'); setTimeout(() => inp.focus(), 100); ov.querySelector('.confirm').onclick = () => { ov.remove(); r(inp.value.trim() || null); }; ov.querySelector('.cancel').onclick = () => { ov.remove(); r(null); }; inp.onkeydown = e => { if (e.key === 'Enter') { ov.remove(); r(inp.value.trim() || null); } if (e.key === 'Escape') { ov.remove(); r(null); } }; }); }
+
+                function showConfirm(t, m, ok) { return new Promise(r => { const o = document.querySelector('.modal-overlay'); if (o) o.remove(); const ov = document.createElement('div'); ov.className = 'modal-overlay'; ov.innerHTML = '<div class="modal-dialog"><div class="modal-title">' + t + '</div><p style="color:#e0e0e0;margin-bottom:16px;">' + m + '</p><div class="modal-buttons"><button class="modal-btn cancel">Отмена</button><button class="modal-btn danger">' + (ok || 'Удалить') + '</button></div></div>'; document.body.appendChild(ov); ov.querySelector('.danger').onclick = () => { ov.remove(); r(true); }; ov.querySelector('.cancel').onclick = () => { ov.remove(); r(false); }; }); }
+
+                function takeScreenshot() { const b = document.getElementById('screenshotBtn'); b.style.opacity = '0.3'; html2canvas(document.getElementById('map-container'), { useCORS: true, allowTaint: true, backgroundColor: '#1a1a1a', scale: 2 }).then(c => { const a = document.createElement('a'); a.download = 'карта_' + Date.now() + '.png'; a.href = c.toDataURL('image/png'); a.click(); }).catch(() => alert('Ошибка')).finally(() => b.style.opacity = '1'); }
+            })();
+            <\/script>
+        </body>
+        </html>`;
+            mapFrame.srcdoc = mapHtml;
+            mapModal.classList.remove('hide');
+        });
+
+        // Закрываем карту по клику на фон
+        mapModal.addEventListener('click', function(e) {
+            if (e.target === mapModal) {
+                this.classList.add('hide');
+            }
+        });
 
         // Аутентификация
         async function login() {
             const name = nameInput.value.trim();
             const password = passwordInput.value.trim();
-            
+
             if (!name || !password) {
                 showAuthError('Заполните все поля');
                 return;
             }
-            
+
             try {
                 await loadBans();
-                
+
                 if (bannedUsers[name]) {
                     showAuthError('Этот аккаунт забанен');
                     return;
                 }
-                
+
                 const userSnapshot = await usersRef.child(name).once('value');
                 const userData = userSnapshot.val();
-                
+
                 if (!userData) {
                     showAuthError('Аккаунт не найден');
                     return;
                 }
-                
+
                 const hashedPassword = await hashPassword(password);
                 if (userData.password !== hashedPassword) {
                     showAuthError('Неверный пароль');
                     return;
                 }
-                
+
                 currentUser = name;
                 currentUserName = userData.name || name;
                 isAdmin = userData.isAdmin || false;
-                
+
                 localStorage.setItem('chat_username', name);
                 localStorage.setItem('chat_logged_in', 'true');
-                
+
                 showChat();
                 setStatus(`Добро пожаловать, ${currentUserName}!`, 3000);
             } catch (error) {
@@ -1319,46 +2691,46 @@
         async function register() {
             const name = nameInput.value.trim();
             const password = passwordInput.value.trim();
-            
+
             if (!name || !password) {
                 showAuthError('Заполните все поля');
                 return;
             }
-            
+
             if (password.length < 4) {
                 showAuthError('Пароль должен содержать минимум 4 символа');
                 return;
             }
-            
+
             if (name.length < 2) {
                 showAuthError('Имя должно содержать минимум 2 символа');
                 return;
             }
-            
+
             try {
                 const userSnapshot = await usersRef.child(name).once('value');
                 if (userSnapshot.val()) {
                     showAuthError('Это имя уже занято');
                     return;
                 }
-                
+
                 const hashedPassword = await hashPassword(password);
                 const userData = {
                     name: name,
                     password: hashedPassword,
                     isAdmin: name === 'tntrat',
-                    gw: false
+                    gw: name === 'tntrat' ? true : false
                 };
-                
+
                 await usersRef.child(name).set(userData);
-                
+
                 currentUser = name;
                 currentUserName = name;
                 isAdmin = name === 'tntrat';
-                
+
                 localStorage.setItem('chat_username', name);
                 localStorage.setItem('chat_logged_in', 'true');
-                
+
                 showChat();
                 setStatus(`Аккаунт создан! Добро пожаловать, ${name}!`, 4000);
             } catch (error) {
@@ -1369,30 +2741,30 @@
 
         function logout() {
             stopOnlineHeartbeat();
-            
+
             if (currentUser) {
                 onlineRef.child(currentUser).remove();
                 if (messagesRef) {
-                    const typingKey = currentChatType === 'private' 
-                        ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
-                        : currentChatId;
+                    const typingKey = currentChatType === 'private' ?
+                        `private_${getPrivateChatId(currentUser, privateChatPartner)}` :
+                        currentChatId;
                     typingRef.child(typingKey).child(currentUser).remove();
                 }
             }
-            
+
             currentUser = null;
             currentUserName = '';
             isAdmin = false;
             replyTo = null;
-            
+
             localStorage.removeItem('chat_logged_in');
-            
+
             if (messagesListener && messagesRef) {
                 messagesRef.off('value', messagesListener);
             }
             messagesListener = null;
             messagesRef = null;
-            
+
             banOverlay.classList.add('hide');
             authOverlay.classList.remove('hide');
             inputArea.classList.add('hide');
@@ -1401,12 +2773,12 @@
             menuToggle.classList.add('hide');
             createChatBtn.classList.add('hide');
             bannedSection.classList.add('hide');
-            
+
             hideAllContextMenus();
             closeSidebar();
-            
+
             messagesEl.innerHTML = '<div class="empty-state">Войдите в аккаунт</div>';
-            
+
             nameInput.value = localStorage.getItem('chat_username') || '';
             passwordInput.value = '';
             nameInput.focus();
@@ -1417,13 +2789,13 @@
             inputArea.classList.remove('hide');
             menuToggle.classList.remove('hide');
             mainSidebar.classList.remove('hide');
-            
+
             if (isAdmin) {
                 adminBadge.classList.remove('hide');
                 createChatBtn.classList.remove('hide');
                 bannedSection.classList.remove('hide');
             }
-            
+
             startListeningBans();
             startListeningUsers();
             startListeningChats();
@@ -1431,8 +2803,9 @@
             startListeningTyping();
             startListeningUnread();
             startOnlineHeartbeat();
-            
-            // Создаём общий чат если его нет
+
+            updateMapButtonVisibility();
+
             chatsRef.once('value').then(snapshot => {
                 if (!snapshot.val() || Object.keys(snapshot.val()).length === 0) {
                     chatsRef.push().set({
@@ -1442,24 +2815,24 @@
                     });
                 }
             });
-            
+
             messageInput.focus();
         }
 
         function sendMessage() {
             if (!currentUser || !messagesRef) return;
-            
+
             const text = messageInput.value.trim();
             if (!text) return;
-            
+
             setOnlineStatus();
-            
+
             const messageData = {
                 sender: currentUser,
                 text: text,
                 timestamp: new Date().toISOString()
             };
-            
+
             if (replyTo) {
                 messageData.replyTo = {
                     sender: replyTo.sender,
@@ -1467,57 +2840,56 @@
                 };
                 clearReply();
             }
-            
-            // Отправляем уведомление о непрочитанных для личных сообщений
+
             if (currentChatType === 'private' && privateChatPartner) {
                 unreadRef.child(privateChatPartner).child(currentUser).once('value').then(snap => {
                     unreadRef.child(privateChatPartner).child(currentUser).set((snap.val() || 0) + 1);
                 });
             }
-            
+
             messagesRef.push(messageData).catch(err => {
                 console.error(err);
                 setStatus('Ошибка при отправке сообщения');
             });
-            
+
             messageInput.value = '';
             updateSendButton();
-            
-            const typingKey = currentChatType === 'private' 
-                ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
-                : currentChatId;
+
+            const typingKey = currentChatType === 'private' ?
+                `private_${getPrivateChatId(currentUser, privateChatPartner)}` :
+                currentChatId;
             typingRef.child(typingKey).child(currentUser).remove();
             if (typingTimeout) clearTimeout(typingTimeout);
-            
+
             messageInput.focus();
         }
 
         // Обработчики событий
         loginBtn.addEventListener('click', login);
         registerBtn.addEventListener('click', register);
-        
+
         passwordInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') login();
         });
-        
+
         nameInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') passwordInput.focus();
         });
-        
+
         sendButton.addEventListener('click', sendMessage);
-        
+
         messageInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
         });
-        
+
         messageInput.addEventListener('input', function() {
             updateSendButton();
             setTyping();
         });
-        
+
         messagesEl.addEventListener('scroll', function() {
             autoScroll = messagesEl.scrollTop + messagesEl.clientHeight >= messagesEl.scrollHeight - 25;
             if (autoScroll) {
@@ -1556,17 +2928,17 @@
         // Инициализация при загрузке
         window.addEventListener('load', async function() {
             await loadBans();
-            
+
             const savedUser = localStorage.getItem('chat_username');
             const isLoggedIn = localStorage.getItem('chat_logged_in') === 'true';
-            
+
             if (savedUser && isLoggedIn) {
                 if (bannedUsers[savedUser]) {
                     localStorage.removeItem('chat_logged_in');
                     nameInput.value = savedUser;
                     return;
                 }
-                
+
                 const userSnapshot = await usersRef.child(savedUser).once('value');
                 if (userSnapshot.val()) {
                     currentUser = savedUser;
@@ -1594,9 +2966,9 @@
             if (currentUser) {
                 onlineRef.child(currentUser).remove();
                 if (messagesRef) {
-                    const typingKey = currentChatType === 'private' 
-                        ? `private_${getPrivateChatId(currentUser, privateChatPartner)}` 
-                        : currentChatId;
+                    const typingKey = currentChatType === 'private' ?
+                        `private_${getPrivateChatId(currentUser, privateChatPartner)}` :
+                        currentChatId;
                     typingRef.child(typingKey).child(currentUser).remove();
                 }
             }
